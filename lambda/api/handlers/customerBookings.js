@@ -1,0 +1,354 @@
+'use strict';
+
+const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+const {
+  DynamoDBDocumentClient,
+  QueryCommand,
+  PutCommand,
+  UpdateCommand,
+  GetCommand,
+  TransactWriteCommand,
+} = require('@aws-sdk/lib-dynamodb');
+const { v4: uuidv4 } = require('uuid');
+
+const { checkSlotAvailable } = require('./bookings');
+const { sendEmail, emailLayout } = require('../utils/email');
+const { createNotification } = require('../utils/notify');
+
+const ddbClient = new DynamoDBClient({});
+const ddb = DynamoDBDocumentClient.from(ddbClient);
+
+const BOOKINGS_TABLE = process.env.BOOKINGS_TABLE;
+const PACKAGES_TABLE = process.env.PACKAGES_TABLE;
+
+const RESCHEDULE_WINDOW_MS = 24 * 60 * 60 * 1000;
+const VALID_SERVICES = ['session', 'mock', 'cv', 'mentoria'];
+
+function slotDateTime(date, time) {
+  return new Date(`${date}T${time}:00`);
+}
+
+function withinModifyWindow(booking) {
+  return slotDateTime(booking.date, booking.time).getTime() - Date.now() >= RESCHEDULE_WINDOW_MS;
+}
+
+/**
+ * GET /me/bookings?scope=upcoming
+ */
+async function listMyBookings(email, queryParams) {
+  try {
+    const result = await ddb.send(
+      new QueryCommand({
+        TableName: BOOKINGS_TABLE,
+        IndexName: 'email-date-index',
+        KeyConditionExpression: 'email = :email',
+        ExpressionAttributeValues: { ':email': email },
+      })
+    );
+
+    let items = result.Items || [];
+    if (queryParams?.scope === 'upcoming') {
+      const today = new Date().toISOString().split('T')[0];
+      items = items.filter((b) => b.date >= today && b.status !== 'cancelled');
+    }
+
+    items.sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+
+    const bookings = items.map((b) => ({
+      ...b,
+      canModify: (b.status === 'pending' || b.status === 'confirmed') && withinModifyWindow(b),
+    }));
+
+    return { statusCode: 200, body: { bookings } };
+  } catch (err) {
+    console.error('listMyBookings error:', err);
+    return { statusCode: 500, body: { error: 'Failed to fetch bookings.' } };
+  }
+}
+
+/**
+ * POST /me/bookings
+ * Body: { date, time, service, message?, packageId? }
+ */
+async function createCustomerBooking(email, body) {
+  if (!body) return { statusCode: 400, body: { error: 'Request body is required.' } };
+
+  const { date, time, service, message = '', packageId } = body;
+  const errors = [];
+  if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) errors.push('date must be in YYYY-MM-DD format.');
+  if (!time || !/^\d{2}:\d{2}$/.test(time)) errors.push('time must be in HH:MM format.');
+  if (!service || !VALID_SERVICES.includes(service)) errors.push(`service must be one of: ${VALID_SERVICES.join(', ')}.`);
+  if (errors.length) return { statusCode: 400, body: { errors } };
+
+  try {
+    let pkg = null;
+    if (packageId) {
+      const pkgResult = await ddb.send(new GetCommand({ TableName: PACKAGES_TABLE, Key: { id: packageId } }));
+      pkg = pkgResult.Item;
+      if (!pkg || pkg.email !== email) {
+        return { statusCode: 403, body: { error: 'This package does not belong to you.' } };
+      }
+      if (pkg.status !== 'active' || pkg.remainingCredits <= 0) {
+        return { statusCode: 409, body: { error: 'No credits remaining on this package.' } };
+      }
+    }
+
+    const availability = await checkSlotAvailable(date, time);
+    if (!availability.ok) {
+      return { statusCode: availability.statusCode, body: { error: availability.error } };
+    }
+
+    const id = uuidv4();
+    const createdAt = new Date().toISOString();
+    const booking = {
+      id,
+      date,
+      time,
+      email,
+      service,
+      message: message.trim(),
+      status: packageId ? 'confirmed' : 'pending',
+      durationMinutes: availability.durationMinutes,
+      packageId: packageId || null,
+      createdAt,
+    };
+
+    if (packageId) {
+      try {
+        await ddb.send(
+          new UpdateCommand({
+            TableName: PACKAGES_TABLE,
+            Key: { id: packageId },
+            UpdateExpression: 'SET usedCredits = usedCredits + :one, remainingCredits = remainingCredits - :one',
+            ConditionExpression: 'remainingCredits > :zero',
+            ExpressionAttributeValues: { ':one': 1, ':zero': 0 },
+          })
+        );
+      } catch (err) {
+        if (err.name === 'ConditionalCheckFailedException') {
+          return { statusCode: 409, body: { error: 'No credits remaining on this package.' } };
+        }
+        throw err;
+      }
+    }
+
+    await ddb.send(new PutCommand({ TableName: BOOKINGS_TABLE, Item: booking }));
+
+    const title = packageId ? 'Sesión confirmada' : 'Sesión agendada — pendiente de pago';
+    try {
+      await sendEmail({
+        to: email,
+        subject: `${title} — ${date} ${time}`,
+        html: emailLayout({
+          headerSubtitle: title,
+          bodyHtml: `
+            <p style="margin:0 0 16px;color:#374151;font-size:15px;line-height:1.7;">
+              ${packageId
+                ? 'Tu sesión quedó confirmada usando uno de tus créditos disponibles.'
+                : 'Tu sesión quedó registrada. Se confirmará una vez recibido el pago.'}
+            </p>
+            <p style="margin:0;color:#374151;font-size:15px;"><strong>Fecha:</strong> ${date}</p>
+            <p style="margin:0;color:#374151;font-size:15px;"><strong>Hora:</strong> ${time}</p>
+          `,
+        }),
+      });
+    } catch (emailErr) {
+      console.error('createCustomerBooking email error:', emailErr);
+    }
+
+    await createNotification(email, {
+      type: packageId ? 'booking_confirmed' : 'booking_pending',
+      title,
+      body: `${date} ${time}`,
+      relatedBookingId: id,
+      relatedPackageId: packageId || null,
+    });
+
+    return { statusCode: 201, body: { booking } };
+  } catch (err) {
+    console.error('createCustomerBooking error:', err);
+    return { statusCode: 500, body: { error: 'Failed to create booking.' } };
+  }
+}
+
+async function getOwnedBooking(email, id) {
+  const result = await ddb.send(
+    new QueryCommand({
+      TableName: BOOKINGS_TABLE,
+      IndexName: 'id-index',
+      KeyConditionExpression: 'id = :id',
+      ExpressionAttributeValues: { ':id': id },
+      Limit: 1,
+    })
+  );
+  const booking = result.Items?.[0];
+  if (!booking) return { errorResponse: { statusCode: 404, body: { error: 'Booking not found.' } } };
+  if (booking.email !== email) return { errorResponse: { statusCode: 403, body: { error: 'This booking does not belong to you.' } } };
+  if (booking.status === 'cancelled') return { errorResponse: { statusCode: 400, body: { error: 'This booking is already cancelled.' } } };
+  return { booking };
+}
+
+const RESCHEDULE_BLOCKED_MSG =
+  'El plazo para reagendar ya pasó. Escríbele directamente a Fabiola para hacer cambios dentro de las 24 horas previas a tu sesión.';
+const CANCEL_BLOCKED_MSG =
+  'El plazo para cancelar ya pasó. Escríbele directamente a Fabiola para hacer cambios dentro de las 24 horas previas a tu sesión.';
+
+/**
+ * PUT /me/bookings/{id}/reschedule
+ * Body: { date, time }
+ */
+async function rescheduleMyBooking(email, id, body) {
+  if (!body || !body.date || !body.time) {
+    return { statusCode: 400, body: { error: 'date and time are required.' } };
+  }
+
+  const owned = await getOwnedBooking(email, id).catch((err) => {
+    console.error('rescheduleMyBooking lookup error:', err);
+    return { errorResponse: { statusCode: 500, body: { error: 'Failed to fetch booking.' } } };
+  });
+  if (owned.errorResponse) return owned.errorResponse;
+  const { booking } = owned;
+
+  if (!withinModifyWindow(booking)) {
+    return { statusCode: 403, body: { error: RESCHEDULE_BLOCKED_MSG } };
+  }
+
+  try {
+    const availability = await checkSlotAvailable(body.date, body.time);
+    if (!availability.ok) {
+      return { statusCode: availability.statusCode, body: { error: availability.error } };
+    }
+
+    const newId = uuidv4();
+    const now = new Date().toISOString();
+    const newBooking = {
+      ...booking,
+      id: newId,
+      date: body.date,
+      time: body.time,
+      durationMinutes: availability.durationMinutes,
+      rescheduledFromId: booking.id,
+      rescheduledToId: null,
+      createdAt: now,
+    };
+
+    await ddb.send(
+      new TransactWriteCommand({
+        TransactItems: [
+          {
+            Update: {
+              TableName: BOOKINGS_TABLE,
+              Key: { id: booking.id, date: booking.date },
+              UpdateExpression: 'SET #status = :cancelled, rescheduledToId = :newId, updatedAt = :now',
+              ExpressionAttributeNames: { '#status': 'status' },
+              ExpressionAttributeValues: { ':cancelled': 'cancelled', ':newId': newId, ':now': now },
+            },
+          },
+          { Put: { TableName: BOOKINGS_TABLE, Item: newBooking } },
+        ],
+      })
+    );
+
+    try {
+      await sendEmail({
+        to: email,
+        subject: `Sesión reagendada — ${body.date} ${body.time}`,
+        html: emailLayout({
+          headerSubtitle: 'Sesión reagendada',
+          bodyHtml: `
+            <p style="margin:0 0 16px;color:#374151;font-size:15px;line-height:1.7;">Tu sesión fue reagendada.</p>
+            <p style="margin:0;color:#374151;font-size:15px;"><strong>Antes:</strong> ${booking.date} ${booking.time}</p>
+            <p style="margin:0;color:#374151;font-size:15px;"><strong>Ahora:</strong> ${body.date} ${body.time}</p>
+          `,
+        }),
+      });
+    } catch (emailErr) {
+      console.error('rescheduleMyBooking email error:', emailErr);
+    }
+
+    await createNotification(email, {
+      type: 'booking_rescheduled',
+      title: 'Sesión reagendada',
+      body: `${booking.date} ${booking.time} → ${body.date} ${body.time}`,
+      relatedBookingId: newId,
+      relatedPackageId: booking.packageId || null,
+    });
+
+    return { statusCode: 200, body: { booking: newBooking } };
+  } catch (err) {
+    console.error('rescheduleMyBooking error:', err);
+    return { statusCode: 500, body: { error: 'Failed to reschedule booking.' } };
+  }
+}
+
+/**
+ * POST /me/bookings/{id}/cancel
+ */
+async function cancelMyBooking(email, id) {
+  const owned = await getOwnedBooking(email, id).catch((err) => {
+    console.error('cancelMyBooking lookup error:', err);
+    return { errorResponse: { statusCode: 500, body: { error: 'Failed to fetch booking.' } } };
+  });
+  if (owned.errorResponse) return owned.errorResponse;
+  const { booking } = owned;
+
+  if (!withinModifyWindow(booking)) {
+    return { statusCode: 403, body: { error: CANCEL_BLOCKED_MSG } };
+  }
+
+  try {
+    await ddb.send(
+      new UpdateCommand({
+        TableName: BOOKINGS_TABLE,
+        Key: { id: booking.id, date: booking.date },
+        UpdateExpression: 'SET #status = :cancelled, updatedAt = :now',
+        ExpressionAttributeNames: { '#status': 'status' },
+        ExpressionAttributeValues: { ':cancelled': 'cancelled', ':now': new Date().toISOString() },
+      })
+    );
+
+    if (booking.packageId) {
+      await ddb.send(
+        new UpdateCommand({
+          TableName: PACKAGES_TABLE,
+          Key: { id: booking.packageId },
+          UpdateExpression: 'SET usedCredits = usedCredits - :one, remainingCredits = remainingCredits + :one',
+          ExpressionAttributeValues: { ':one': 1 },
+        })
+      );
+    }
+
+    try {
+      await sendEmail({
+        to: email,
+        subject: `Sesión cancelada — ${booking.date} ${booking.time}`,
+        html: emailLayout({
+          headerSubtitle: 'Sesión cancelada',
+          bodyHtml: `
+            <p style="margin:0;color:#374151;font-size:15px;line-height:1.7;">
+              Tu sesión del ${booking.date} a las ${booking.time} fue cancelada.
+              ${booking.packageId ? 'El crédito de tu paquete quedó disponible de nuevo.' : ''}
+            </p>
+          `,
+        }),
+      });
+    } catch (emailErr) {
+      console.error('cancelMyBooking email error:', emailErr);
+    }
+
+    await createNotification(email, {
+      type: 'booking_cancelled',
+      title: 'Sesión cancelada',
+      body: `${booking.date} ${booking.time}`,
+      relatedBookingId: booking.id,
+      relatedPackageId: booking.packageId || null,
+    });
+
+    return { statusCode: 200, body: { message: 'Booking cancelled.' } };
+  } catch (err) {
+    console.error('cancelMyBooking error:', err);
+    return { statusCode: 500, body: { error: 'Failed to cancel booking.' } };
+  }
+}
+
+module.exports = { listMyBookings, createCustomerBooking, rescheduleMyBooking, cancelMyBooking };

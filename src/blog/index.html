@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog & Recursos — Fabiola Ledesma</title>
+  <meta name="description" content="Artículos sobre Diseño Estratégico, UX Leadership y transformación digital por Fabiola Ledesma." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/styles.css" />
+  <style>
+    /* ── Blog-specific styles ─────────────────────────────────────── */
+    .blog-hero {
+      background: linear-gradient(135deg, #2d0f18 0%, #C96A8A 100%);
+      padding: 5rem 0 4rem;
+      text-align: center;
+      color: #fff;
+    }
+    .blog-hero h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 700; margin-bottom: 1rem; }
+    .blog-hero p { font-size: 1.125rem; opacity: 0.85; max-width: 42rem; margin: 0 auto; }
+
+    .blog-controls {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .search-bar {
+      position: relative;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.75rem;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 0.75rem;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      font-family: inherit;
+      box-sizing: border-box;
+      background: #fff;
+    }
+    .search-bar input:focus { border-color: #C96A8A; box-shadow: 0 0 0 3px rgba(201,106,138,0.15); }
+    .search-bar svg {
+      position: absolute; left: 0.875rem; top: 50%; transform: translateY(-50%);
+      color: #94a3b8; width: 1.125rem; height: 1.125rem; pointer-events: none;
+    }
+
+    .tag-filters { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .tag-pill {
+      padding: 0.375rem 0.875rem;
+      border-radius: 2rem;
+      border: 1.5px solid #e2e8f0;
+      background: #fff;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #64748b;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .tag-pill:hover { border-color: #E8A0BA; color: #C96A8A; background: #fff0f5; }
+    .tag-pill.active { background: #C96A8A; color: #fff; border-color: #C96A8A; }
+
+    .posts-section {
+      max-width: 900px;
+      margin: 2.5rem auto 0;
+      padding: 0 1.5rem;
+    }
+
+    .posts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.75rem;
+      margin-bottom: 3rem;
+    }
+
+    /* Blog card */
+    .blog-card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 1rem;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .blog-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
+
+    .blog-card__cover {
+      height: 180px;
+      background: #fce4ee;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .blog-card__cover-placeholder {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #E8A0BA;
+      letter-spacing: -0.05em;
+    }
+
+    .blog-card__content { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; }
+    .blog-card__tags { display: flex; flex-wrap: wrap; gap: 0.375rem; margin-bottom: 0.625rem; }
+    .blog-tag {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      background: #fce4ee;
+      color: #C96A8A;
+      border-radius: 1rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+    .blog-card__title { font-size: 1rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem; line-height: 1.4; }
+    .blog-card__title a { color: inherit; text-decoration: none; }
+    .blog-card__title a:hover { color: #C96A8A; }
+    .blog-card__excerpt { font-size: 0.875rem; color: #64748b; line-height: 1.6; flex: 1; margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .blog-card__meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 0.75rem; margin-top: auto; }
+    .blog-card__read-more { color: #C96A8A; font-weight: 600; text-decoration: none; }
+    .blog-card__read-more:hover { text-decoration: underline; }
+
+    /* Skeleton */
+    .blog-card--skeleton { pointer-events: none; }
+    .blog-card--skeleton .blog-card__cover { background: #e2e8f0; }
+    .skeleton-line { height: 0.875rem; border-radius: 0.25rem; background: linear-gradient(90deg,#e2e8f0 25%,#f1f5f9 50%,#e2e8f0 75%); background-size: 200% 100%; animation: skel 1.4s infinite; }
+    .skeleton-tag { display: inline-block; width: 4rem; height: 1.1rem; border-radius: 1rem; background: #e2e8f0; animation: skel 1.4s infinite; }
+    .skeleton-title { height: 1.1rem; width: 80%; border-radius: 0.25rem; background: #e2e8f0; animation: skel 1.4s infinite; margin-bottom: 0.5rem; }
+    .skeleton-excerpt { height: 0.75rem; border-radius: 0.25rem; background: #e2e8f0; animation: skel 1.4s infinite; margin-bottom: 0.4rem; }
+    .skeleton-excerpt--short { width: 60%; }
+    .skeleton-meta { height: 0.75rem; width: 50%; border-radius: 0.25rem; background: #e2e8f0; animation: skel 1.4s infinite; }
+    @keyframes skel { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 2rem 0 4rem;
+    }
+    .page-btn {
+      width: 2.25rem; height: 2.25rem;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 0.5rem;
+      background: #fff;
+      font-size: 0.875rem;
+      color: #475569;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+    .page-btn:hover:not(:disabled) { border-color: #E8A0BA; color: #C96A8A; background: #fff0f5; }
+    .page-btn.active { background: #C96A8A; color: #fff; border-color: #C96A8A; }
+    .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .empty-state { text-align: center; padding: 4rem 1rem; color: #94a3b8; }
+    .empty-state svg { margin: 0 auto 1rem; display: block; }
+    .empty-state h3 { font-size: 1rem; font-weight: 600; color: #64748b; margin-bottom: 0.5rem; }
+
+    /* Animate on scroll */
+    .animate-on-scroll { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .animate-on-scroll.animated { opacity: 1; transform: none; }
+  </style>
+</head>
+<body>
+
+<!-- API Base URL -->
+<script src="../js/config.js"></script>
+
+<!-- ── Navigation ──────────────────────────────────────────────────────── -->
+<nav id="main-nav" class="site-nav">
+  <div class="nav-container">
+    <a href="../index.html" class="nav-logo" aria-label="Inicio — Fabiola Ledesma">
+      <span class="logo-mark">FL</span>
+      <span class="logo-name">Fabiola Ledesma</span>
+    </a>
+
+    <button id="menu-toggle" class="menu-toggle" aria-label="Abrir menú" aria-expanded="false" data-menu-toggle>
+      <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+    </button>
+
+    <div id="mobile-menu" class="nav-menu" data-mobile-menu>
+      <a href="../index.html#servicios" class="nav-link" data-nav-link>Servicios</a>
+      <a href="../index.html#sobre-mi" class="nav-link" data-nav-link>Sobre mí</a>
+      <a href="../index.html#testimonios" class="nav-link" data-nav-link>Testimonios</a>
+      <a href="./index.html" class="nav-link nav-link--active" aria-current="page">Blog</a>
+      <a href="../index.html#contacto" class="nav-link" data-nav-link>Contacto</a>
+      <button class="btn-cta nav-cta" data-open-booking>Agendar consulta</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Hero ────────────────────────────────────────────────────────────── -->
+<section class="blog-hero">
+  <div style="max-width:42rem;margin:0 auto;padding:0 1.5rem;">
+    <h1>Blog & Recursos</h1>
+    <p>Comparto perspectivas, frameworks y aprendizajes sobre Diseño Estratégico, UX Leadership y transformación digital en organizaciones.</p>
+  </div>
+</section>
+
+<!-- ── Controls ────────────────────────────────────────────────────────── -->
+<div class="blog-controls">
+  <div class="search-bar">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+    <input
+      type="search"
+      id="blog-search"
+      placeholder="Buscar artículos..."
+      aria-label="Buscar artículos"
+      autocomplete="off"
+    />
+  </div>
+  <div class="tag-filters" id="tag-filters" role="group" aria-label="Filtrar por tema">
+    <button class="tag-pill active" data-tag="">Todos</button>
+    <!-- Additional tags injected by JS -->
+  </div>
+</div>
+
+<!-- ── Posts Grid ───────────────────────────────────────────────────────── -->
+<section class="posts-section" aria-live="polite" aria-label="Artículos del blog">
+  <div class="posts-grid" id="posts-grid">
+    <!-- Skeleton cards while loading -->
+    <article class="blog-card blog-card--skeleton" aria-hidden="true">
+      <div class="blog-card__cover"></div>
+      <div class="blog-card__content">
+        <div class="blog-card__tags"><span class="skeleton-tag"></span></div>
+        <div class="skeleton-title"></div>
+        <div class="skeleton-excerpt"></div>
+        <div class="skeleton-excerpt skeleton-excerpt--short"></div>
+        <div class="skeleton-meta"></div>
+      </div>
+    </article>
+    <article class="blog-card blog-card--skeleton" aria-hidden="true">
+      <div class="blog-card__cover"></div>
+      <div class="blog-card__content">
+        <div class="blog-card__tags"><span class="skeleton-tag"></span></div>
+        <div class="skeleton-title"></div>
+        <div class="skeleton-excerpt"></div>
+        <div class="skeleton-excerpt skeleton-excerpt--short"></div>
+        <div class="skeleton-meta"></div>
+      </div>
+    </article>
+    <article class="blog-card blog-card--skeleton" aria-hidden="true">
+      <div class="blog-card__cover"></div>
+      <div class="blog-card__content">
+        <div class="blog-card__tags"><span class="skeleton-tag"></span></div>
+        <div class="skeleton-title"></div>
+        <div class="skeleton-excerpt"></div>
+        <div class="skeleton-excerpt skeleton-excerpt--short"></div>
+        <div class="skeleton-meta"></div>
+      </div>
+    </article>
+  </div>
+
+  <div id="pagination" class="pagination" aria-label="Paginación"></div>
+</section>
+
+<!-- ── Footer ──────────────────────────────────────────────────────────── -->
+<footer class="site-footer">
+  <div class="footer-container">
+    <div class="footer-brand">
+      <span class="logo-mark">FL</span>
+      <p class="footer-tagline">Diseño Estratégico & UX Leadership</p>
+    </div>
+    <nav class="footer-nav" aria-label="Pie de página">
+      <a href="../index.html#servicios">Servicios</a>
+      <a href="../index.html#sobre-mi">Sobre mí</a>
+      <a href="./index.html">Blog</a>
+      <a href="../index.html#contacto">Contacto</a>
+    </nav>
+    <p class="footer-copy">&copy; <span id="footer-year"></span> Fabiola Ledesma. Todos los derechos reservados.</p>
+  </div>
+</footer>
+
+<script src="../js/config.js"></script>
+<script src="../js/main.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+  const PER_PAGE = 9;
+  let allPosts = [];
+  let filteredPosts = [];
+  let currentPage = 1;
+  let activeTag = '';
+  let searchQuery = '';
+  let searchTimer = null;
+
+  function getApiBase() {
+    return (window.API_BASE_URL || '').replace(/\/$/, '');
+  }
+
+  function esc(str) {
+    const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+    return String(str).replace(/[&<>"']/g, c => map[c]);
+  }
+
+  function formatDate(isoStr) {
+    try {
+      return new Date(isoStr).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+    } catch { return ''; }
+  }
+
+  function cardHTML(post) {
+    const tags = Array.isArray(post.tags) ? post.tags : String(post.tags || '').split(',').map(t => t.trim()).filter(Boolean);
+    const cover = post.coverImage || post.cover_image || '';
+    const slug = post.slug || '';
+    return `
+      <article class="blog-card animate-on-scroll">
+        <a href="./post.html?slug=${encodeURIComponent(slug)}" class="blog-card__cover-link" tabindex="-1" aria-hidden="true">
+          <div class="blog-card__cover" ${cover ? `style="background-image:url('${esc(cover)}')"` : ''}>
+            ${!cover ? '<span class="blog-card__cover-placeholder">FL</span>' : ''}
+          </div>
+        </a>
+        <div class="blog-card__content">
+          ${tags.length ? `<div class="blog-card__tags">${tags.map(t => `<span class="blog-tag">${esc(t)}</span>`).join('')}</div>` : ''}
+          <h2 class="blog-card__title">
+            <a href="./post.html?slug=${encodeURIComponent(slug)}">${esc(post.title || '')}</a>
+          </h2>
+          <p class="blog-card__excerpt">${esc(post.excerpt || '')}</p>
+          <div class="blog-card__meta">
+            <time datetime="${esc(post.publishedAt || post.created_at || '')}">${formatDate(post.publishedAt || post.created_at || '')}</time>
+            <a href="./post.html?slug=${encodeURIComponent(slug)}" class="blog-card__read-more">Leer más &rarr;</a>
+          </div>
+        </div>
+      </article>`;
+  }
+
+  function applyFilters() {
+    const q = searchQuery.toLowerCase();
+    filteredPosts = allPosts.filter(p => {
+      const matchTag = !activeTag || (Array.isArray(p.tags) ? p.tags : String(p.tags || '').split(',')).some(t => t.trim().toLowerCase() === activeTag.toLowerCase());
+      const matchSearch = !q || (p.title || '').toLowerCase().includes(q) || (p.excerpt || '').toLowerCase().includes(q);
+      return matchTag && matchSearch;
+    });
+    currentPage = 1;
+    renderPage();
+  }
+
+  function renderPage() {
+    const grid = document.getElementById('posts-grid');
+    const start = (currentPage - 1) * PER_PAGE;
+    const slice = filteredPosts.slice(start, start + PER_PAGE);
+
+    if (!slice.length) {
+      grid.innerHTML = `
+        <div class="empty-state" style="grid-column:1/-1;">
+          <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="#cbd5e1"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <h3>Sin resultados</h3>
+          <p>No encontramos artículos con esos criterios.</p>
+        </div>`;
+    } else {
+      grid.innerHTML = slice.map(cardHTML).join('');
+      // Trigger animations
+      requestAnimationFrame(() => {
+        grid.querySelectorAll('.animate-on-scroll').forEach((el, i) => {
+          setTimeout(() => el.classList.add('animated'), i * 80);
+        });
+      });
+    }
+
+    renderPagination();
+  }
+
+  function renderPagination() {
+    const total = Math.ceil(filteredPosts.length / PER_PAGE);
+    const pag = document.getElementById('pagination');
+    if (total <= 1) { pag.innerHTML = ''; return; }
+
+    let html = `<button class="page-btn" id="pag-prev" aria-label="Página anterior" ${currentPage === 1 ? 'disabled' : ''}>&larr;</button>`;
+    for (let i = 1; i <= total; i++) {
+      html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}" aria-label="Página ${i}" aria-current="${i === currentPage}">${i}</button>`;
+    }
+    html += `<button class="page-btn" id="pag-next" aria-label="Página siguiente" ${currentPage === total ? 'disabled' : ''}>&rarr;</button>`;
+    pag.innerHTML = html;
+
+    pag.querySelectorAll('[data-page]').forEach(btn => {
+      btn.addEventListener('click', () => { currentPage = Number(btn.dataset.page); renderPage(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+    });
+    document.getElementById('pag-prev')?.addEventListener('click', () => { if (currentPage > 1) { currentPage--; renderPage(); window.scrollTo({ top: 0, behavior: 'smooth' }); } });
+    document.getElementById('pag-next')?.addEventListener('click', () => { if (currentPage < total) { currentPage++; renderPage(); window.scrollTo({ top: 0, behavior: 'smooth' }); } });
+  }
+
+  function buildTagFilters(posts) {
+    const tagsSet = new Set();
+    posts.forEach(p => {
+      (Array.isArray(p.tags) ? p.tags : String(p.tags || '').split(',')).forEach(t => {
+        const trimmed = t.trim();
+        if (trimmed) tagsSet.add(trimmed);
+      });
+    });
+
+    const container = document.getElementById('tag-filters');
+    tagsSet.forEach(tag => {
+      const btn = document.createElement('button');
+      btn.className = 'tag-pill';
+      btn.dataset.tag = tag;
+      btn.textContent = tag;
+      container.appendChild(btn);
+    });
+
+    container.querySelectorAll('.tag-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeTag = btn.dataset.tag || '';
+        container.querySelectorAll('.tag-pill').forEach(b => b.classList.toggle('active', b === btn));
+        applyFilters();
+      });
+    });
+  }
+
+  // Search
+  document.getElementById('blog-search').addEventListener('input', (e) => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      searchQuery = e.target.value.trim();
+      applyFilters();
+    }, 300);
+  });
+
+  // Load posts
+  async function loadPosts() {
+    try {
+      const res = await fetch(`${getApiBase()}/blog/posts?published=true`);
+      if (!res.ok) throw new Error(`Error ${res.status}`);
+      const data = await res.json();
+      allPosts = Array.isArray(data) ? data : (data.posts || data.items || []);
+      filteredPosts = [...allPosts];
+      buildTagFilters(allPosts);
+      renderPage();
+    } catch (err) {
+      console.error('[Blog] Load error:', err);
+      document.getElementById('posts-grid').innerHTML = `
+        <div class="empty-state" style="grid-column:1/-1;">
+          <h3>Error al cargar artículos</h3>
+          <p>Por favor, intenta de nuevo más tarde.</p>
+        </div>`;
+    }
+  }
+
+  loadPosts();
+})();
+</script>
+</body>
+</html>

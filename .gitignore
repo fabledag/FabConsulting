@@ -1,0 +1,23 @@
+# Secrets — never commit
+FabDev_accessKeys.csv
+*.pem
+*.key
+.env
+.env.*
+
+# Dependencies
+node_modules/
+
+# Build output
+frontend/dist/
+lambda/api.zip
+
+# OS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+
+# Claude Code local state
+.claude/

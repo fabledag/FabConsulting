@@ -1,0 +1,25 @@
+{
+  "name": "fabiola-ledesma-api",
+  "version": "1.0.0",
+  "description": "Serverless API backend for Fabiola Ledesma consulting website",
+  "main": "index.js",
+  "engines": {
+    "node": ">=20.x"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.600.0",
+    "@aws-sdk/lib-dynamodb": "^3.600.0",
+    "@aws-sdk/client-ses": "^3.600.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "marked": "^12.0.0",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "archiver": "^7.0.0"
+  },
+  "scripts": {
+    "package": "zip -r ../api.zip . -x '*.zip' -x 'node_modules/.cache/*'",
+    "install:prod": "npm install --omit=dev"
+  }
+}

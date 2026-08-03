@@ -1,0 +1,301 @@
+/* Booking.module.css */
+
+.bookingInnerResponsive {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+@media (min-width: 900px) {
+  .bookingInnerResponsive {
+    flex-direction: row;
+    gap: 3rem;
+    align-items: flex-start;
+  }
+  .bookingInnerResponsive > *:first-child {
+    flex: 1;
+  }
+  .bookingInnerResponsive > *:last-child {
+    flex: 1.2;
+  }
+}
+
+/* ── STEP INDICATOR ── */
+.steps {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 2rem;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0.35;
+  transition: opacity 0.3s;
+}
+
+.step.active {
+  opacity: 1;
+}
+
+.step.done {
+  opacity: 0.7;
+}
+
+.stepNum {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--purple-100);
+  color: var(--purple-700);
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.step.active .stepNum {
+  background: var(--purple-700);
+  color: white;
+}
+
+.step.done .stepNum {
+  background: #22c55e;
+  color: white;
+}
+
+.stepLabel {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--purple-800);
+  white-space: nowrap;
+}
+
+.stepLine {
+  flex: 1;
+  height: 1px;
+  background: rgba(82, 58, 168, 0.12);
+  margin: 0 0.5rem;
+}
+
+.stepTitle {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--purple-900);
+  margin-bottom: 0.25rem;
+}
+
+.stepSubtitle {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-bottom: 1.25rem;
+  line-height: 1.5;
+}
+
+/* ── SERVICE OPTIONS ── */
+.serviceOptions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+}
+
+.serviceOption {
+  border: 1.5px solid rgba(82, 58, 168, 0.12);
+  border-radius: 14px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: var(--cream);
+}
+
+.serviceOption:hover {
+  border-color: var(--purple-400);
+  background: var(--purple-50);
+}
+
+.serviceOption.selected {
+  border-color: var(--purple-600);
+  background: var(--purple-50);
+}
+
+.soptTop {
+  margin-bottom: 0.4rem;
+}
+
+.soptTag {
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--purple-700);
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+}
+
+.soptTagPlain {
+  background: var(--purple-100);
+  color: var(--purple-600);
+}
+
+.soptName {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--purple-900);
+  margin-bottom: 0.25rem;
+}
+
+.soptDesc {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+}
+
+.soptPrice {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.2rem;
+  font-weight: 300;
+  color: var(--purple-800);
+  letter-spacing: -0.02em;
+}
+
+.soptPrice span {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* ── PAYMENT ── */
+.paymentSummary {
+  background: var(--purple-50);
+  border: 1px solid var(--purple-100);
+  border-radius: 14px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.875rem;
+}
+
+.psRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.35rem 0;
+}
+
+.psRow:not(:last-child) {
+  border-bottom: 1px solid rgba(82, 58, 168, 0.08);
+}
+
+.psLabel {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.psValue {
+  color: var(--purple-900);
+  font-weight: 500;
+}
+
+.psTotal .psLabel {
+  color: var(--purple-800);
+  font-weight: 500;
+}
+
+.psTotal .psValue {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.4rem;
+  font-weight: 300;
+  color: var(--purple-800);
+  letter-spacing: -0.02em;
+}
+
+.paymentNote {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.8rem;
+  color: #166534;
+}
+
+.paymentNote strong {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-size: 0.82rem;
+}
+
+/* ── BUTTONS ── */
+.formSubmit {
+  display: block;
+  width: 100%;
+  text-align: center;
+  background: var(--purple-700);
+  color: white;
+  padding: 0.9rem;
+  border-radius: 999px;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 0.5rem;
+  text-decoration: none;
+}
+
+.formSubmit:hover {
+  background: var(--purple-600);
+}
+
+.formSubmit:disabled {
+  background: #c4b8e8;
+  cursor: not-allowed;
+  transform: none;
+  opacity: 0.6;
+}
+
+.paypalSubmit {
+  background: #0070ba;
+}
+
+.paypalSubmit:hover {
+  background: #005ea6;
+}
+
+.btnBack {
+  background: none;
+  border: 1px solid rgba(82, 58, 168, 0.15);
+  border-radius: 999px;
+  padding: 0.7rem 1.25rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.btnBack:hover {
+  border-color: var(--purple-400);
+  color: var(--purple-700);
+}
+
+.actionsRow {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.actionsRow .formSubmit {
+  flex: 1;
+  margin-top: 0;
+}

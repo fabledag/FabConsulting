@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Administración — Fabiola Ledesma</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    [x-cloak] { display: none !important; }
+    .tab-active { @apply border-b-2 border-pink-600 text-pink-600; }
+    .slot-checked { background: #C96A8A; color: #fff; }
+    .day-blocked { background: #fef2f2; border-color: #fca5a5; color: #dc2626; }
+    textarea { resize: vertical; }
+    .skeleton { background: linear-gradient(90deg,#e2e8f0 25%,#f1f5f9 50%,#e2e8f0 75%); background-size: 200% 100%; animation: skel 1.4s infinite; }
+    @keyframes skel { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    .modal-overlay { background: rgba(0,0,0,0.45); }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
+  </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800">
+
+<!-- API Base URL — overwritten at deploy time -->
+<script>
+  window.API_BASE_URL = 'API_GATEWAY_URL_PLACEHOLDER';
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     LOGIN SCREEN
+═══════════════════════════════════════════════════════════════════════════ -->
+<div id="login-screen" class="min-h-screen flex items-center justify-center px-4">
+  <div class="w-full max-w-sm bg-white rounded-2xl shadow-lg p-8">
+    <div class="text-center mb-8">
+      <div class="w-12 h-12 bg-pink-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+        <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+        </svg>
+      </div>
+      <h1 class="text-xl font-bold text-slate-800">Panel de Administración</h1>
+      <p class="text-sm text-slate-500 mt-1">Fabiola Ledesma Consultoría</p>
+    </div>
+
+    <form id="login-form" novalidate>
+      <div id="login-error" class="hidden mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm"></div>
+
+      <div class="mb-4">
+        <label for="login-email" class="block text-sm font-medium text-slate-700 mb-1">Email</label>
+        <input
+          type="email" id="login-email" name="email"
+          class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent"
+          placeholder="admin@fabiolaledesma.com"
+          required autocomplete="email"
+        />
+      </div>
+
+      <div class="mb-6">
+        <label for="login-password" class="block text-sm font-medium text-slate-700 mb-1">Contraseña</label>
+        <input
+          type="password" id="login-password" name="password"
+          class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent"
+          placeholder="••••••••"
+          required autocomplete="current-password"
+        />
+      </div>
+
+      <button
+        type="submit" id="login-btn"
+        class="w-full py-2.5 bg-pink-600 hover:bg-pink-700 disabled:opacity-60 text-white font-semibold rounded-lg text-sm transition-colors flex items-center justify-center gap-2"
+      >
+        <span id="login-btn-text">Iniciar sesión</span>
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     DASHBOARD
+═══════════════════════════════════════════════════════════════════════════ -->
+<div id="dashboard" class="hidden min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 bg-pink-600 rounded-lg flex items-center justify-center">
+          <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+          </svg>
+        </div>
+        <span class="font-semibold text-slate-800">Admin Panel</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span id="admin-email-display" class="text-sm text-slate-500 hidden sm:inline"></span>
+        <button id="logout-btn" class="text-sm text-slate-600 hover:text-red-600 transition-colors flex items-center gap-1">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+          </svg>
+          Salir
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Tabs -->
+  <div class="bg-white border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav class="flex gap-6 -mb-px" aria-label="Secciones del panel">
+        <button class="tab-btn py-4 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition-colors" data-tab="disponibilidad">Disponibilidad</button>
+        <button class="tab-btn py-4 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition-colors" data-tab="reservas">Reservas</button>
+        <button class="tab-btn py-4 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition-colors" data-tab="blog">Blog</button>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Tab Content -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- ── Disponibilidad Tab ──────────────────────────────────────────────── -->
+    <section id="tab-disponibilidad" class="tab-panel hidden">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-lg font-bold text-slate-800">Gestión de Disponibilidad</h2>
+        <button id="save-availability-btn" class="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white text-sm font-semibold rounded-lg transition-colors flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          Guardar cambios
+        </button>
+      </div>
+
+      <div id="availability-save-msg" class="hidden mb-4 p-3 rounded-lg text-sm"></div>
+
+      <!-- Weekly Schedule -->
+      <div class="bg-white rounded-xl border border-slate-200 p-6 mb-6">
+        <h3 class="text-sm font-semibold text-slate-700 mb-4">Horario semanal</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm" id="schedule-table">
+            <thead>
+              <tr>
+                <th class="text-left font-medium text-slate-500 pb-3 pr-4 min-w-[90px]">Horario</th>
+                <th class="text-center font-medium text-slate-500 pb-3 px-2">Dom</th>
+                <th class="text-center font-medium text-slate-500 pb-3 px-2">Lun</th>
+                <th class="text-center font-medium text-slate-500 pb-3 px-2">Mar</th>
+                <th class="text-center font-medium text-slate-500 pb-3 px-2">Mié</th>
+                <th class="text-center font-medium text-slate-500 pb-3 px-2">Jue</th>
+                <th class="text-center font-medium text-slate-500 pb-3 px-2">Vie</th>
+                <th class="text-center font-medium text-slate-500 pb-3 px-2">Sáb</th>
+              </tr>
+            </thead>
+            <tbody id="schedule-body">
+              <!-- Rows injected by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Blocked Dates -->
+      <div class="bg-white rounded-xl border border-slate-200 p-6">
+        <h3 class="text-sm font-semibold text-slate-700 mb-4">Fechas bloqueadas</h3>
+        <div class="flex flex-wrap gap-3 items-end mb-4">
+          <div>
+            <label for="block-date-input" class="block text-xs font-medium text-slate-500 mb-1">Agregar fecha</label>
+            <input type="date" id="block-date-input" class="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400" />
+          </div>
+          <button id="add-blocked-date-btn" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white text-sm font-medium rounded-lg transition-colors">
+            Bloquear fecha
+          </button>
+        </div>
+        <div id="blocked-dates-list" class="flex flex-wrap gap-2">
+          <!-- Tags injected by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Reservas Tab ───────────────────────────────────────────────────── -->
+    <section id="tab-reservas" class="tab-panel hidden">
+      <div class="flex flex-wrap items-end justify-between gap-4 mb-6">
+        <h2 class="text-lg font-bold text-slate-800">Reservas</h2>
+        <div class="flex flex-wrap gap-3 items-end">
+          <div>
+            <label class="block text-xs font-medium text-slate-500 mb-1">Desde</label>
+            <input type="date" id="filter-from" class="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-500 mb-1">Hasta</label>
+            <input type="date" id="filter-to" class="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400" />
+          </div>
+          <button id="filter-reservas-btn" class="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white text-sm font-semibold rounded-lg transition-colors">Filtrar</button>
+          <button id="export-csv-btn" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            Exportar CSV
+          </button>
+        </div>
+      </div>
+
+      <div id="reservas-msg" class="hidden mb-4 p-3 rounded-lg text-sm"></div>
+
+      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-slate-50 border-b border-slate-200">
+              <tr>
+                <th class="text-left font-medium text-slate-500 px-4 py-3">Fecha</th>
+                <th class="text-left font-medium text-slate-500 px-4 py-3">Hora</th>
+                <th class="text-left font-medium text-slate-500 px-4 py-3">Nombre</th>
+                <th class="text-left font-medium text-slate-500 px-4 py-3">Email</th>
+                <th class="text-left font-medium text-slate-500 px-4 py-3 hidden md:table-cell">Teléfono</th>
+                <th class="text-left font-medium text-slate-500 px-4 py-3 hidden lg:table-cell">Servicio</th>
+                <th class="text-left font-medium text-slate-500 px-4 py-3">Estado</th>
+                <th class="text-left font-medium text-slate-500 px-4 py-3">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="reservas-tbody">
+              <tr><td colspan="8" class="text-center py-12 text-slate-400">Cargando reservas...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Blog Tab ───────────────────────────────────────────────────────── -->
+    <section id="tab-blog" class="tab-panel hidden">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-lg font-bold text-slate-800">Entradas del Blog</h2>
+        <button id="new-post-btn" class="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white text-sm font-semibold rounded-lg transition-colors flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          Nueva entrada
+        </button>
+      </div>
+
+      <div id="blog-msg" class="hidden mb-4 p-3 rounded-lg text-sm"></div>
+
+      <div id="posts-list" class="bg-white rounded-xl border border-slate-200 divide-y divide-slate-100">
+        <div class="text-center py-12 text-slate-400">Cargando entradas...</div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     BLOG EDITOR MODAL
+═══════════════════════════════════════════════════════════════════════════ -->
+<div id="blog-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+      <h2 id="blog-modal-title" class="text-base font-bold text-slate-800">Nueva entrada</h2>
+      <button id="close-blog-modal" class="text-slate-400 hover:text-slate-700 transition-colors" aria-label="Cerrar">
+        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="overflow-y-auto flex-1 px-6 py-5">
+      <div id="blog-modal-msg" class="hidden mb-4 p-3 rounded-lg text-sm"></div>
+
+      <form id="blog-editor-form" novalidate>
+        <input type="hidden" id="post-id" name="id" />
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label for="post-title" class="block text-sm font-medium text-slate-700 mb-1">Título <span class="text-red-500">*</span></label>
+            <input type="text" id="post-title" name="title"
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
+              placeholder="Título del artículo" required />
+          </div>
+          <div>
+            <label for="post-slug" class="block text-sm font-medium text-slate-700 mb-1">Slug (URL)</label>
+            <input type="text" id="post-slug" name="slug"
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-400 bg-slate-50"
+              placeholder="auto-generado-desde-titulo" />
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label for="post-excerpt" class="block text-sm font-medium text-slate-700 mb-1">Extracto <span class="text-red-500">*</span></label>
+          <textarea id="post-excerpt" name="excerpt" rows="2"
+            class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
+            placeholder="Breve descripción del artículo (aparece en listados)" required></textarea>
+        </div>
+
+        <div class="mb-4">
+          <label for="post-content" class="block text-sm font-medium text-slate-700 mb-1">
+            Contenido <span class="text-red-500">*</span>
+            <span class="font-normal text-slate-400 ml-1">(Markdown)</span>
+          </label>
+          <textarea id="post-content" name="content" rows="14"
+            class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-400 font-mono"
+            placeholder="# Título&#10;&#10;Escribe el contenido en **Markdown**..." required></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label for="post-tags" class="block text-sm font-medium text-slate-700 mb-1">Tags</label>
+            <input type="text" id="post-tags" name="tags"
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
+              placeholder="diseño, ux, estrategia (separados por coma)" />
+          </div>
+          <div>
+            <label for="post-cover" class="block text-sm font-medium text-slate-700 mb-1">URL de imagen de portada</label>
+            <input type="url" id="post-cover" name="coverImage"
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
+              placeholder="https://..." />
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="post-published" name="published" class="sr-only peer" />
+            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-pink-400 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-pink-600"></div>
+            <span class="ml-2 text-sm font-medium text-slate-700">Publicar</span>
+          </label>
+          <span id="publish-status-label" class="text-xs text-slate-400">Borrador</span>
+        </div>
+      </form>
+    </div>
+
+    <div class="flex justify-end gap-3 px-6 py-4 border-t border-slate-200">
+      <button id="cancel-blog-btn" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors">
+        Cancelar
+      </button>
+      <button id="save-post-btn" class="px-5 py-2 bg-pink-600 hover:bg-pink-700 text-white text-sm font-semibold rounded-lg transition-colors flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        <span id="save-post-btn-text">Guardar</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     DELETE CONFIRM MODAL
+═══════════════════════════════════════════════════════════════════════════ -->
+<div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+        <svg class="w-5 h-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+      </div>
+      <div>
+        <h3 class="font-semibold text-slate-800">¿Eliminar entrada?</h3>
+        <p class="text-sm text-slate-500">Esta acción no se puede deshacer.</p>
+      </div>
+    </div>
+    <div class="flex justify-end gap-3">
+      <button id="cancel-delete-btn" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">Cancelar</button>
+      <button id="confirm-delete-btn" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition-colors">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  const TOKEN_KEY = 'fabiola_admin_token';
+  const DAYS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+  const HOURS = Array.from({ length: 12 }, (_, i) => {
+    const h = i + 8;
+    const suffix = h < 12 ? 'am' : h === 12 ? 'pm' : 'pm';
+    const h12 = h > 12 ? h - 12 : h;
+    return { value: `${String(h).padStart(2, '0')}:00`, label: `${h12}:00 ${suffix}` };
+  });
+
+  // ── API ────────────────────────────────────────────────────────────────────
+
+  function apiBase() {
+    return (window.API_BASE_URL || '').replace(/\/$/, '');
+  }
+
+  function getToken() { return localStorage.getItem(TOKEN_KEY); }
+  function setToken(t) { localStorage.setItem(TOKEN_KEY, t); }
+  function clearToken() { localStorage.removeItem(TOKEN_KEY); }
+
+  async function apiFetch(path, opts = {}) {
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(opts.headers || {}),
+    };
+    const token = getToken();
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    const res = await fetch(`${apiBase()}${path}`, { ...opts, headers });
+    if (res.status === 401) {
+      clearToken();
+      showLogin();
+      throw new Error('No autorizado');
+    }
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.message || `Error ${res.status}`);
+    return data;
+  }
+
+  // ── Auth ───────────────────────────────────────────────────────────────────
+
+  function showLogin() {
+    document.getElementById('login-screen').classList.remove('hidden');
+    document.getElementById('dashboard').classList.add('hidden');
+  }
+
+  function showDashboard(email) {
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+    if (email) document.getElementById('admin-email-display').textContent = email;
+  }
+
+  // ── Login Form ─────────────────────────────────────────────────────────────
+
+  document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = e.target.email.value.trim();
+    const password = e.target.password.value;
+    const btn = document.getElementById('login-btn');
+    const errEl = document.getElementById('login-error');
+    const btnText = document.getElementById('login-btn-text');
+
+    errEl.classList.add('hidden');
+    btn.disabled = true;
+    btnText.textContent = 'Iniciando sesión...';
+
+    try {
+      const data = await apiFetch('/admin/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      });
+      setToken(data.token);
+      showDashboard(email);
+      activateTab('disponibilidad');
+    } catch (err) {
+      errEl.textContent = err.message === 'No autorizado' ? 'Credenciales incorrectas.' : (err.message || 'Error al iniciar sesión.');
+      errEl.classList.remove('hidden');
+    } finally {
+      btn.disabled = false;
+      btnText.textContent = 'Iniciar sesión';
+    }
+  });
+
+  document.getElementById('logout-btn').addEventListener('click', () => {
+    clearToken();
+    showLogin();
+  });
+
+  // ── Tabs ───────────────────────────────────────────────────────────────────
+
+  function activateTab(name) {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      const active = btn.dataset.tab === name;
+      btn.classList.toggle('border-pink-600', active);
+      btn.classList.toggle('text-pink-600', active);
+      btn.classList.toggle('border-transparent', !active);
+      btn.classList.toggle('text-slate-500', !active);
+    });
+    document.querySelectorAll('.tab-panel').forEach(panel => {
+      panel.classList.toggle('hidden', panel.id !== `tab-${name}`);
+    });
+
+    if (name === 'disponibilidad') loadAvailability();
+    if (name === 'reservas') loadReservas();
+    if (name === 'blog') loadPosts();
+  }
+
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => activateTab(btn.dataset.tab));
+  });
+
+  // ── Disponibilidad Tab ─────────────────────────────────────────────────────
+
+  let schedule = {};    // { 0: { '08:00': true, '09:00': false, ... }, ... } (0=Dom)
+  let blockedDates = []; // ['YYYY-MM-DD', ...]
+
+  function buildScheduleTable() {
+    const tbody = document.getElementById('schedule-body');
+    tbody.innerHTML = HOURS.map(hour => `
+      <tr class="hover:bg-slate-50 transition-colors">
+        <td class="py-2 pr-4 text-slate-600 font-medium text-xs whitespace-nowrap">${hour.label}</td>
+        ${DAYS.map((_, dayIdx) => {
+          const checked = schedule[dayIdx]?.[hour.value] || false;
+          return `<td class="py-2 px-2 text-center">
+            <input
+              type="checkbox"
+              class="schedule-checkbox w-4 h-4 rounded border-slate-300 text-pink-600 focus:ring-pink-400 cursor-pointer"
+              data-day="${dayIdx}"
+              data-hour="${hour.value}"
+              ${checked ? 'checked' : ''}
+            />
+          </td>`;
+        }).join('')}
+      </tr>`).join('');
+  }
+
+  function renderBlockedDates() {
+    const container = document.getElementById('blocked-dates-list');
+    if (!blockedDates.length) {
+      container.innerHTML = '<span class="text-sm text-slate-400">Sin fechas bloqueadas</span>';
+      return;
+    }
+    container.innerHTML = [...blockedDates].sort().map(date => `
+      <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-red-50 border border-red-200 text-red-700 rounded-full text-sm">
+        ${date}
+        <button class="remove-block-btn hover:text-red-900" data-date="${date}" aria-label="Quitar bloqueo de ${date}">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </span>`).join('');
+
+    container.querySelectorAll('.remove-block-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        blockedDates = blockedDates.filter(d => d !== btn.dataset.date);
+        renderBlockedDates();
+      });
+    });
+  }
+
+  async function loadAvailability() {
+    try {
+      const data = await apiFetch('/admin/availability');
+      schedule = data.schedule || {};
+      blockedDates = data.blockedDates || [];
+    } catch (err) {
+      schedule = {};
+      blockedDates = [];
+    }
+    buildScheduleTable();
+    renderBlockedDates();
+  }
+
+  document.getElementById('add-blocked-date-btn').addEventListener('click', () => {
+    const input = document.getElementById('block-date-input');
+    const date = input.value;
+    if (!date) return;
+    if (!blockedDates.includes(date)) {
+      blockedDates = [...blockedDates, date];
+      renderBlockedDates();
+    }
+    input.value = '';
+  });
+
+  document.getElementById('save-availability-btn').addEventListener('click', async () => {
+    const btn = document.getElementById('save-availability-btn');
+    const msgEl = document.getElementById('availability-save-msg');
+
+    // Collect checkboxes
+    document.querySelectorAll('.schedule-checkbox').forEach(cb => {
+      const day = Number(cb.dataset.day);
+      const hour = cb.dataset.hour;
+      if (!schedule[day]) schedule[day] = {};
+      schedule[day][hour] = cb.checked;
+    });
+
+    btn.disabled = true;
+    btn.textContent = 'Guardando...';
+
+    try {
+      await apiFetch('/admin/availability', {
+        method: 'POST',
+        body: JSON.stringify({ schedule, blockedDates }),
+      });
+      showMsg(msgEl, 'success', 'Disponibilidad guardada correctamente.');
+    } catch (err) {
+      showMsg(msgEl, 'error', err.message || 'Error al guardar.');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Guardar cambios';
+    }
+  });
+
+  // ── Reservas Tab ───────────────────────────────────────────────────────────
+
+  let reservasData = [];
+
+  const STATUS_LABELS = {
+    pending: { label: 'Pendiente', cls: 'bg-yellow-100 text-yellow-800' },
+    confirmed: { label: 'Confirmada', cls: 'bg-green-100 text-green-800' },
+    cancelled: { label: 'Cancelada', cls: 'bg-red-100 text-red-800' },
+  };
+
+  function renderReservas(list) {
+    const tbody = document.getElementById('reservas-tbody');
+    if (!list.length) {
+      tbody.innerHTML = '<tr><td colspan="8" class="text-center py-12 text-slate-400">No hay reservas para el período seleccionado.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = list.map(r => {
+      const st = STATUS_LABELS[r.status] || STATUS_LABELS.pending;
+      return `
+        <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100">
+          <td class="px-4 py-3 whitespace-nowrap text-sm">${r.date || ''}</td>
+          <td class="px-4 py-3 whitespace-nowrap text-sm">${r.time || ''}</td>
+          <td class="px-4 py-3 text-sm font-medium">${esc(r.nombre || r.name || '')}</td>
+          <td class="px-4 py-3 text-sm text-slate-500">${esc(r.email || '')}</td>
+          <td class="px-4 py-3 text-sm text-slate-500 hidden md:table-cell">${esc(r.telefono || r.phone || '')}</td>
+          <td class="px-4 py-3 text-sm text-slate-500 hidden lg:table-cell">${esc(r.servicio || r.service || '')}</td>
+          <td class="px-4 py-3">
+            <span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium ${st.cls}">${st.label}</span>
+          </td>
+          <td class="px-4 py-3">
+            <select
+              class="status-select border border-slate-200 rounded-md px-2 py-1 text-xs text-slate-600 focus:outline-none focus:ring-1 focus:ring-pink-400"
+              data-id="${r.id}"
+            >
+              <option value="pending" ${r.status === 'pending' ? 'selected' : ''}>Pendiente</option>
+              <option value="confirmed" ${r.status === 'confirmed' ? 'selected' : ''}>Confirmar</option>
+              <option value="cancelled" ${r.status === 'cancelled' ? 'selected' : ''}>Cancelar</option>
+            </select>
+          </td>
+        </tr>`;
+    }).join('');
+
+    tbody.querySelectorAll('.status-select').forEach(sel => {
+      sel.addEventListener('change', async () => {
+        const id = sel.dataset.id;
+        const newStatus = sel.value;
+        try {
+          await apiFetch(`/admin/reservas/${id}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ status: newStatus }),
+          });
+          const r = reservasData.find(x => String(x.id) === String(id));
+          if (r) r.status = newStatus;
+          renderReservas(reservasData);
+        } catch (err) {
+          showMsg(document.getElementById('reservas-msg'), 'error', 'Error al actualizar estado: ' + err.message);
+        }
+      });
+    });
+  }
+
+  async function loadReservas(from, to) {
+    const tbody = document.getElementById('reservas-tbody');
+    tbody.innerHTML = '<tr><td colspan="8" class="text-center py-12 text-slate-400">Cargando...</td></tr>';
+    let qs = '';
+    if (from) qs += `?from=${from}`;
+    if (to) qs += `${qs ? '&' : '?'}to=${to}`;
+    try {
+      const data = await apiFetch(`/admin/reservas${qs}`);
+      reservasData = Array.isArray(data) ? data : (data.reservations || data.bookings || []);
+      renderReservas(reservasData);
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="8" class="text-center py-12 text-red-400">Error al cargar: ${esc(err.message)}</td></tr>`;
+    }
+  }
+
+  document.getElementById('filter-reservas-btn').addEventListener('click', () => {
+    const from = document.getElementById('filter-from').value;
+    const to = document.getElementById('filter-to').value;
+    loadReservas(from || undefined, to || undefined);
+  });
+
+  document.getElementById('export-csv-btn').addEventListener('click', () => {
+    if (!reservasData.length) return;
+    const headers = ['Fecha', 'Hora', 'Nombre', 'Email', 'Teléfono', 'Servicio', 'Estado'];
+    const rows = reservasData.map(r => [
+      r.date || '', r.time || '',
+      r.nombre || r.name || '', r.email || '',
+      r.telefono || r.phone || '', r.servicio || r.service || '',
+      r.status || '',
+    ]);
+    const csv = [headers, ...rows].map(row =>
+      row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')
+    ).join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `reservas-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // ── Blog Tab ───────────────────────────────────────────────────────────────
+
+  let postsData = [];
+  let deleteTargetId = null;
+
+  function renderPosts(list) {
+    const container = document.getElementById('posts-list');
+    if (!list.length) {
+      container.innerHTML = '<div class="text-center py-12 text-slate-400">No hay entradas aún. Crea la primera.</div>';
+      return;
+    }
+    container.innerHTML = list.map(post => `
+      <div class="flex items-center justify-between px-5 py-4 hover:bg-slate-50 transition-colors">
+        <div class="flex-1 min-w-0 mr-4">
+          <div class="flex items-center gap-2 mb-0.5">
+            <span class="text-sm font-medium text-slate-800 truncate">${esc(post.title || '')}</span>
+            <span class="flex-shrink-0 inline-block px-2 py-0.5 rounded-full text-xs font-medium ${post.published ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}">${post.published ? 'Publicado' : 'Borrador'}</span>
+          </div>
+          <p class="text-xs text-slate-400 truncate">${esc(post.excerpt || '')}</p>
+        </div>
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <button class="edit-post-btn px-3 py-1.5 text-xs font-medium text-pink-600 hover:bg-pink-50 rounded-lg transition-colors" data-id="${post.id}">
+            Editar
+          </button>
+          <button class="delete-post-btn px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-50 rounded-lg transition-colors" data-id="${post.id}">
+            Eliminar
+          </button>
+        </div>
+      </div>`).join('');
+
+    container.querySelectorAll('.edit-post-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const post = postsData.find(p => String(p.id) === btn.dataset.id);
+        if (post) openBlogModal(post);
+      });
+    });
+    container.querySelectorAll('.delete-post-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        deleteTargetId = btn.dataset.id;
+        document.getElementById('delete-modal').classList.remove('hidden');
+      });
+    });
+  }
+
+  async function loadPosts() {
+    document.getElementById('posts-list').innerHTML = '<div class="text-center py-12 text-slate-400">Cargando...</div>';
+    try {
+      const data = await apiFetch('/admin/blog/posts');
+      postsData = Array.isArray(data) ? data : (data.posts || []);
+      renderPosts(postsData);
+    } catch (err) {
+      document.getElementById('posts-list').innerHTML = `<div class="text-center py-12 text-red-400">Error: ${esc(err.message)}</div>`;
+    }
+  }
+
+  // Auto-generate slug
+  document.getElementById('post-title').addEventListener('input', (e) => {
+    const slugEl = document.getElementById('post-slug');
+    // Only auto-generate if user hasn't manually changed slug
+    if (!slugEl.dataset.manual) {
+      slugEl.value = slugify(e.target.value);
+    }
+  });
+  document.getElementById('post-slug').addEventListener('input', (e) => {
+    e.target.dataset.manual = e.target.value ? '1' : '';
+    e.target.value = slugify(e.target.value, true);
+  });
+
+  document.getElementById('post-published').addEventListener('change', (e) => {
+    document.getElementById('publish-status-label').textContent = e.target.checked ? 'Se publicará' : 'Borrador';
+  });
+
+  function openBlogModal(post = null) {
+    const form = document.getElementById('blog-editor-form');
+    const modalTitle = document.getElementById('blog-modal-title');
+    const msgEl = document.getElementById('blog-modal-msg');
+    msgEl.classList.add('hidden');
+    form.reset();
+
+    const slugEl = document.getElementById('post-slug');
+    slugEl.dataset.manual = '';
+
+    if (post) {
+      modalTitle.textContent = 'Editar entrada';
+      document.getElementById('post-id').value = post.id || '';
+      document.getElementById('post-title').value = post.title || '';
+      slugEl.value = post.slug || '';
+      slugEl.dataset.manual = post.slug ? '1' : '';
+      document.getElementById('post-excerpt').value = post.excerpt || '';
+      document.getElementById('post-content').value = post.content || '';
+      document.getElementById('post-tags').value = Array.isArray(post.tags) ? post.tags.join(', ') : (post.tags || '');
+      document.getElementById('post-cover').value = post.coverImage || post.cover_image || '';
+      const pub = post.published || false;
+      document.getElementById('post-published').checked = pub;
+      document.getElementById('publish-status-label').textContent = pub ? 'Se publicará' : 'Borrador';
+    } else {
+      modalTitle.textContent = 'Nueva entrada';
+      document.getElementById('post-id').value = '';
+      document.getElementById('post-published').checked = false;
+      document.getElementById('publish-status-label').textContent = 'Borrador';
+    }
+
+    document.getElementById('blog-modal').classList.remove('hidden');
+  }
+
+  function closeBlogModal() {
+    document.getElementById('blog-modal').classList.add('hidden');
+  }
+
+  document.getElementById('new-post-btn').addEventListener('click', () => openBlogModal());
+  document.getElementById('close-blog-modal').addEventListener('click', closeBlogModal);
+  document.getElementById('cancel-blog-btn').addEventListener('click', closeBlogModal);
+
+  document.getElementById('blog-modal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('blog-modal')) closeBlogModal();
+  });
+
+  document.getElementById('save-post-btn').addEventListener('click', async () => {
+    const form = document.getElementById('blog-editor-form');
+    const msgEl = document.getElementById('blog-modal-msg');
+    const btn = document.getElementById('save-post-btn');
+    const btnText = document.getElementById('save-post-btn-text');
+    msgEl.classList.add('hidden');
+
+    const id = form.id.value;
+    const title = form.title.value.trim();
+    const slug = form.slug.value.trim() || slugify(title);
+    const excerpt = form.excerpt.value.trim();
+    const content = form.content.value.trim();
+    const tagsRaw = form.tags.value;
+    const coverImage = form.coverImage.value.trim();
+    const published = form['published'].checked;
+
+    if (!title || !excerpt || !content) {
+      showMsg(msgEl, 'error', 'Completa los campos requeridos: título, extracto y contenido.');
+      return;
+    }
+
+    const tags = tagsRaw.split(',').map(t => t.trim()).filter(Boolean);
+    const payload = { title, slug, excerpt, content, tags, coverImage, published };
+
+    btn.disabled = true;
+    btnText.textContent = 'Guardando...';
+
+    try {
+      if (id) {
+        await apiFetch(`/admin/blog/posts/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
+      } else {
+        await apiFetch('/admin/blog/posts', { method: 'POST', body: JSON.stringify(payload) });
+      }
+      closeBlogModal();
+      loadPosts();
+    } catch (err) {
+      showMsg(msgEl, 'error', err.message || 'Error al guardar la entrada.');
+    } finally {
+      btn.disabled = false;
+      btnText.textContent = 'Guardar';
+    }
+  });
+
+  // Delete confirmation
+  document.getElementById('cancel-delete-btn').addEventListener('click', () => {
+    document.getElementById('delete-modal').classList.add('hidden');
+    deleteTargetId = null;
+  });
+
+  document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+    if (!deleteTargetId) return;
+    const btn = document.getElementById('confirm-delete-btn');
+    btn.disabled = true;
+    btn.textContent = 'Eliminando...';
+    try {
+      await apiFetch(`/admin/blog/posts/${deleteTargetId}`, { method: 'DELETE' });
+      document.getElementById('delete-modal').classList.add('hidden');
+      deleteTargetId = null;
+      loadPosts();
+    } catch (err) {
+      showMsg(document.getElementById('blog-msg'), 'error', 'Error al eliminar: ' + err.message);
+      document.getElementById('delete-modal').classList.add('hidden');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Eliminar';
+    }
+  });
+
+  // Keyboard close modals
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeBlogModal();
+      document.getElementById('delete-modal').classList.add('hidden');
+    }
+  });
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+
+  function esc(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function slugify(str, preserveHyphen) {
+    return str
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(preserveHyphen ? /^-/ : /^-|-$/g, '');
+  }
+
+  function showMsg(el, type, msg) {
+    if (!el) return;
+    el.className = `p-3 rounded-lg text-sm ${type === 'success' ? 'bg-green-50 border border-green-200 text-green-700' : 'bg-red-50 border border-red-200 text-red-700'}`;
+    el.textContent = msg;
+    el.classList.remove('hidden');
+    if (type === 'success') setTimeout(() => el.classList.add('hidden'), 5000);
+  }
+
+  // ── Init ───────────────────────────────────────────────────────────────────
+
+  const token = getToken();
+  if (token) {
+    showDashboard();
+    activateTab('disponibilidad');
+  } else {
+    showLogin();
+  }
+})();
+</script>
+</body>
+</html>

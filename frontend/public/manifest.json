@@ -1,0 +1,23 @@
+{
+  "name": "Fabiola Ledesma — Mentora UX",
+  "short_name": "FabDesign",
+  "description": "Mentoría UX & Design Management para profesionales que quieren crecer con claridad.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAF9F6",
+  "theme_color": "#523AA8",
+  "lang": "es-MX",
+  "icons": [
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
