@@ -27,7 +27,7 @@ async function login(body) {
   if (!body || !body.password) {
     return {
       statusCode: 400,
-      body: { error: 'Password is required.' },
+      body: { error: 'Escribe tu contraseña.' },
     };
   }
 
@@ -35,7 +35,7 @@ async function login(body) {
     console.error('JWT_SECRET environment variable is not set.');
     return {
       statusCode: 500,
-      body: { error: 'Server configuration error.' },
+      body: { error: 'Error de configuración del servidor.' },
     };
   }
 
@@ -45,12 +45,12 @@ async function login(body) {
     passwordHash = result.Item?.passwordHash;
   } catch (err) {
     console.error('Admin lookup error:', err);
-    return { statusCode: 500, body: { error: 'Authentication error.' } };
+    return { statusCode: 500, body: { error: 'Hubo un problema con tu sesión. Vuelve a iniciar sesión.' } };
   }
 
   if (!passwordHash) {
     console.error('No admin password hash found in fabiola-admin.');
-    return { statusCode: 500, body: { error: 'Server configuration error.' } };
+    return { statusCode: 500, body: { error: 'Error de configuración del servidor.' } };
   }
 
   let isValid = false;
@@ -60,14 +60,14 @@ async function login(body) {
     console.error('bcrypt compare error:', err);
     return {
       statusCode: 500,
-      body: { error: 'Authentication error.' },
+      body: { error: 'Hubo un problema con tu sesión. Vuelve a iniciar sesión.' },
     };
   }
 
   if (!isValid) {
     return {
       statusCode: 401,
-      body: { error: 'Invalid credentials.' },
+      body: { error: 'La contraseña es incorrecta.' },
     };
   }
 
@@ -98,7 +98,7 @@ async function login(body) {
 async function requestPasswordReset() {
   if (!JWT_SECRET || !ADMIN_EMAIL) {
     console.error('JWT_SECRET or ADMIN_EMAIL environment variable is not set.');
-    return { statusCode: 500, body: { error: 'Server configuration error.' } };
+    return { statusCode: 500, body: { error: 'Error de configuración del servidor.' } };
   }
 
   try {
@@ -229,7 +229,7 @@ function requireAuth(event) {
     console.error('JWT_SECRET environment variable is not set.');
     return {
       statusCode: 500,
-      body: { error: 'Server configuration error.' },
+      body: { error: 'Error de configuración del servidor.' },
     };
   }
 
@@ -239,7 +239,7 @@ function requireAuth(event) {
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return {
       statusCode: 401,
-      body: { error: 'Authorization header missing or malformed.' },
+      body: { error: 'Tu sesión no es válida. Vuelve a iniciar sesión.' },
     };
   }
 
@@ -250,7 +250,7 @@ function requireAuth(event) {
     if (decoded.role !== 'admin') {
       return {
         statusCode: 403,
-        body: { error: 'Insufficient permissions.' },
+        body: { error: 'No tienes permisos para hacer esto.' },
       };
     }
     // Auth passed — return null to indicate success
@@ -259,12 +259,12 @@ function requireAuth(event) {
     if (err.name === 'TokenExpiredError') {
       return {
         statusCode: 401,
-        body: { error: 'Token has expired. Please log in again.' },
+        body: { error: 'Tu sesión expiró. Vuelve a iniciar sesión.' },
       };
     }
     return {
       statusCode: 401,
-      body: { error: 'Invalid token.' },
+      body: { error: 'Tu sesión no es válida. Vuelve a iniciar sesión.' },
     };
   }
 }

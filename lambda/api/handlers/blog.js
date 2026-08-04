@@ -39,29 +39,29 @@ function slugify(title) {
  */
 function validatePost(body, isUpdate = false) {
   const errors = [];
-  if (!body) return ['Request body is required.'];
+  if (!body) return ['Faltan datos en la solicitud.'];
 
   if (!isUpdate) {
     if (!body.title || typeof body.title !== 'string' || body.title.trim().length < 3) {
-      errors.push('title must be at least 3 characters.');
+      errors.push('El título debe tener al menos 3 caracteres.');
     }
     if (!body.content || typeof body.content !== 'string' || body.content.trim().length < 10) {
-      errors.push('content must be at least 10 characters.');
+      errors.push('El contenido debe tener al menos 10 caracteres.');
     }
   } else {
     if (body.title !== undefined && (typeof body.title !== 'string' || body.title.trim().length < 3)) {
-      errors.push('title must be at least 3 characters.');
+      errors.push('El título debe tener al menos 3 caracteres.');
     }
     if (body.content !== undefined && (typeof body.content !== 'string' || body.content.trim().length < 10)) {
-      errors.push('content must be at least 10 characters.');
+      errors.push('El contenido debe tener al menos 10 caracteres.');
     }
   }
 
   if (body.tags !== undefined && !Array.isArray(body.tags)) {
-    errors.push('tags must be an array of strings.');
+    errors.push('Las etiquetas deben ser una lista de textos.');
   }
   if (body.published !== undefined && typeof body.published !== 'boolean') {
-    errors.push('published must be a boolean.');
+    errors.push('El campo \'publicado\' debe ser verdadero o falso.');
   }
 
   return errors;
@@ -100,7 +100,7 @@ async function getPublishedPosts(queryParams) {
     };
   } catch (err) {
     console.error('getPublishedPosts error:', err);
-    return { statusCode: 500, body: { error: 'Failed to fetch blog posts.' } };
+    return { statusCode: 500, body: { error: 'No se pudieron cargar los artículos.' } };
   }
 }
 
@@ -109,7 +109,7 @@ async function getPublishedPosts(queryParams) {
  * Fetches a single published post by slug, renders markdown to HTML.
  */
 async function getPostBySlug(slug) {
-  if (!slug) return { statusCode: 400, body: { error: 'Slug is required.' } };
+  if (!slug) return { statusCode: 400, body: { error: 'Falta la dirección del artículo.' } };
 
   try {
     const result = await ddb.send(
@@ -122,7 +122,7 @@ async function getPostBySlug(slug) {
     );
 
     if (!result.Items || result.Items.length === 0) {
-      return { statusCode: 404, body: { error: 'Post not found.' } };
+      return { statusCode: 404, body: { error: 'No encontramos ese artículo.' } };
     }
 
     const post = result.Items[0];
@@ -135,7 +135,7 @@ async function getPostBySlug(slug) {
     };
   } catch (err) {
     console.error('getPostBySlug error:', err);
-    return { statusCode: 500, body: { error: 'Failed to fetch blog post.' } };
+    return { statusCode: 500, body: { error: 'No se pudo cargar el artículo.' } };
   }
 }
 
@@ -174,7 +174,7 @@ async function adminGetAllPosts(queryParams) {
     };
   } catch (err) {
     console.error('adminGetAllPosts error:', err);
-    return { statusCode: 500, body: { error: 'Failed to fetch blog posts.' } };
+    return { statusCode: 500, body: { error: 'No se pudieron cargar los artículos.' } };
   }
 }
 
@@ -229,7 +229,7 @@ async function adminCreatePost(body) {
     return { statusCode: 201, body: { message: 'Post created.', post } };
   } catch (err) {
     console.error('adminCreatePost error:', err);
-    return { statusCode: 500, body: { error: 'Failed to create blog post.' } };
+    return { statusCode: 500, body: { error: 'No se pudo crear el artículo.' } };
   }
 }
 
@@ -238,7 +238,7 @@ async function adminCreatePost(body) {
  * Updates an existing blog post.
  */
 async function adminUpdatePost(id, body) {
-  if (!id) return { statusCode: 400, body: { error: 'Post ID is required.' } };
+  if (!id) return { statusCode: 400, body: { error: 'Falta el identificador del artículo.' } };
 
   const errors = validatePost(body, true);
   if (errors.length) return { statusCode: 400, body: { errors } };
@@ -256,7 +256,7 @@ async function adminUpdatePost(id, body) {
     );
 
     if (!scanResult.Items || scanResult.Items.length === 0) {
-      return { statusCode: 404, body: { error: 'Post not found.' } };
+      return { statusCode: 404, body: { error: 'No encontramos ese artículo.' } };
     }
 
     const existing = scanResult.Items[0];
@@ -302,7 +302,7 @@ async function adminUpdatePost(id, body) {
     return { statusCode: 200, body: { message: 'Post updated.', id } };
   } catch (err) {
     console.error('adminUpdatePost error:', err);
-    return { statusCode: 500, body: { error: 'Failed to update blog post.' } };
+    return { statusCode: 500, body: { error: 'No se pudo actualizar el artículo.' } };
   }
 }
 
@@ -311,7 +311,7 @@ async function adminUpdatePost(id, body) {
  * Deletes a blog post.
  */
 async function adminDeletePost(id) {
-  if (!id) return { statusCode: 400, body: { error: 'Post ID is required.' } };
+  if (!id) return { statusCode: 400, body: { error: 'Falta el identificador del artículo.' } };
 
   try {
     const scanResult = await ddb.send(
@@ -325,7 +325,7 @@ async function adminDeletePost(id) {
     );
 
     if (!scanResult.Items || scanResult.Items.length === 0) {
-      return { statusCode: 404, body: { error: 'Post not found.' } };
+      return { statusCode: 404, body: { error: 'No encontramos ese artículo.' } };
     }
 
     const post = scanResult.Items[0];
@@ -339,7 +339,7 @@ async function adminDeletePost(id) {
     return { statusCode: 200, body: { message: 'Post deleted.', id } };
   } catch (err) {
     console.error('adminDeletePost error:', err);
-    return { statusCode: 500, body: { error: 'Failed to delete blog post.' } };
+    return { statusCode: 500, body: { error: 'No se pudo eliminar el artículo.' } };
   }
 }
 

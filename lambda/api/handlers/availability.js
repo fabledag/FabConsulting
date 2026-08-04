@@ -13,6 +13,8 @@ const {
 const ddbClient = new DynamoDBClient({});
 const ddb = DynamoDBDocumentClient.from(ddbClient);
 
+const { nowInMexicoCity } = require('../utils/time');
+
 const AVAILABILITY_TABLE = process.env.AVAILABILITY_TABLE;
 const BLOCKED_DATES_TABLE = process.env.BLOCKED_DATES_TABLE;
 const BOOKINGS_TABLE = process.env.BOOKINGS_TABLE;
@@ -44,7 +46,7 @@ async function getPublicAvailability(queryParams) {
   const month = parseInt(queryParams?.month || now.getMonth() + 1, 10);
 
   if (isNaN(year) || isNaN(month) || month < 1 || month > 12) {
-    return { statusCode: 400, body: { error: 'Invalid year or month parameter.' } };
+    return { statusCode: 400, body: { error: 'El año o el mes no son válidos.' } };
   }
 
   try {
@@ -101,15 +103,18 @@ async function getPublicAvailability(queryParams) {
       (bookingsResult.Items || []).map((b) => `${b.date}#${b.time}`)
     );
 
-    // Build calendar
-    const daysInMonth = new Date(year, month, 0).getDate();
-    const today = toDateString(now);
+    // Build calendar.
+    //
+    // "Today" and "now" come from the Mexico City clock, not the Lambda's UTC
+    // one — otherwise this drops or keeps the wrong day for six hours either
+    // side of midnight. See utils/time.js.
+    const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
+    const { date: today, time: nowTime } = nowInMexicoCity();
     const calendar = [];
 
     for (let day = 1; day <= daysInMonth; day++) {
-      const dateObj = new Date(year, month - 1, day);
-      const dateStr = toDateString(dateObj);
-      const dow = dateObj.getDay();
+      const dateStr = `${year}-${pad(month)}-${pad(day)}`;
+      const dow = new Date(Date.UTC(year, month - 1, day)).getUTCDay();
 
       // Skip past dates
       if (dateStr < today) continue;
@@ -118,11 +123,19 @@ async function getPublicAvailability(queryParams) {
 
       if (!blockedSet.has(dateStr) && rulesByDay[dow]) {
         for (const rule of rulesByDay[dow]) {
-          const key = `${dateStr}#${rule.time}`;
+          // Drop slots whose start time has already passed today. They used to
+          // be listed as available and then rejected on submit with "Cannot
+          // book a slot in the past" — the error had no visible cause.
+          if (dateStr === today && rule.time <= nowTime) continue;
+
+          // Taken slots are omitted entirely rather than returned as
+          // `available: false`: the picker only ever shows what's bookable.
+          if (bookedSet.has(`${dateStr}#${rule.time}`)) continue;
+
           slots.push({
             time: rule.time,
             durationMinutes: rule.durationMinutes,
-            available: !bookedSet.has(key),
+            available: true,
           });
         }
       }
@@ -141,7 +154,7 @@ async function getPublicAvailability(queryParams) {
     };
   } catch (err) {
     console.error('getPublicAvailability error:', err);
-    return { statusCode: 500, body: { error: 'Failed to fetch availability.' } };
+    return { statusCode: 500, body: { error: 'No se pudo cargar la disponibilidad.' } };
   }
 }
 
@@ -159,7 +172,7 @@ async function adminGetAvailability() {
     return { statusCode: 200, body: { rules } };
   } catch (err) {
     console.error('adminGetAvailability error:', err);
-    return { statusCode: 500, body: { error: 'Failed to fetch availability rules.' } };
+    return { statusCode: 500, body: { error: 'No se pudieron cargar los horarios.' } };
   }
 }
 
@@ -169,18 +182,18 @@ async function adminGetAvailability() {
  * Body: { dayOfWeek (0-6), timeSlot ("09:00"), durationMinutes (60), active }
  */
 async function adminSetAvailability(body) {
-  if (!body) return { statusCode: 400, body: { error: 'Request body is required.' } };
+  if (!body) return { statusCode: 400, body: { error: 'Faltan datos en la solicitud.' } };
 
   const { dayOfWeek, timeSlot, durationMinutes = 60, active = true } = body;
 
   if (dayOfWeek === undefined || dayOfWeek === null || dayOfWeek < 0 || dayOfWeek > 6) {
-    return { statusCode: 400, body: { error: 'dayOfWeek must be 0 (Sunday) through 6 (Saturday).' } };
+    return { statusCode: 400, body: { error: 'El día de la semana debe ir de 0 (domingo) a 6 (sábado).' } };
   }
   if (!timeSlot || !/^\d{2}:\d{2}$/.test(timeSlot)) {
-    return { statusCode: 400, body: { error: 'timeSlot must be in HH:MM format (e.g. "09:00").' } };
+    return { statusCode: 400, body: { error: 'La hora debe tener el formato HH:MM (por ejemplo "09:00").' } };
   }
   if (typeof durationMinutes !== 'number' || durationMinutes < 15 || durationMinutes > 480) {
-    return { statusCode: 400, body: { error: 'durationMinutes must be between 15 and 480.' } };
+    return { statusCode: 400, body: { error: 'La duración debe estar entre 15 y 480 minutos.' } };
   }
 
   const pk = `WEEKLY#${dayOfWeek}`;
@@ -198,10 +211,10 @@ async function adminSetAvailability(body) {
 
   try {
     await ddb.send(new PutCommand({ TableName: AVAILABILITY_TABLE, Item: item }));
-    return { statusCode: 200, body: { message: 'Availability rule saved.', rule: item } };
+    return { statusCode: 200, body: { message: 'Horario guardado.', rule: item } };
   } catch (err) {
     console.error('adminSetAvailability error:', err);
-    return { statusCode: 500, body: { error: 'Failed to save availability rule.' } };
+    return { statusCode: 500, body: { error: 'No se pudo guardar el horario.' } };
   }
 }
 
@@ -210,12 +223,12 @@ async function adminSetAvailability(body) {
  * Removes an availability rule. The {id} is encoded as "dayOfWeek:timeSlot" (e.g. "1:09:00").
  */
 async function adminDeleteAvailability(id) {
-  if (!id) return { statusCode: 400, body: { error: 'Rule ID is required.' } };
+  if (!id) return { statusCode: 400, body: { error: 'Falta el identificador del horario.' } };
 
   // id format: "{dayOfWeek}:{timeSlot}" e.g. "1:09:00"
   const colonIndex = id.indexOf(':');
   if (colonIndex === -1) {
-    return { statusCode: 400, body: { error: 'Rule ID format must be "{dayOfWeek}:{timeSlot}" (e.g. "1:09:00").' } };
+    return { statusCode: 400, body: { error: 'El formato del horario debe ser "{díaSemana}:{hora}" (por ejemplo "1:09:00").' } };
   }
   const dayOfWeek = id.slice(0, colonIndex);
   const timeSlot = id.slice(colonIndex + 1);
@@ -231,7 +244,7 @@ async function adminDeleteAvailability(id) {
     return { statusCode: 200, body: { message: 'Availability rule removed.' } };
   } catch (err) {
     console.error('adminDeleteAvailability error:', err);
-    return { statusCode: 500, body: { error: 'Failed to delete availability rule.' } };
+    return { statusCode: 500, body: { error: 'No se pudo eliminar el horario.' } };
   }
 }
 
@@ -245,7 +258,7 @@ async function adminBlockDate(body) {
     return { statusCode: 400, body: { error: 'date (YYYY-MM-DD) is required.' } };
   }
   if (!/^\d{4}-\d{2}-\d{2}$/.test(body.date)) {
-    return { statusCode: 400, body: { error: 'date must be in YYYY-MM-DD format.' } };
+    return { statusCode: 400, body: { error: 'La fecha debe tener el formato AAAA-MM-DD.' } };
   }
 
   const item = {
@@ -259,7 +272,7 @@ async function adminBlockDate(body) {
     return { statusCode: 200, body: { message: `Date ${body.date} has been blocked.`, item } };
   } catch (err) {
     console.error('adminBlockDate error:', err);
-    return { statusCode: 500, body: { error: 'Failed to block date.' } };
+    return { statusCode: 500, body: { error: 'No se pudo bloquear la fecha.' } };
   }
 }
 
@@ -270,7 +283,7 @@ async function adminBlockDate(body) {
 async function adminUnblockDate(date) {
   if (!date) return { statusCode: 400, body: { error: 'date (YYYY-MM-DD) is required.' } };
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-    return { statusCode: 400, body: { error: 'date must be in YYYY-MM-DD format.' } };
+    return { statusCode: 400, body: { error: 'La fecha debe tener el formato AAAA-MM-DD.' } };
   }
 
   try {
@@ -280,7 +293,7 @@ async function adminUnblockDate(date) {
     return { statusCode: 200, body: { message: `Date ${date} has been unblocked.` } };
   } catch (err) {
     console.error('adminUnblockDate error:', err);
-    return { statusCode: 500, body: { error: 'Failed to unblock date.' } };
+    return { statusCode: 500, body: { error: 'No se pudo desbloquear la fecha.' } };
   }
 }
 

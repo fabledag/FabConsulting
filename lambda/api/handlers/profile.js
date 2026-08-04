@@ -15,12 +15,12 @@ async function getProfile(email) {
   try {
     const result = await ddb.send(new GetCommand({ TableName: USERS_TABLE, Key: { email } }));
     if (!result.Item) {
-      return { statusCode: 404, body: { error: 'Profile not found.' } };
+      return { statusCode: 404, body: { error: 'No encontramos tu perfil.' } };
     }
     return { statusCode: 200, body: { user: result.Item } };
   } catch (err) {
     console.error('getProfile error:', err);
-    return { statusCode: 500, body: { error: 'Failed to fetch profile.' } };
+    return { statusCode: 500, body: { error: 'No se pudo cargar tu perfil.' } };
   }
 }
 
@@ -29,14 +29,14 @@ async function getProfile(email) {
  * Body: { name?, phone? } — only provided fields are updated.
  */
 async function updateProfile(email, body) {
-  if (!body) return { statusCode: 400, body: { error: 'Request body is required.' } };
+  if (!body) return { statusCode: 400, body: { error: 'Faltan datos en la solicitud.' } };
 
   const errors = [];
   if (body.name !== undefined && (typeof body.name !== 'string' || body.name.trim().length < 2)) {
-    errors.push('name must be at least 2 characters.');
+    errors.push('El nombre debe tener al menos 2 caracteres.');
   }
   if (body.phone !== undefined && body.phone && !/^[\d\s\-\+\(\)]{7,20}$/.test(body.phone)) {
-    errors.push('Phone number format is invalid.');
+    errors.push('El número de teléfono no tiene un formato válido.');
   }
   if (errors.length) return { statusCode: 400, body: { errors } };
 
@@ -67,7 +67,7 @@ async function updateProfile(email, body) {
     return { statusCode: 200, body: { message: 'Profile updated.' } };
   } catch (err) {
     console.error('updateProfile error:', err);
-    return { statusCode: 500, body: { error: 'Failed to update profile.' } };
+    return { statusCode: 500, body: { error: 'No se pudo actualizar tu perfil.' } };
   }
 }
 

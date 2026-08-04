@@ -30,7 +30,7 @@ async function listMyNotifications(email, queryParams) {
     return { statusCode: 200, body: { notifications: items } };
   } catch (err) {
     console.error('listMyNotifications error:', err);
-    return { statusCode: 500, body: { error: 'Failed to fetch notifications.' } };
+    return { statusCode: 500, body: { error: 'No se pudieron cargar tus notificaciones.' } };
   }
 }
 
@@ -38,7 +38,7 @@ async function listMyNotifications(email, queryParams) {
  * PUT /me/notifications/{id}/read
  */
 async function markNotificationRead(email, id) {
-  if (!id) return { statusCode: 400, body: { error: 'Notification ID is required.' } };
+  if (!id) return { statusCode: 400, body: { error: 'Falta el identificador de la notificación.' } };
 
   try {
     await ddb.send(
@@ -54,10 +54,10 @@ async function markNotificationRead(email, id) {
     return { statusCode: 200, body: { message: 'Notification marked as read.' } };
   } catch (err) {
     if (err.name === 'ConditionalCheckFailedException') {
-      return { statusCode: 404, body: { error: 'Notification not found.' } };
+      return { statusCode: 404, body: { error: 'No encontramos esa notificación.' } };
     }
     console.error('markNotificationRead error:', err);
-    return { statusCode: 500, body: { error: 'Failed to update notification.' } };
+    return { statusCode: 500, body: { error: 'No se pudo actualizar la notificación.' } };
   }
 }
 

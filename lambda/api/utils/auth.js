@@ -39,12 +39,12 @@ function verifyToken(token) {
 function requireCustomerAuth(event) {
   if (!JWT_SECRET) {
     console.error('JWT_SECRET environment variable is not set.');
-    return { errorResponse: { statusCode: 500, body: { error: 'Server configuration error.' } } };
+    return { errorResponse: { statusCode: 500, body: { error: 'Error de configuración del servidor.' } } };
   }
 
   const authHeader = event.headers?.Authorization || event.headers?.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return { errorResponse: { statusCode: 401, body: { error: 'Authorization header missing or malformed.' } } };
+    return { errorResponse: { statusCode: 401, body: { error: 'Tu sesión no es válida. Vuelve a iniciar sesión.' } } };
   }
 
   const token = authHeader.slice(7);
@@ -52,14 +52,14 @@ function requireCustomerAuth(event) {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     if (decoded.role !== 'customer') {
-      return { errorResponse: { statusCode: 403, body: { error: 'Insufficient permissions.' } } };
+      return { errorResponse: { statusCode: 403, body: { error: 'No tienes permisos para hacer esto.' } } };
     }
     return { email: decoded.email };
   } catch (err) {
     if (err.name === 'TokenExpiredError') {
       return { errorResponse: { statusCode: 401, body: { error: 'Session expired. Please log in again.' } } };
     }
-    return { errorResponse: { statusCode: 401, body: { error: 'Invalid token.' } } };
+    return { errorResponse: { statusCode: 401, body: { error: 'Tu sesión no es válida. Vuelve a iniciar sesión.' } } };
   }
 }
 

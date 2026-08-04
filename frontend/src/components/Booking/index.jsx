@@ -433,15 +433,20 @@ function Booking() {
               {step === 4 && (
                 <div>
                   <div className={styles.stepTitle}>Tus datos</div>
-                  <p className={styles.stepSubtitle}>Solo lo necesario para preparar tu sesión.</p>
+                  <p className={styles.stepSubtitle}>
+                    Solo lo necesario para preparar tu sesión. Los campos marcados
+                    con <span className={styles.required} aria-hidden="true">*</span> son obligatorios.
+                  </p>
 
                   <div style={{ marginBottom: '1rem' }}>
                     <label htmlFor="booking-name" style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--purple-800)', marginBottom: '0.4rem' }}>
-                      Nombre
+                      Nombre <span className={styles.required} aria-hidden="true">*</span>
                     </label>
                     <input
                       id="booking-name"
                       type="text"
+                      required
+                      aria-required="true"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       onBlur={() => setNameTouched(true)}
@@ -564,12 +569,13 @@ function Booking() {
                       ) : (
                         <form onSubmit={handleRequestLink}>
                           <label htmlFor="booking-email" style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--purple-800)', marginBottom: '0.4rem' }}>
-                            Correo electrónico
+                            Correo electrónico <span className={styles.required} aria-hidden="true">*</span>
                           </label>
                           <input
                             id="booking-email"
                             type="email"
                             required
+                            aria-required="true"
                             placeholder="tu@correo.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}

@@ -81,9 +81,19 @@ function SlotPicker({ onSelect, selectedKey }) {
       )}
 
       {!loading && !error && calendar.length === 0 && (
-        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-          No hay horarios disponibles este mes — prueba con el mes siguiente.
-        </p>
+        <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+          <p style={{ margin: '0 0 0.7rem' }}>
+            No quedan horarios disponibles en {MONTHS[target.month - 1]}.
+          </p>
+          <button
+            type="button"
+            className={styles.weekBtn}
+            style={{ width: 'auto', padding: '0.45rem 1rem', borderRadius: '999px' }}
+            onClick={() => setMonthOffset(monthOffset + 1)}
+          >
+            Ver {MONTHS[target.month === 12 ? 0 : target.month]} →
+          </button>
+        </div>
       )}
 
       {!loading && !error && (

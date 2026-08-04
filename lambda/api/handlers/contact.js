@@ -14,19 +14,19 @@ const SITE_URL = process.env.SITE_URL || 'https://fabiolaledesma.com';
  */
 function validateContact(body) {
   const errors = [];
-  if (!body) return ['Request body is required.'];
+  if (!body) return ['Faltan datos en la solicitud.'];
 
   if (!body.name || typeof body.name !== 'string' || body.name.trim().length < 2) {
-    errors.push('Name must be at least 2 characters.');
+    errors.push('El nombre debe tener al menos 2 caracteres.');
   }
   if (!body.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) {
-    errors.push('A valid email address is required.');
+    errors.push('Escribe un correo electrónico válido.');
   }
   if (!body.message || typeof body.message !== 'string' || body.message.trim().length < 10) {
-    errors.push('Message must be at least 10 characters.');
+    errors.push('El mensaje debe tener al menos 10 caracteres.');
   }
   if (body.phone && !/^[\d\s\-\+\(\)]{7,20}$/.test(body.phone)) {
-    errors.push('Phone number format is invalid.');
+    errors.push('El número de teléfono no tiene un formato válido.');
   }
   return errors;
 }
@@ -207,7 +207,7 @@ async function submitContact(body) {
 
   if (!ADMIN_EMAIL || !FROM_EMAIL) {
     console.error('ADMIN_EMAIL or FROM_EMAIL environment variable is not set.');
-    return { statusCode: 500, body: { error: 'Server configuration error.' } };
+    return { statusCode: 500, body: { error: 'Error de configuración del servidor.' } };
   }
 
   try {
@@ -242,7 +242,7 @@ async function submitContact(body) {
     };
   } catch (err) {
     console.error('SES send error:', err);
-    return { statusCode: 500, body: { error: 'Failed to send email. Please try again later.' } };
+    return { statusCode: 500, body: { error: 'No se pudo enviar el correo. Inténtalo más tarde.' } };
   }
 }
 

@@ -27,7 +27,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  */
 async function requestMagicLink(body) {
   if (!body || !body.email || !EMAIL_RE.test(body.email)) {
-    return { statusCode: 400, body: { error: 'A valid email address is required.' } };
+    return { statusCode: 400, body: { error: 'Escribe un correo electrónico válido.' } };
   }
 
   const email = body.email.trim().toLowerCase();
@@ -133,7 +133,7 @@ async function requestMagicLink(body) {
  */
 async function verifyMagicLink(body) {
   if (!body || !body.token) {
-    return { statusCode: 400, body: { error: 'token is required.' } };
+    return { statusCode: 400, body: { error: 'Falta el token.' } };
   }
 
   let decoded;

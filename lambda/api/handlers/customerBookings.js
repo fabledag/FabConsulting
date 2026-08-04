@@ -62,7 +62,7 @@ async function listMyBookings(email, queryParams) {
     return { statusCode: 200, body: { bookings } };
   } catch (err) {
     console.error('listMyBookings error:', err);
-    return { statusCode: 500, body: { error: 'Failed to fetch bookings.' } };
+    return { statusCode: 500, body: { error: 'No se pudieron cargar las reservas.' } };
   }
 }
 
@@ -71,14 +71,14 @@ async function listMyBookings(email, queryParams) {
  * Body: { date, time, service, name, linkedin?, message?, packageId? }
  */
 async function createCustomerBooking(email, body) {
-  if (!body) return { statusCode: 400, body: { error: 'Request body is required.' } };
+  if (!body) return { statusCode: 400, body: { error: 'Faltan datos en la solicitud.' } };
 
   const { date, time, service, name = '', linkedin = '', message = '', packageId } = body;
   const errors = [];
-  if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) errors.push('date must be in YYYY-MM-DD format.');
-  if (!time || !/^\d{2}:\d{2}$/.test(time)) errors.push('time must be in HH:MM format.');
+  if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) errors.push('La fecha debe tener el formato AAAA-MM-DD.');
+  if (!time || !/^\d{2}:\d{2}$/.test(time)) errors.push('La hora debe tener el formato HH:MM.');
   if (!service || !VALID_SERVICES.includes(service)) errors.push(`service must be one of: ${VALID_SERVICES.join(', ')}.`);
-  if (!name || typeof name !== 'string' || name.trim().length < 2) errors.push('name must be at least 2 characters.');
+  if (!name || typeof name !== 'string' || name.trim().length < 2) errors.push('El nombre debe tener al menos 2 caracteres.');
   if (errors.length) return { statusCode: 400, body: { errors } };
 
   try {
@@ -87,10 +87,10 @@ async function createCustomerBooking(email, body) {
       const pkgResult = await ddb.send(new GetCommand({ TableName: PACKAGES_TABLE, Key: { id: packageId } }));
       pkg = pkgResult.Item;
       if (!pkg || pkg.email !== email) {
-        return { statusCode: 403, body: { error: 'This package does not belong to you.' } };
+        return { statusCode: 403, body: { error: 'Este paquete no está asociado a tu cuenta.' } };
       }
       if (pkg.status !== 'active' || pkg.remainingCredits <= 0) {
-        return { statusCode: 409, body: { error: 'No credits remaining on this package.' } };
+        return { statusCode: 409, body: { error: 'Ya no te quedan sesiones en este paquete.' } };
       }
     }
 
@@ -129,7 +129,7 @@ async function createCustomerBooking(email, body) {
         );
       } catch (err) {
         if (err.name === 'ConditionalCheckFailedException') {
-          return { statusCode: 409, body: { error: 'No credits remaining on this package.' } };
+          return { statusCode: 409, body: { error: 'Ya no te quedan sesiones en este paquete.' } };
         }
         throw err;
       }
@@ -170,7 +170,7 @@ async function createCustomerBooking(email, body) {
     return { statusCode: 201, body: { booking } };
   } catch (err) {
     console.error('createCustomerBooking error:', err);
-    return { statusCode: 500, body: { error: 'Failed to create booking.' } };
+    return { statusCode: 500, body: { error: 'No se pudo crear la reserva. Inténtalo de nuevo.' } };
   }
 }
 
@@ -185,9 +185,9 @@ async function getOwnedBooking(email, id) {
     })
   );
   const booking = result.Items?.[0];
-  if (!booking) return { errorResponse: { statusCode: 404, body: { error: 'Booking not found.' } } };
-  if (booking.email !== email) return { errorResponse: { statusCode: 403, body: { error: 'This booking does not belong to you.' } } };
-  if (booking.status === 'cancelled') return { errorResponse: { statusCode: 400, body: { error: 'This booking is already cancelled.' } } };
+  if (!booking) return { errorResponse: { statusCode: 404, body: { error: 'No encontramos esa reserva.' } } };
+  if (booking.email !== email) return { errorResponse: { statusCode: 403, body: { error: 'Esta reserva no está asociada a tu cuenta.' } } };
+  if (booking.status === 'cancelled') return { errorResponse: { statusCode: 400, body: { error: 'Esta reserva ya estaba cancelada.' } } };
   return { booking };
 }
 
@@ -207,7 +207,7 @@ async function rescheduleMyBooking(email, id, body) {
 
   const owned = await getOwnedBooking(email, id).catch((err) => {
     console.error('rescheduleMyBooking lookup error:', err);
-    return { errorResponse: { statusCode: 500, body: { error: 'Failed to fetch booking.' } } };
+    return { errorResponse: { statusCode: 500, body: { error: 'No se pudo cargar la reserva.' } } };
   });
   if (owned.errorResponse) return owned.errorResponse;
   const { booking } = owned;
@@ -280,7 +280,7 @@ async function rescheduleMyBooking(email, id, body) {
     return { statusCode: 200, body: { booking: newBooking } };
   } catch (err) {
     console.error('rescheduleMyBooking error:', err);
-    return { statusCode: 500, body: { error: 'Failed to reschedule booking.' } };
+    return { statusCode: 500, body: { error: 'No se pudo reagendar la reserva.' } };
   }
 }
 
@@ -290,7 +290,7 @@ async function rescheduleMyBooking(email, id, body) {
 async function cancelMyBooking(email, id) {
   const owned = await getOwnedBooking(email, id).catch((err) => {
     console.error('cancelMyBooking lookup error:', err);
-    return { errorResponse: { statusCode: 500, body: { error: 'Failed to fetch booking.' } } };
+    return { errorResponse: { statusCode: 500, body: { error: 'No se pudo cargar la reserva.' } } };
   });
   if (owned.errorResponse) return owned.errorResponse;
   const { booking } = owned;
@@ -350,7 +350,7 @@ async function cancelMyBooking(email, id) {
     return { statusCode: 200, body: { message: 'Booking cancelled.' } };
   } catch (err) {
     console.error('cancelMyBooking error:', err);
-    return { statusCode: 500, body: { error: 'Failed to cancel booking.' } };
+    return { statusCode: 500, body: { error: 'No se pudo cancelar la reserva.' } };
   }
 }
 

@@ -44,7 +44,7 @@ async function listMyPackages(email) {
     return { statusCode: 200, body: { packages: result.Items || [] } };
   } catch (err) {
     console.error('listMyPackages error:', err);
-    return { statusCode: 500, body: { error: 'Failed to fetch packages.' } };
+    return { statusCode: 500, body: { error: 'No se pudieron cargar tus paquetes.' } };
   }
 }
 
@@ -104,7 +104,7 @@ async function createPendingPackage(email, body) {
     return { statusCode: 201, body: { package: pkg, paypalUrl } };
   } catch (err) {
     console.error('createPendingPackage error:', err);
-    return { statusCode: 500, body: { error: 'Failed to create package.' } };
+    return { statusCode: 500, body: { error: 'No se pudo crear el paquete.' } };
   }
 }
 
@@ -131,7 +131,7 @@ async function adminListPendingPackages(queryParams) {
     return { statusCode: 200, body: { packages } };
   } catch (err) {
     console.error('adminListPendingPackages error:', err);
-    return { statusCode: 500, body: { error: 'Failed to fetch packages.' } };
+    return { statusCode: 500, body: { error: 'No se pudieron cargar tus paquetes.' } };
   }
 }
 
@@ -140,7 +140,7 @@ async function adminListPendingPackages(queryParams) {
  * Body: { status: 'active' | 'cancelled' }
  */
 async function adminConfirmPackage(id, body) {
-  if (!id) return { statusCode: 400, body: { error: 'Package ID is required.' } };
+  if (!id) return { statusCode: 400, body: { error: 'Falta el identificador del paquete.' } };
   if (!body || !['active', 'cancelled'].includes(body.status)) {
     return { statusCode: 400, body: { error: "status must be 'active' or 'cancelled'." } };
   }
@@ -148,7 +148,7 @@ async function adminConfirmPackage(id, body) {
   try {
     const result = await ddb.send(new GetCommand({ TableName: PACKAGES_TABLE, Key: { id } }));
     const pkg = result.Item;
-    if (!pkg) return { statusCode: 404, body: { error: 'Package not found.' } };
+    if (!pkg) return { statusCode: 404, body: { error: 'No encontramos ese paquete.' } };
 
     const now = new Date().toISOString();
 
@@ -208,7 +208,7 @@ async function adminConfirmPackage(id, body) {
     return { statusCode: 200, body: { message: 'Package updated.', id, status: body.status } };
   } catch (err) {
     console.error('adminConfirmPackage error:', err);
-    return { statusCode: 500, body: { error: 'Failed to update package.' } };
+    return { statusCode: 500, body: { error: 'No se pudo actualizar el paquete.' } };
   }
 }
 

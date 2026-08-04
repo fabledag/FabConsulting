@@ -14,6 +14,7 @@ const { v4: uuidv4 } = require('uuid');
 
 const { sendEmail, emailLayout } = require('../utils/email');
 const { createNotification } = require('../utils/notify');
+const { isSlotInPast, msUntilSlot } = require('../utils/time');
 
 const ddbClient = new DynamoDBClient({});
 const ddb = DynamoDBDocumentClient.from(ddbClient);
@@ -51,22 +52,22 @@ function escapeHtml(str) {
  */
 function validateBooking(body) {
   const errors = [];
-  if (!body) return ['Request body is required.'];
+  if (!body) return ['Faltan datos en la solicitud.'];
 
   if (!body.date || !/^\d{4}-\d{2}-\d{2}$/.test(body.date)) {
-    errors.push('date must be in YYYY-MM-DD format.');
+    errors.push('La fecha debe tener el formato AAAA-MM-DD.');
   }
   if (!body.time || !/^\d{2}:\d{2}$/.test(body.time)) {
-    errors.push('time must be in HH:MM format (e.g. "09:00").');
+    errors.push('La hora debe tener el formato HH:MM (por ejemplo "09:00").');
   }
   if (!body.name || typeof body.name !== 'string' || body.name.trim().length < 2) {
-    errors.push('name must be at least 2 characters.');
+    errors.push('El nombre debe tener al menos 2 caracteres.');
   }
   if (!body.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) {
-    errors.push('A valid email address is required.');
+    errors.push('Escribe un correo electrónico válido.');
   }
   if (body.phone && !/^[\d\s\-\+\(\)]{7,20}$/.test(body.phone)) {
-    errors.push('Phone number format is invalid.');
+    errors.push('El número de teléfono no tiene un formato válido.');
   }
   return errors;
 }
@@ -203,10 +204,10 @@ function buildAdminBookingEmail(booking) {
  * and the customer-authenticated /me/bookings flow.
  */
 async function checkSlotAvailable(date, time) {
-  const now = new Date();
-  const slotDate = new Date(`${date}T${time}:00`);
-  if (slotDate <= now) {
-    return { ok: false, statusCode: 400, error: 'Cannot book a slot in the past.' };
+  // Slots are Mexico City wall-clock times; Lambda runs in UTC. Comparing them
+  // naively made afternoon slots look six hours in the past. See utils/time.js.
+  if (isSlotInPast(date, time)) {
+    return { ok: false, statusCode: 400, error: 'Ese horario ya pasó. Elige uno disponible.' };
   }
 
   // 1. Check if the date is blocked
@@ -214,17 +215,19 @@ async function checkSlotAvailable(date, time) {
     new GetCommand({ TableName: BLOCKED_DATES_TABLE, Key: { date } })
   );
   if (blockedResult.Item) {
-    return { ok: false, statusCode: 409, error: 'This date is not available for bookings.' };
+    return { ok: false, statusCode: 409, error: 'Esa fecha no está disponible para reservas.' };
   }
 
   // 2. Check weekly availability rule exists for this day/time
-  const dow = slotDate.getDay();
+  // Day-of-week must also come from the Mexico City calendar date, not from a
+  // UTC-parsed Date, or slots near midnight resolve to the wrong weekday.
+  const dow = new Date(`${date}T12:00:00Z`).getUTCDay();
   const pk = `WEEKLY#${dow}`;
   const availResult = await ddb.send(
     new GetCommand({ TableName: AVAILABILITY_TABLE, Key: { pk, sk: time } })
   );
   if (!availResult.Item || !availResult.Item.active) {
-    return { ok: false, statusCode: 409, error: 'This time slot is not available.' };
+    return { ok: false, statusCode: 409, error: 'Ese horario no está disponible.' };
   }
   const durationMinutes = availResult.Item.durationMinutes || 60;
 
@@ -239,7 +242,7 @@ async function checkSlotAvailable(date, time) {
     })
   );
   if (existingResult.Items && existingResult.Items.length > 0) {
-    return { ok: false, statusCode: 409, error: 'This slot has already been booked. Please choose another time.' };
+    return { ok: false, statusCode: 409, error: 'Ese horario acaba de ocuparse. Por favor elige otro.' };
   }
 
   return { ok: true, durationMinutes };
@@ -323,7 +326,7 @@ async function createBooking(body) {
     };
   } catch (err) {
     console.error('createBooking error:', err);
-    return { statusCode: 500, body: { error: 'Failed to create booking.' } };
+    return { statusCode: 500, body: { error: 'No se pudo crear la reserva. Inténtalo de nuevo.' } };
   }
 }
 
@@ -384,7 +387,7 @@ async function adminGetBookings(queryParams) {
     };
   } catch (err) {
     console.error('adminGetBookings error:', err);
-    return { statusCode: 500, body: { error: 'Failed to fetch bookings.' } };
+    return { statusCode: 500, body: { error: 'No se pudieron cargar las reservas.' } };
   }
 }
 
@@ -393,7 +396,7 @@ async function adminGetBookings(queryParams) {
  * Updates booking status. Body: { status: "confirmed" | "cancelled" | "pending" }
  */
 async function adminUpdateBooking(id, body) {
-  if (!id) return { statusCode: 400, body: { error: 'Booking ID is required.' } };
+  if (!id) return { statusCode: 400, body: { error: 'Falta el identificador de la reserva.' } };
   if (!body || !body.status) return { statusCode: 400, body: { error: 'status is required.' } };
   if (!VALID_STATUSES.includes(body.status)) {
     return { statusCode: 400, body: { error: `status must be one of: ${VALID_STATUSES.join(', ')}.` } };
@@ -412,7 +415,7 @@ async function adminUpdateBooking(id, body) {
     );
 
     if (!scanResult.Items || scanResult.Items.length === 0) {
-      return { statusCode: 404, body: { error: 'Booking not found.' } };
+      return { statusCode: 404, body: { error: 'No encontramos esa reserva.' } };
     }
 
     const existingBooking = scanResult.Items[0];
@@ -489,7 +492,7 @@ async function adminUpdateBooking(id, body) {
     };
   } catch (err) {
     console.error('adminUpdateBooking error:', err);
-    return { statusCode: 500, body: { error: 'Failed to update booking.' } };
+    return { statusCode: 500, body: { error: 'No se pudo actualizar la reserva.' } };
   }
 }
 
