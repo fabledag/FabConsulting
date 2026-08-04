@@ -153,13 +153,6 @@
   margin-bottom: 4px;
 }
 
-.cardNote {
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.4);
-  margin: 0;
-  line-height: 1.4;
-}
-
 .resultsNote {
   text-align: center;
   max-width: 640px;
@@ -169,18 +162,6 @@
   font-family: 'Fraunces', Georgia, serif;
   font-style: italic;
   line-height: 1.5;
-}
-
-.footer {
-  text-align: center;
-  margin-top: 1.5rem;
-}
-
-.note {
-  margin-top: 1rem;
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.3);
-  font-weight: 300;
 }
 
 /* ─── Responsive ─────────────────────────────── */
@@ -207,9 +188,5 @@
   .grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 1.25rem;
-  }
-
-  .footer {
-    margin-top: 2.5rem;
   }
 }

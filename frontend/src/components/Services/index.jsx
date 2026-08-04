@@ -24,9 +24,8 @@ const SERVICES = [
     forWho: 'Para quien quiere que su perfil comunique mejor su experiencia.',
     topics: ['Estructura del CV', 'Claridad de logros', 'Coherencia con LinkedIn', 'Priorización de información'],
     duration: '60 min',
-    price: '$1,200',
+    price: '$1,000',
     cta: 'Quiero revisar mi perfil',
-    note: 'Esta sesión también puede combinar revisión de portafolio si lo necesitas.',
   },
   {
     id: 'servicio-portafolio',
@@ -40,7 +39,6 @@ const SERVICES = [
     duration: '60 min',
     price: '$1,200',
     cta: 'Quiero revisar mi portafolio',
-    note: 'Esta sesión también puede combinar revisión de CV y LinkedIn si lo necesitas.',
   },
   {
     id: 'servicio-entrevista',
@@ -96,7 +94,7 @@ function Services() {
 
       {/* Cards grid */}
       <div className={styles.grid}>
-        {SERVICES.map(({ id, key, tag, tagPlain, name, desc, forWho, topics, duration, price, cta, note }, i) => (
+        {SERVICES.map(({ id, key, tag, tagPlain, name, desc, forWho, topics, duration, price, cta }, i) => (
           <FadeUp key={id} id={id} className={styles.card} delay={`${i * 0.05}s`}>
             <span className={`${styles.tag} ${tagPlain ? styles.tagPlain : ''}`}>{tag}</span>
             <h3 className={styles.cardH3}>{name}</h3>
@@ -128,8 +126,6 @@ function Services() {
             >
               {cta}
             </a>
-
-            {note && <p className={styles.cardNote}>{note}</p>}
           </FadeUp>
         ))}
       </div>
@@ -137,11 +133,6 @@ function Services() {
       <p className={styles.resultsNote}>
         No saldrás solo con consejos: terminaremos la sesión con recomendaciones claras y próximos pasos que puedas aplicar.
       </p>
-
-      {/* CTA */}
-      <div className={styles.footer}>
-        <p className={styles.note}>Precios + IVA si requieres factura</p>
-      </div>
       </div>
     </section>
   );
