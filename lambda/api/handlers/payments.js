@@ -26,7 +26,7 @@ const {
   DynamoDBDocumentClient,
   GetCommand,
   UpdateCommand,
-  ScanCommand,
+  QueryCommand,
 } = require('@aws-sdk/lib-dynamodb');
 
 const { createPreference, getPayment, verifyWebhookSignature, isConfigured } = require('../utils/mercadopago');
@@ -56,6 +56,29 @@ const SERVICE_LABELS = {
   mentoria: 'Mentoría — 4 sesiones en 6 meses',
 };
 
+
+/**
+ * Looks a booking up by its id.
+ *
+ * Uses the `id-index` GSI rather than a filtered Scan. The original version did
+ * `Scan` + `FilterExpression` + `Limit: 1`, which looks right and is not:
+ * DynamoDB applies Limit BEFORE the filter, so it examined one arbitrary item,
+ * filtered it out, and reported the booking as missing. With a single row in
+ * the table it happened to work; with three, paid bookings silently failed to
+ * confirm.
+ */
+async function findBookingById(bookingId) {
+  const result = await ddb.send(
+    new QueryCommand({
+      TableName: BOOKINGS_TABLE,
+      IndexName: 'id-index',
+      KeyConditionExpression: 'id = :id',
+      ExpressionAttributeValues: { ':id': bookingId },
+    })
+  );
+  return (result.Items || [])[0] || null;
+}
+
 /* ── Creating a checkout ────────────────────────────────────────────────── */
 
 /**
@@ -75,15 +98,7 @@ async function createCheckout(email, body) {
 
   try {
     if (body.bookingId) {
-      const result = await ddb.send(
-        new ScanCommand({
-          TableName: BOOKINGS_TABLE,
-          FilterExpression: 'id = :id',
-          ExpressionAttributeValues: { ':id': body.bookingId },
-          Limit: 1,
-        })
-      );
-      const booking = (result.Items || [])[0];
+      const booking = await findBookingById(body.bookingId);
       if (!booking) return { statusCode: 404, body: { error: 'No encontramos esa reserva.' } };
       if (booking.email !== email) {
         return { statusCode: 403, body: { error: 'Esta reserva no está asociada a tu cuenta.' } };
@@ -212,15 +227,7 @@ async function handleWebhook({ body, headers, queryParams }) {
 
 /** Marks a booking confirmed exactly once, then sends the calendar invites. */
 async function confirmBooking(bookingId, payment) {
-  const result = await ddb.send(
-    new ScanCommand({
-      TableName: BOOKINGS_TABLE,
-      FilterExpression: 'id = :id',
-      ExpressionAttributeValues: { ':id': bookingId },
-      Limit: 1,
-    })
-  );
-  const booking = (result.Items || [])[0];
+  const booking = await findBookingById(bookingId);
   if (!booking) {
     console.warn('[mp] pago aprobado para una reserva inexistente:', bookingId);
     return;

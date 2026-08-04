@@ -167,15 +167,31 @@ function verifyWebhookSignature({ signatureHeader, requestId, dataId }) {
   const v1 = parts.v1;
   if (!ts || !v1) return false;
 
-  const manifest = `id:${String(dataId).toLowerCase()};request-id:${requestId || ''};ts:${ts};`;
-  const expected = crypto.createHmac('sha256', WEBHOOK_SECRET).update(manifest).digest('hex');
+  // Mercado Pago's documented manifest. Two variants are accepted because the
+  // `request-id` segment is omitted when the header is absent — some
+  // notifications arrive without it, and building the string with an empty
+  // value then produces a different digest than the one MP signed.
+  const id = String(dataId).toLowerCase();
+  const candidates = [
+    `id:${id};request-id:${requestId || ''};ts:${ts};`,
+    `id:${id};ts:${ts};`,
+  ];
 
-  // Constant-time compare, so a wrong signature can't be brute-forced by
-  // measuring how long the comparison takes.
-  const a = Buffer.from(expected, 'utf8');
-  const b = Buffer.from(v1, 'utf8');
-  if (a.length !== b.length) return false;
-  return crypto.timingSafeEqual(a, b);
+  for (const manifest of candidates) {
+    const expected = crypto.createHmac('sha256', WEBHOOK_SECRET).update(manifest).digest('hex');
+    // Constant-time compare, so a wrong signature can't be brute-forced by
+    // measuring how long the comparison takes.
+    const a = Buffer.from(expected, 'utf8');
+    const b = Buffer.from(v1, 'utf8');
+    if (a.length === b.length && crypto.timingSafeEqual(a, b)) return true;
+  }
+
+  // Logged without the secret or the expected digest: enough to see which
+  // component is off, nothing an attacker could use to forge a signature.
+  console.warn(
+    `[mp] firma no coincide — dataId=${id} requestId=${requestId || '(ausente)'} ts=${ts} v1len=${v1.length}`
+  );
+  return false;
 }
 
 module.exports = {
