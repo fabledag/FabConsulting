@@ -38,15 +38,19 @@
   font-family: 'Fraunces', Georgia, serif;
   font-size: 2rem;
   font-weight: 600;
-  color: var(--purple-900);
+  /* Brand purple, the same one as the logo. Was --purple-900, which reads as
+     near-black rather than purple at this size. */
+  color: var(--purple-800);
   margin-bottom: 1rem;
   line-height: 1.15;
   letter-spacing: -0.03em;
 }
 
+/* "UX, IA" keeps the italic for emphasis but no longer shifts colour — the
+   whole headline is one purple. */
 .h1 em {
   font-style: italic;
-  color: var(--purple-600);
+  color: inherit;
 }
 
 .sub {
