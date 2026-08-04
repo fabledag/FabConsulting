@@ -69,14 +69,38 @@ async function requestMagicLink(body) {
     // emailed before this deploy keep working until they expire.
     const loginUrl = `${SITE_URL}/login/?token=${token}${redirectPath ? `&redirect=${encodeURIComponent(redirectPath)}` : ''}`;
 
+    // People who requested this from the booking widget are mid-reservation and
+    // waiting to finish it. A generic "Iniciar sesión" email left them unsure
+    // whether clicking would take them back to their booking at all, so the
+    // copy states plainly what happens next.
+    const fromBooking = redirectPath && redirectPath.includes('#agenda');
+
     try {
       await sendEmail({
         to: email,
-        subject: 'Tu enlace de acceso — Fabiola Ledesma',
+        subject: fromBooking
+          ? 'Confirma tu correo para terminar de agendar — Fabiola Ledesma'
+          : 'Tu enlace de acceso — Fabiola Ledesma',
         html: emailLayout({
           headerTitle: 'Fabiola Ledesma · Consultoría',
-          headerSubtitle: 'Enlace de acceso a tu cuenta',
-          bodyHtml: `
+          headerSubtitle: fromBooking ? 'Termina de agendar tu sesión' : 'Enlace de acceso a tu cuenta',
+          bodyHtml: fromBooking
+            ? `
+            <h2 style="margin:0 0 16px;color:#111827;font-size:20px;font-weight:600;">Ya casi está tu sesión</h2>
+            <p style="margin:0 0 16px;color:#374151;font-size:15px;line-height:1.7;">
+              Da clic en el botón para confirmar tu correo. Te llevará de vuelta a tu
+              reserva —con el servicio y el horario que elegiste ya guardados— para que
+              solo la confirmes.
+            </p>
+            <p style="margin:0 0 16px;color:#374151;font-size:15px;line-height:1.7;">
+              <strong>Ábrelo en el mismo dispositivo</strong> donde empezaste a agendar.
+              El enlace expira en 15 minutos y solo puede usarse una vez.
+            </p>
+            <p style="margin:0;color:#9ca3af;font-size:13px;line-height:1.6;">
+              Si tú no solicitaste esto, puedes ignorar este correo.
+            </p>
+          `
+            : `
             <h2 style="margin:0 0 16px;color:#111827;font-size:20px;font-weight:600;">Confirma tu inicio de sesión</h2>
             <p style="margin:0 0 16px;color:#374151;font-size:15px;line-height:1.7;">
               Da clic en el botón para entrar a tu cuenta. Este enlace expira en 15 minutos y solo puede usarse una vez.
@@ -86,7 +110,7 @@ async function requestMagicLink(body) {
             </p>
           `,
           ctaUrl: loginUrl,
-          ctaLabel: 'Iniciar sesión',
+          ctaLabel: fromBooking ? 'Volver a mi reserva' : 'Iniciar sesión',
         }),
       });
     } catch (emailErr) {

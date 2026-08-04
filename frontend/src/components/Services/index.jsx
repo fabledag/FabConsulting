@@ -3,10 +3,11 @@
 import Link from 'next/link';
 import FadeUp from '../FadeUp/index.jsx';
 import { SERVICES } from '@/lib/services.js';
+import { setPreselectedService } from '@/lib/bookingStorage.js';
 import styles from './Services.module.css';
 
 function selectService(key) {
-  sessionStorage.setItem('preselected_service', key);
+  setPreselectedService(key);
 }
 
 function Services() {

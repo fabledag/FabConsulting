@@ -6,6 +6,7 @@ import SlotPicker from '../SlotPicker/index.jsx';
 import { useAuth } from '../../hooks/useAuth.js';
 import { apiFetch, getLastEmail } from '@/lib/api.js';
 import { SERVICES_BY_KEY } from '@/lib/services.js';
+import { takePreselectedService, takePendingSelection, savePendingSelection } from '@/lib/bookingStorage.js';
 import styles from './Booking.module.css';
 
 const TRUST_ITEMS = [
@@ -37,8 +38,6 @@ const MODALITY = 'Videollamada — el enlace se comparte por correo al confirmar
 const TIMEZONE = 'Hora Ciudad de México (CST)';
 const CANCELLATION_POLICY = 'Puedes reagendar o cancelar tú mismo/a desde tu perfil hasta 24 horas antes de tu sesión.';
 
-const PENDING_SELECTION_KEY = 'pending_booking_selection';
-const PRESELECTED_SERVICE_KEY = 'preselected_service';
 
 function googleCalendarUrl(svc, slot) {
   if (!svc.durationMinutes || !slot) return null;
@@ -70,6 +69,9 @@ function Booking() {
   const [emailTouched, setEmailTouched] = useState(false);
   const [linkStatus, setLinkStatus] = useState('idle'); // idle | sending | sent
   const [error, setError] = useState('');
+  // True right after coming back from the magic link with a restored booking,
+  // so we can tell the user what just happened instead of silently jumping.
+  const [justRestored, setJustRestored] = useState(false);
 
   const [activePackage, setActivePackage] = useState(null);
   const [loadingPackages, setLoadingPackages] = useState(false);
@@ -84,32 +86,36 @@ function Booking() {
 
   // Pick up a service chosen from a Services card / career-stage link.
   useEffect(() => {
-    const preselected = sessionStorage.getItem(PRESELECTED_SERVICE_KEY);
+    const preselected = takePreselectedService();
     if (preselected && SERVICES[preselected]) {
       setSelectedService(preselected);
       setStep(2);
     }
-    if (preselected) sessionStorage.removeItem(PRESELECTED_SERVICE_KEY);
   }, []);
 
   // Restore an in-progress selection after the magic-link round trip.
+  //
+  // This is the moment the user comes back from their email, in a brand-new
+  // tab, already logged in. Without the restore + the visible banner below,
+  // they land on a reset form with no explanation — which read as "logging in
+  // did nothing".
   useEffect(() => {
     if (!user) return;
-    const saved = sessionStorage.getItem(PENDING_SELECTION_KEY);
-    if (!saved) return;
-    try {
-      const parsed = JSON.parse(saved);
-      if (parsed.selectedService) setSelectedService(parsed.selectedService);
-      if (parsed.selectedSlot) setSelectedSlot(parsed.selectedSlot);
-      if (parsed.name) setName(parsed.name);
-      if (parsed.linkedin) setLinkedin(parsed.linkedin);
-      if (parsed.message) setMessage(parsed.message);
-      setStep(5);
-    } catch {
-      // ignore malformed storage
-    } finally {
-      sessionStorage.removeItem(PENDING_SELECTION_KEY);
-    }
+    const parsed = takePendingSelection();
+    if (!parsed) return;
+
+    if (parsed.selectedService) setSelectedService(parsed.selectedService);
+    if (parsed.selectedSlot) setSelectedSlot(parsed.selectedSlot);
+    if (parsed.name) setName(parsed.name);
+    if (parsed.linkedin) setLinkedin(parsed.linkedin);
+    if (parsed.message) setMessage(parsed.message);
+    setStep(5);
+    setJustRestored(true);
+
+    // Land on the widget rather than wherever the page happened to be.
+    requestAnimationFrame(() => {
+      document.getElementById('agenda')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   }, [user]);
 
   // When logged in and reaching the confirm step for mentoria, check credits.
@@ -138,9 +144,10 @@ function Booking() {
     if (!email) return;
     setLinkStatus('sending');
     setError('');
-    sessionStorage.setItem(PENDING_SELECTION_KEY, JSON.stringify({ selectedService, selectedSlot, name, linkedin, message }));
+    savePendingSelection({ selectedService, selectedSlot, name, linkedin, message });
     try {
-      await requestLink(email, '/');
+      // Send them back to the booking widget itself, not the top of the page.
+      await requestLink(email, '/#agenda');
       setLinkStatus('sent');
     } catch (err) {
       setError(err.message || 'No se pudo enviar el enlace.');
@@ -523,14 +530,37 @@ function Booking() {
                 <div>
                   {!user ? (
                     <>
-                      <div className={styles.stepTitle}>Entra a tu cuenta para confirmar</div>
+                      <div className={styles.stepTitle}>Último paso: confirma que eres tú</div>
                       <p className={styles.stepSubtitle}>
-                        Sin contraseñas — te mandamos un enlace de acceso a tu correo. Tu selección queda guardada.
+                        Para apartar tu sesión necesito verificar tu correo. No hay
+                        contraseñas: te llega un enlace y con un clic vuelves aquí.
                       </p>
                       {linkStatus === 'sent' ? (
-                        <p style={{ fontSize: '0.85rem', color: 'var(--text-dark)', lineHeight: 1.6 }}>
-                          Te enviamos un enlace a <strong>{email}</strong>. Ábrelo desde este dispositivo para volver aquí y terminar de agendar.
-                        </p>
+                        <div className={styles.linkSentBox}>
+                          <p className={styles.linkSentTitle}>
+                            <i className="fa-solid fa-paper-plane" aria-hidden="true" /> Revisa tu correo
+                          </p>
+                          <p className={styles.linkSentBody}>
+                            Te envié un enlace a <strong>{email}</strong>.
+                          </p>
+                          <ol className={styles.linkSentSteps}>
+                            <li>Abre el correo <strong>en este mismo dispositivo</strong>.</li>
+                            <li>Haz clic en el enlace y luego en «Confirmar inicio de sesión».</li>
+                            <li>Volverás aquí con tu sesión lista para confirmar.</li>
+                          </ol>
+                          <p className={styles.linkSentNote}>
+                            Tu selección quedó guardada. Si no lo ves en un par de minutos,
+                            revisa spam o correo no deseado.
+                          </p>
+                          <button
+                            type="button"
+                            className={styles.btnBack}
+                            style={{ width: '100%' }}
+                            onClick={() => setLinkStatus('idle')}
+                          >
+                            Usar otro correo
+                          </button>
+                        </div>
                       ) : (
                         <form onSubmit={handleRequestLink}>
                           <label htmlFor="booking-email" style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--purple-800)', marginBottom: '0.4rem' }}>
@@ -564,6 +594,15 @@ function Booking() {
                     </>
                   ) : (
                     <>
+                      {justRestored && (
+                        <div className={styles.restoredBanner} role="status">
+                          <i className="fa-solid fa-circle-check" aria-hidden="true" />
+                          <span>
+                            ¡Listo{user?.name ? `, ${user.name.split(' ')[0]}` : ''}! Ya entraste a tu
+                            cuenta y recuperé tu selección. Solo falta confirmar.
+                          </span>
+                        </div>
+                      )}
                       <div className={styles.stepTitle}>Confirma tu sesión</div>
                       <div className={styles.paymentSummary}>
                         <div className={styles.psRow}>

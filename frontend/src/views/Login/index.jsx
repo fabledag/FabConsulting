@@ -58,11 +58,18 @@ function Login() {
     }
   }
 
+  // True when the link came from the booking widget, so we can promise the
+  // right thing ("back to your reservation") instead of a generic redirect.
+  const returningToBooking = redirect.includes('#agenda');
+
   async function handleConfirm() {
     setStatus('verifying');
     try {
       await verify(token);
-      navigate(redirect);
+      // Show a success state before navigating. Without it the screen just
+      // swapped silently and people read the whole thing as "nothing happened".
+      setStatus('done');
+      setTimeout(() => navigate(redirect), 900);
     } catch (err) {
       setError(err.message || 'El enlace no es válido o ya expiró.');
       setStatus('error');
@@ -95,25 +102,53 @@ function Login() {
         </a>
 
         {token ? (
-          <>
-            <h1 style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '1.4rem', color: 'var(--purple-900)', marginBottom: '0.75rem' }}>
-              Confirma tu inicio de sesión
-            </h1>
-            <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-              Por seguridad, necesitamos que confirmes con un clic que fuiste tú quien abrió este enlace.
-            </p>
-            <button
-              className="btn-primary"
-              style={{ width: '100%', justifyContent: 'center' }}
-              onClick={handleConfirm}
-              disabled={status === 'verifying'}
-            >
-              {status === 'verifying' ? 'Confirmando…' : 'Confirmar inicio de sesión'}
-            </button>
-            {status === 'error' && (
-              <p style={{ marginTop: '1rem', fontSize: '0.85rem', color: '#b91c1c' }}>{error}</p>
-            )}
-          </>
+          status === 'done' ? (
+            <div role="status">
+              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }} aria-hidden="true">✅</div>
+              <h1 style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '1.4rem', color: 'var(--purple-900)', marginBottom: '0.75rem' }}>
+                ¡Listo! Ya entraste
+              </h1>
+              <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>
+                {returningToBooking
+                  ? 'Te estoy regresando a tu reserva para que la termines de confirmar…'
+                  : 'Te estoy llevando a tu perfil…'}
+              </p>
+            </div>
+          ) : (
+            <>
+              <h1 style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '1.4rem', color: 'var(--purple-900)', marginBottom: '0.75rem' }}>
+                Confirma que eres tú
+              </h1>
+              <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+                {returningToBooking
+                  ? 'Un clic más y vuelves a tu reserva para confirmarla. Lo pedimos por seguridad, para asegurarnos de que fuiste tú quien abrió este enlace.'
+                  : 'Por seguridad, necesitamos que confirmes con un clic que fuiste tú quien abrió este enlace.'}
+              </p>
+              <button
+                className="btn-primary"
+                style={{ width: '100%', justifyContent: 'center' }}
+                onClick={handleConfirm}
+                disabled={status === 'verifying'}
+              >
+                {status === 'verifying'
+                  ? 'Entrando…'
+                  : returningToBooking
+                    ? 'Entrar y volver a mi reserva →'
+                    : 'Confirmar inicio de sesión'}
+              </button>
+              {status === 'error' && (
+                <>
+                  <p style={{ marginTop: '1rem', fontSize: '0.85rem', color: '#b91c1c' }}>{error}</p>
+                  <a
+                    href="/#agenda"
+                    style={{ display: 'inline-block', marginTop: '0.75rem', fontSize: '0.85rem', color: 'var(--purple-800)', fontWeight: 600 }}
+                  >
+                    Pedir un enlace nuevo →
+                  </a>
+                </>
+              )}
+            </>
+          )
         ) : status === 'sent' ? (
           <>
             <h1 style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '1.4rem', color: 'var(--purple-900)', marginBottom: '0.75rem' }}>
