@@ -24,6 +24,7 @@ const {
   adminUpdatePost,
   adminDeletePost,
 } = require('./handlers/blog');
+const { createCheckout, handleWebhook } = require('./handlers/payments');
 const { login, requireAuth, requestPasswordReset, resetPassword } = require('./handlers/admin');
 const { requestMagicLink, verifyMagicLink } = require('./handlers/auth');
 const { getProfile, updateProfile } = require('./handlers/profile');
@@ -199,6 +200,19 @@ async function router(event) {
     return wrap(await getPostBySlug(blogSlugMatch.slug));
   }
 
+  // POST /payments/webhook — llamado por Mercado Pago, no por el navegador.
+  // No lleva JWT a propósito: se autentica verificando la firma HMAC de la
+  // notificación y releyendo el pago desde la API de Mercado Pago.
+  if (method === 'POST' && path === '/payments/webhook') {
+    return wrap(
+      await handleWebhook({
+        body,
+        headers: event.headers || {},
+        queryParams,
+      })
+    );
+  }
+
   // POST /auth/request-link
   if (method === 'POST' && path === '/auth/request-link') {
     return wrap(await requestMagicLink(body));
@@ -229,6 +243,8 @@ async function router(event) {
 
     if (method === 'GET' && path === '/me/packages') return wrap(await listMyPackages(email));
     if (method === 'POST' && path === '/me/packages') return wrap(await createPendingPackage(email, body));
+
+    if (method === 'POST' && path === '/me/payments/checkout') return wrap(await createCheckout(email, body));
 
     if (method === 'GET' && path === '/me/notifications') return wrap(await listMyNotifications(email, queryParams));
     const notifMatch = matchRoute('/me/notifications/{id}/read', path);

@@ -269,11 +269,11 @@
   opacity: 0.6;
 }
 
-.paypalSubmit {
+.paySubmit {
   background: #0070ba;
 }
 
-.paypalSubmit:hover {
+.paySubmit:hover {
   background: #005ea6;
 }
 

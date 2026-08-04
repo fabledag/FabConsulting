@@ -40,13 +40,13 @@ export const FAQ_ITEMS = [
   },
   {
     q: '¿Qué sucede después de pagar?',
-    // Corrected 2026-08-04: the old copy claimed the session was confirmed
-    // "de inmediato", but PayPal payments are matched by hand — the booking
-    // sits as pending until that happens. Only credit-paid Mentoría sessions
-    // confirm instantly. This answer feeds Google's FAQ rich result, so an
-    // inaccurate version would have been indexed as a promise.
     plain:
-      'Tu sesión queda apartada y recibes un correo de confirmación en cuanto verifico tu pago, normalmente el mismo día. Si usas un crédito de Mentoría, la confirmación es inmediata y el correo te llega al instante.',
+      'Tu sesión queda confirmada al instante. El pago se procesa por Mercado Pago y, en cuanto se aprueba, recibes el correo de confirmación y la invitación para tu calendario — sin esperas ni revisiones manuales.',
+  },
+  {
+    q: '¿Cómo puedo pagar?',
+    plain:
+      'Con tarjeta de crédito o débito, o con tu saldo de Mercado Pago. El cobro se procesa en la plataforma segura de Mercado Pago; el sitio nunca almacena los datos de tu tarjeta.',
   },
   {
     q: '¿Puedo contratar más de una sesión?',

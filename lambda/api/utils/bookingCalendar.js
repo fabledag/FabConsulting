@@ -4,8 +4,8 @@
  * Sends the calendar invitations for a booking.
  *
  * Business rule (Fabiola, 2026-08-04): the session lands on her calendar when
- * it is CONFIRMED — i.e. when she validates the PayPal payment, or instantly
- * when a Mentoría credit is redeemed. Pending, unpaid bookings never create
+ * it is CONFIRMED — i.e. when Mercado Pago's webhook reports the payment as
+ * approved, or instantly when a Mentoría credit is redeemed. Pending, unpaid bookings never create
  * calendar events; she still hears about those by email.
  *
  * Two separate invites go out (see utils/calendar.js for why): hers lists the

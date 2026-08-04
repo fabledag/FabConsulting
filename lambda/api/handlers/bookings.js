@@ -478,9 +478,9 @@ async function adminUpdateBooking(id, body) {
 
     // Notify the customer once their booking is actually confirmed. Credit-paid
     // mentoria bookings are already confirmed instantly by createCustomerBooking
-    // (and already email the customer there) — this only fires for the PayPal
-    // path, which previously sat at "pending" until an admin flipped it with
-    // no signal to the customer at all.
+    // (and already email the customer there). Since the Mercado Pago
+    // integration this path is mostly a manual fallback: the webhook confirms
+    // paid bookings by itself.
     if (body.status === 'confirmed' && previousStatus !== 'confirmed' && existingBooking.email) {
       // This is the moment the session becomes real: the invite puts it on
       // Fabiola's calendar and on the customer's, and doubles as the

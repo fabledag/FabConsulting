@@ -140,8 +140,8 @@ async function createCustomerBooking(email, body) {
     await ddb.send(new PutCommand({ TableName: BOOKINGS_TABLE, Item: booking }));
 
     // Credit-paid bookings are confirmed on the spot, so the calendar invites
-    // go out now. PayPal ones wait for Fabiola to validate the payment — she
-    // just gets a heads-up email. See utils/bookingCalendar.js.
+    // go out now. Card payments confirm through the Mercado Pago webhook a
+    // few seconds later; until then she just gets a heads-up email.
     if (packageId) {
       await sendBookingInvites(booking, { durationMinutes: availability.durationMinutes });
     } else {

@@ -99,9 +99,10 @@ async function createPendingPackage(email, body) {
       }
     }
 
-    const paypalUrl = `https://paypal.me/fabledag/${def.pricePaidMXN}MXN?note=${encodeURIComponent(`${def.label} - ${id}`)}`;
+    // Payment is started separately via POST /me/payments/checkout, which
+    // creates the Mercado Pago preference for this package id.
 
-    return { statusCode: 201, body: { package: pkg, paypalUrl } };
+    return { statusCode: 201, body: { package: pkg } };
   } catch (err) {
     console.error('createPendingPackage error:', err);
     return { statusCode: 500, body: { error: 'No se pudo crear el paquete.' } };

@@ -58,10 +58,10 @@ ${serviceLines}
 
 1. La persona elige una asesoría y una fecha disponible en ${SITE_URL}/#agenda
 2. Confirma su cuenta con un enlace enviado por correo (sin contraseñas).
-3. Paga por PayPal, o usa un crédito si compró el paquete de Mentoría.
-4. Recibe la confirmación por correo. Las sesiones pagadas con crédito de
-   Mentoría se confirman al instante; las pagadas por PayPal se confirman
-   cuando Fabiola verifica el pago.
+3. Paga con tarjeta a través de Mercado Pago, o usa un crédito si compró el
+   paquete de Mentoría.
+4. La sesión se confirma automáticamente en cuanto se aprueba el pago, y
+   recibe la confirmación por correo junto con la invitación de calendario.
 5. Puede reagendar o cancelar desde su perfil hasta 24 horas antes.
 
 ## Blog

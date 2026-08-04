@@ -23,7 +23,7 @@ const TRUST_ITEMS = [
   {
     icon: 'fa-solid fa-envelope-circle-check',
     title: 'Te aviso en cuanto se confirme',
-    body: 'Si pagas con PayPal, tu sesión queda apartada y te confirmo por correo en cuanto recibo el pago. Si usas un crédito de Mentoría, queda confirmada al instante.',
+    body: 'Pagas con tarjeta y tu sesión queda confirmada al instante — sin esperas ni confirmaciones manuales. Si usas un crédito de Mentoría, ni siquiera necesitas pagar.',
   },
   {
     icon: 'fa-solid fa-calendar-check',
@@ -79,7 +79,7 @@ function Booking() {
   const [activePackage, setActivePackage] = useState(null);
   const [loadingPackages, setLoadingPackages] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [result, setResult] = useState(null); // { booking, paypalUrl? }
+  const [result, setResult] = useState(null); // { booking } | { package }
 
   const canGoToStep2 = Boolean(selectedService);
   const canGoToStep3 = Boolean(selectedSlot);
@@ -198,11 +198,16 @@ function Booking() {
     syncProfileName();
     try {
       const data = await apiFetch('/me/packages', { method: 'POST', auth: true, body: { packageType: 'mentoria-4x6' } });
-      window.open(data.paypalUrl, '_blank', 'noopener,noreferrer');
-      setResult({ package: data.package, paypalUrl: data.paypalUrl });
+      const checkout = await apiFetch('/me/payments/checkout', {
+        method: 'POST',
+        auth: true,
+        body: { packageId: data.package.id },
+      });
+      // Same tab, not a popup: blockers eat popups, and Mercado Pago sends the
+      // buyer straight back to /pago/exito/ when it's done.
+      window.location.assign(checkout.checkoutUrl);
     } catch (err) {
       setError(err.message || 'No se pudo iniciar la compra del paquete.');
-    } finally {
       setSubmitting(false);
     }
   }
@@ -224,14 +229,16 @@ function Booking() {
           message: message.trim(),
         },
       });
-      const svc = SERVICES[selectedService];
-      const note = encodeURIComponent(`${svc.label} - ${data.booking.id}`);
-      const paypalUrl = `https://paypal.me/fabledag/${svc.price}MXN?note=${note}`;
-      window.open(paypalUrl, '_blank', 'noopener,noreferrer');
-      setResult({ booking: data.booking, paypalUrl });
+      // The slot is held as `pending` while the customer pays. Mercado Pago's
+      // webhook flips it to `confirmed` — nobody has to confirm it by hand.
+      const checkout = await apiFetch('/me/payments/checkout', {
+        method: 'POST',
+        auth: true,
+        body: { bookingId: data.booking.id },
+      });
+      window.location.assign(checkout.checkoutUrl);
     } catch (err) {
       setError(err.message || 'No se pudo agendar la sesión.');
-    } finally {
       setSubmitting(false);
     }
   }
@@ -641,14 +648,14 @@ function Booking() {
                       )}
 
                       {selectedService === 'mentoria' && !loadingPackages && !activePackage && (
-                        <button className={`${styles.formSubmit} ${styles.paypalSubmit}`} disabled={submitting} onClick={handleBuyPackage}>
+                        <button className={`${styles.formSubmit} ${styles.paySubmit}`} disabled={submitting} onClick={handleBuyPackage}>
                           {submitting ? 'Procesando…' : `Comprar el paquete completo — ${SERVICES.mentoria.display} →`}
                         </button>
                       )}
 
                       {selectedService !== 'mentoria' && (
-                        <button className={`${styles.formSubmit} ${styles.paypalSubmit}`} disabled={submitting} onClick={handleBookAndPay}>
-                          {submitting ? 'Procesando…' : `Agendar y pagar con PayPal — ${SERVICES[selectedService].display} →`}
+                        <button className={`${styles.formSubmit} ${styles.paySubmit}`} disabled={submitting} onClick={handleBookAndPay}>
+                          {submitting ? 'Llevándote al pago…' : `Pagar ${SERVICES[selectedService].display} y confirmar →`}
                         </button>
                       )}
 
@@ -673,7 +680,7 @@ function Booking() {
                     <p className={styles.stepSubtitle}>
                       {isConfirmed
                         ? 'Me dará mucho gusto acompañarte. Recibirás por correo la confirmación, el enlace de la videollamada y los detalles de tu reserva.'
-                        : 'Completa el pago en la pestaña de PayPal que se abrió para confirmar tu lugar. En cuanto lo recibamos, tu sesión queda apartada.'}
+                        : 'Te llevamos al pago seguro de Mercado Pago. En cuanto se apruebe, tu sesión queda confirmada automáticamente.'}
                     </p>
 
                     {selectedSlot && svc && !result.package && (
