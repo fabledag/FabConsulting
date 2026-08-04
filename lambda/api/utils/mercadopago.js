@@ -64,13 +64,18 @@ async function mpFetch(path, { method = 'GET', body, idempotencyKey } = {}) {
 /**
  * Payment types Fabiola does NOT accept.
  *
- * Her decision (2026-08-04): immediate methods only. `ticket` is cash at OXXO
- * and friends — it can take 1-3 days to clear, which would leave a slot held
- * for a payment that may never arrive. `atm` is bank-counter transfer, same
- * problem. What remains: credit card, debit card and Mercado Pago balance,
- * all of which confirm within seconds.
+ * Her decision (2026-08-04): immediate methods only, so a slot is never held
+ * for money that hasn't actually arrived.
+ *   - `ticket`        cash at OXXO and similar — clears in 1-3 days
+ *   - `atm`           bank-counter transfer — same problem
+ *   - `bank_transfer` SPEI. Usually minutes, but "usually" isn't immediate, and
+ *                     she asked for card only after seeing it in the checkout.
+ *
+ * What remains: credit, debit and prepaid cards, plus Mercado Pago balance
+ * (`account_money`), which settles instantly and shares none of the problem
+ * above — excluding it would only cost sales.
  */
-const EXCLUDED_PAYMENT_TYPES = [{ id: 'ticket' }, { id: 'atm' }];
+const EXCLUDED_PAYMENT_TYPES = [{ id: 'ticket' }, { id: 'atm' }, { id: 'bank_transfer' }];
 
 /**
  * Creates a Checkout Pro preference and returns the URL to send the buyer to.
