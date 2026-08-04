@@ -2,9 +2,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { adminApiFetch } from '../../adminApi.js';
 
 const SERVICE_LABELS = {
-  session: 'Sesión 1:1',
-  mock: 'Mock Interview',
-  cv: 'Revisión CV + Portafolio',
+  session: 'Conversación estratégica 1:1',
+  mock: 'Simulación de entrevista',
+  cv: 'Revisión de CV y LinkedIn',
+  portfolio: 'Revisión de portafolio o book',
   mentoria: 'Mentoría',
 };
 

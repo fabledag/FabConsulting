@@ -30,7 +30,7 @@ const SERVICES = [
   },
   {
     id: 'servicio-portafolio',
-    key: 'cv',
+    key: 'portfolio',
     tag: 'Portafolio',
     tagPlain: true,
     name: 'Revisión de portafolio o book',

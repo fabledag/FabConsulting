@@ -22,7 +22,7 @@ const BOOKINGS_TABLE = process.env.BOOKINGS_TABLE;
 const PACKAGES_TABLE = process.env.PACKAGES_TABLE;
 
 const RESCHEDULE_WINDOW_MS = 24 * 60 * 60 * 1000;
-const VALID_SERVICES = ['session', 'mock', 'cv', 'mentoria'];
+const VALID_SERVICES = ['session', 'mock', 'cv', 'portfolio', 'mentoria'];
 
 function slotDateTime(date, time) {
   return new Date(`${date}T${time}:00`);
