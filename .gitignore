@@ -9,7 +9,9 @@ FabDev_accessKeys.csv
 node_modules/
 
 # Build output
-frontend/dist/
+frontend/.next/
+frontend/out/
+frontend/next-env.d.ts
 lambda/api.zip
 
 # OS

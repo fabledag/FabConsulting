@@ -60,6 +60,13 @@
   line-height: 1.6;
 }
 
+/* The panel stays in the DOM for crawlers and is hidden via the `hidden`
+   attribute. Stated explicitly so adding a `display` rule above can't
+   accidentally reveal every collapsed answer. */
+.panel[hidden] {
+  display: none;
+}
+
 .panel a {
   color: var(--purple-700);
   font-weight: 600;

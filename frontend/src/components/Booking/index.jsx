@@ -1,8 +1,11 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import FadeUp from '../FadeUp/index.jsx';
 import SlotPicker from '../SlotPicker/index.jsx';
 import { useAuth } from '../../hooks/useAuth.js';
-import { apiFetch, getLastEmail } from '../../api.js';
+import { apiFetch, getLastEmail } from '@/lib/api.js';
+import { SERVICES_BY_KEY } from '@/lib/services.js';
 import styles from './Booking.module.css';
 
 const TRUST_ITEMS = [
@@ -28,66 +31,7 @@ const TRUST_ITEMS = [
   },
 ];
 
-const SERVICES = {
-  session: {
-    name: 'Conversación estratégica 1:1',
-    label: 'Conversación estratégica 1:1 (60 min)',
-    desc: '60 min · Ordena tus ideas y define tus siguientes pasos',
-    price: 800,
-    display: '$800 MXN',
-    tag: 'Más elegida',
-    duration: '60 minutos',
-    durationMinutes: 60,
-    includes: ['Diagnóstico de tu situación actual', 'Recomendaciones específicas', 'Próximos pasos por escrito'],
-  },
-  mock: {
-    name: 'Simulación de entrevista',
-    label: 'Simulación de entrevista',
-    desc: 'Práctica real + retroalimentación honesta y específica',
-    price: 900,
-    display: '$900 MXN',
-    tag: 'Preparación',
-    tagPlain: true,
-    duration: '60 minutos',
-    durationMinutes: 60,
-    includes: ['Entrevista simulada completa', 'Retroalimentación honesta', 'Puntos concretos a mejorar'],
-  },
-  cv: {
-    name: 'Revisión de CV y LinkedIn',
-    label: 'Revisión de CV y LinkedIn',
-    desc: 'Feedback directo desde lo que realmente evalúan los hiring managers',
-    price: 1000,
-    display: '$1,000 MXN',
-    tag: 'CV & LinkedIn',
-    tagPlain: true,
-    duration: '60 minutos',
-    durationMinutes: 60,
-    includes: ['Estructura y jerarquía del CV', 'Claridad de logros', 'Coherencia CV ↔ LinkedIn'],
-  },
-  portfolio: {
-    name: 'Revisión de portafolio o book',
-    label: 'Revisión de portafolio o book',
-    desc: 'Analizaremos la estructura, narrativa y presentación de tus casos',
-    price: 1200,
-    display: '$1,200 MXN',
-    tag: 'Portafolio',
-    tagPlain: true,
-    duration: '60 minutos',
-    durationMinutes: 60,
-    includes: ['Storytelling y narrativa', 'Estructura de casos', 'Preparación para explicarlo en entrevista'],
-  },
-  mentoria: {
-    name: 'Mentoría',
-    label: 'Mentoría · 4 sesiones / 6 meses',
-    desc: '4 sesiones a lo largo de 6 meses · Ahorra $400 vs sueltas',
-    price: 2800,
-    display: '$2,800 MXN',
-    tag: 'Acompañamiento continuo',
-    tagPlain: true,
-    duration: '4 sesiones de 60 min, a lo largo de 6 meses',
-    includes: ['Acompañamiento continuo', 'Seguimiento entre sesiones', 'Estrategia de carrera a mediano plazo'],
-  },
-};
+const SERVICES = SERVICES_BY_KEY;
 
 const MODALITY = 'Videollamada — el enlace se comparte por correo al confirmar tu reserva.';
 const TIMEZONE = 'Hora Ciudad de México (CST)';

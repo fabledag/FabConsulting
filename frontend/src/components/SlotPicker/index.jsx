@@ -1,5 +1,7 @@
+'use client';
+
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { apiFetch } from '../../api.js';
+import { apiFetch } from '@/lib/api.js';
 import styles from './SlotPicker.module.css';
 
 const MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];

@@ -90,7 +90,7 @@ async function createPendingPackage(email, body) {
               <p style="margin:0 0 8px;color:#374151;font-size:15px;"><strong>Paquete:</strong> ${def.label}</p>
               <p style="margin:0;color:#374151;font-size:15px;"><strong>Monto:</strong> $${def.pricePaidMXN} MXN</p>
             `,
-            ctaUrl: `${SITE_URL}/admin`,
+            ctaUrl: `${SITE_URL}/admin/`,
             ctaLabel: 'Ver en el panel de admin',
           }),
         });
@@ -179,7 +179,7 @@ async function adminConfirmPackage(id, body) {
                 agéndalas cuando quieras desde tu perfil.
               </p>
             `,
-            ctaUrl: `${SITE_URL}/profile`,
+            ctaUrl: `${SITE_URL}/profile/`,
             ctaLabel: 'Agendar mis sesiones',
           }),
         });

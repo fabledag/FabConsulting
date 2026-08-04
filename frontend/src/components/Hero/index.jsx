@@ -1,5 +1,5 @@
+import Image from 'next/image';
 import styles from './Hero.module.css';
-import fabiolaImg from '../../assets/fabiola.jpg';
 
 const STATS = [
   { num: '15+', label: 'años diseñando\nproductos E2E' },
@@ -70,7 +70,14 @@ function Hero() {
           </div>
 
           <div className={styles.cardPhotoRow}>
-            <img src={fabiolaImg} alt="Fabiola Ledesma" className={styles.cardPhoto} />
+            <Image
+              src="/fabiola.jpg"
+              alt="Fabiola Ledesma"
+              width={44}
+              height={44}
+              className={styles.cardPhoto}
+              priority
+            />
             <div>
               <div className={styles.cardName}>Fabiola Ledesma</div>
               <div className={styles.cardRole}>Senior Design Manager</div>

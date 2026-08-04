@@ -114,7 +114,7 @@ async function requestPasswordReset() {
       })
     );
 
-    const resetUrl = `${SITE_URL}/#/admin?token=${token}`;
+    const resetUrl = `${SITE_URL}/admin/?token=${token}`;
 
     try {
       await sendEmail({

@@ -1,5 +1,5 @@
+import Image from 'next/image';
 import FadeUp from '../FadeUp/index.jsx';
-import fabiolaImg from '../../assets/fabiola.jpg';
 
 const LOGOS = [
   { label: 'BBVA' },
@@ -98,9 +98,11 @@ function About() {
               flexShrink: 0,
             }}
           >
-            <img
-              src={fabiolaImg}
-              alt="Fabiola Ledesma"
+            <Image
+              src="/fabiola.jpg"
+              alt="Fabiola Ledesma, Senior Design Manager y consultora en UX, IA y Product Design"
+              width={180}
+              height={180}
               style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
             />
           </div>

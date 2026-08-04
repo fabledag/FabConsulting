@@ -1,5 +1,7 @@
+'use client';
+
 import { createContext, useCallback, useEffect, useState } from 'react';
-import { apiFetch, getToken, setToken, setLastEmail } from '../api.js';
+import { apiFetch, getToken, setToken, setLastEmail } from '@/lib/api.js';
 
 export const AuthContext = createContext(null);
 

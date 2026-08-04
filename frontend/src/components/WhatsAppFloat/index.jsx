@@ -1,5 +1,5 @@
 import styles from './WhatsAppFloat.module.css';
-import { WHATSAPP_NUMBER } from '../../config.js';
+import { WHATSAPP_NUMBER } from '@/lib/config.js';
 
 function WhatsAppFloat() {
   // Only show if WHATSAPP_NUMBER is set and is not the placeholder

@@ -183,7 +183,7 @@ function buildAdminBookingEmail(booking) {
           </tr>
           <tr>
             <td style="background:#f9fafb;padding:20px 40px;border-top:1px solid #e5e7eb;text-align:center;">
-              <a href="${SITE_URL}/admin" style="display:inline-block;background:#4f46e5;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:6px;font-size:15px;font-weight:500;">
+              <a href="${SITE_URL}/admin/" style="display:inline-block;background:#4f46e5;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:6px;font-size:15px;font-weight:500;">
                 Ver en el panel de admin
               </a>
             </td>
@@ -466,7 +466,7 @@ async function adminUpdateBooking(id, body) {
               <p style="margin:0;color:#374151;font-size:15px;"><strong>Fecha:</strong> ${existingBooking.date}</p>
               <p style="margin:0;color:#374151;font-size:15px;"><strong>Hora:</strong> ${existingBooking.time}</p>
             `,
-            ctaUrl: `${SITE_URL}/#/profile`,
+            ctaUrl: `${SITE_URL}/profile/`,
             ctaLabel: 'Ver mi reserva',
           }),
         });

@@ -190,3 +190,29 @@
     gap: 1.25rem;
   }
 }
+
+/* Link to the dedicated /asesorias/[slug] page. Kept visually secondary to the
+   booking CTA above it — it's there for depth (and for crawlers), not to
+   compete with the primary action. */
+.detailsLink {
+  display: block;
+  margin-top: 0.7rem;
+  text-align: center;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--purple-800);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.detailsLink:hover {
+  color: var(--purple-700);
+  border-bottom-color: var(--purple-400);
+}
+
+.detailsLink:focus-visible {
+  outline: 2px solid var(--purple-800);
+  outline-offset: 3px;
+  border-radius: 3px;
+}

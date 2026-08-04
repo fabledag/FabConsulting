@@ -1,5 +1,7 @@
+'use client';
+
 import { useCallback, useState } from 'react';
-import { adminApiFetch, getAdminToken, setAdminToken } from '../adminApi.js';
+import { adminApiFetch, getAdminToken, setAdminToken } from '@/lib/adminApi.js';
 
 /**
  * No Context here on purpose: the admin JWT only carries {role, iat} — no

@@ -60,10 +60,14 @@ async function requestMagicLink(body) {
         ? body.redirectPath
         : null;
 
-    // Hash-based route: the frontend renders /login and /profile entirely
-    // client-side (via the URL hash) rather than as real server paths, so
-    // this link always resolves regardless of CDN routing config.
-    const loginUrl = `${SITE_URL}/#/login?token=${token}${redirectPath ? `&redirect=${encodeURIComponent(redirectPath)}` : ''}`;
+    // Real path, not a hash route: since the Next.js migration the site is a
+    // static export and the `fabiola-edge-router` CloudFront function resolves
+    // /login/ to its index.html. The trailing slash matters — without it the
+    // function issues a 301 to the slashed form, which costs a round trip.
+    //
+    // The login page still accepts the old `/#/login?token=` shape, so links
+    // emailed before this deploy keep working until they expire.
+    const loginUrl = `${SITE_URL}/login/?token=${token}${redirectPath ? `&redirect=${encodeURIComponent(redirectPath)}` : ''}`;
 
     try {
       await sendEmail({
