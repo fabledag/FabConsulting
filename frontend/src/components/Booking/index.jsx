@@ -105,7 +105,13 @@ function Booking() {
   const [selectedService, setSelectedService] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
 
+  const [name, setName] = useState('');
+  const [linkedin, setLinkedin] = useState('');
+  const [message, setMessage] = useState('');
+  const [nameTouched, setNameTouched] = useState(false);
+
   const [email, setEmail] = useState(getLastEmail);
+  const [emailTouched, setEmailTouched] = useState(false);
   const [linkStatus, setLinkStatus] = useState('idle'); // idle | sending | sent
   const [error, setError] = useState('');
 
@@ -116,6 +122,9 @@ function Booking() {
 
   const canGoToStep2 = Boolean(selectedService);
   const canGoToStep3 = Boolean(selectedSlot);
+  const nameError = nameTouched && name.trim().length < 2 ? 'Escribe tu nombre para continuar.' : '';
+  const canGoToStep5 = name.trim().length >= 2;
+  const emailError = emailTouched && email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? 'Revisa que el correo tenga un formato válido.' : '';
 
   // Pick up a service chosen from a Services card / career-stage link.
   useEffect(() => {
@@ -136,7 +145,10 @@ function Booking() {
       const parsed = JSON.parse(saved);
       if (parsed.selectedService) setSelectedService(parsed.selectedService);
       if (parsed.selectedSlot) setSelectedSlot(parsed.selectedSlot);
-      setStep(4);
+      if (parsed.name) setName(parsed.name);
+      if (parsed.linkedin) setLinkedin(parsed.linkedin);
+      if (parsed.message) setMessage(parsed.message);
+      setStep(5);
     } catch {
       // ignore malformed storage
     } finally {
@@ -146,7 +158,7 @@ function Booking() {
 
   // When logged in and reaching the confirm step for mentoria, check credits.
   useEffect(() => {
-    if (!user || step !== 4 || selectedService !== 'mentoria') {
+    if (!user || step !== 5 || selectedService !== 'mentoria') {
       setActivePackage(null);
       return;
     }
@@ -160,12 +172,17 @@ function Booking() {
       .finally(() => setLoadingPackages(false));
   }, [user, step, selectedService]);
 
+  // Prefill for returning, already-logged-in users so they don't retype it.
+  useEffect(() => {
+    if (user?.name && !name) setName(user.name);
+  }, [user]);
+
   async function handleRequestLink(e) {
     e.preventDefault();
     if (!email) return;
     setLinkStatus('sending');
     setError('');
-    sessionStorage.setItem(PENDING_SELECTION_KEY, JSON.stringify({ selectedService, selectedSlot }));
+    sessionStorage.setItem(PENDING_SELECTION_KEY, JSON.stringify({ selectedService, selectedSlot, name, linkedin, message }));
     try {
       await requestLink(email, '/');
       setLinkStatus('sent');
@@ -175,14 +192,31 @@ function Booking() {
     }
   }
 
+  // Best-effort: keep the account's name in sync with what was typed in the
+  // reservation form. Never blocks or fails the booking/purchase itself.
+  function syncProfileName() {
+    if (name.trim() && name.trim() !== user?.name) {
+      apiFetch('/me', { method: 'PUT', auth: true, body: { name: name.trim() } }).catch(() => {});
+    }
+  }
+
   async function handleBookWithCredit() {
     setSubmitting(true);
     setError('');
+    syncProfileName();
     try {
       const data = await apiFetch('/me/bookings', {
         method: 'POST',
         auth: true,
-        body: { date: selectedSlot.date, time: selectedSlot.time, service: selectedService, packageId: activePackage.id },
+        body: {
+          date: selectedSlot.date,
+          time: selectedSlot.time,
+          service: selectedService,
+          name: name.trim(),
+          linkedin: linkedin.trim(),
+          message: message.trim(),
+          packageId: activePackage.id,
+        },
       });
       setResult({ booking: data.booking });
     } catch (err) {
@@ -195,6 +229,7 @@ function Booking() {
   async function handleBuyPackage() {
     setSubmitting(true);
     setError('');
+    syncProfileName();
     try {
       const data = await apiFetch('/me/packages', { method: 'POST', auth: true, body: { packageType: 'mentoria-4x6' } });
       window.open(data.paypalUrl, '_blank', 'noopener,noreferrer');
@@ -209,11 +244,19 @@ function Booking() {
   async function handleBookAndPay() {
     setSubmitting(true);
     setError('');
+    syncProfileName();
     try {
       const data = await apiFetch('/me/bookings', {
         method: 'POST',
         auth: true,
-        body: { date: selectedSlot.date, time: selectedSlot.time, service: selectedService },
+        body: {
+          date: selectedSlot.date,
+          time: selectedSlot.time,
+          service: selectedService,
+          name: name.trim(),
+          linkedin: linkedin.trim(),
+          message: message.trim(),
+        },
       });
       const svc = SERVICES[selectedService];
       const note = encodeURIComponent(`${svc.label} - ${data.booking.id}`);
@@ -287,8 +330,13 @@ function Booking() {
                   <span className={styles.stepLabel}>Fecha</span>
                 </div>
                 <div className={styles.stepLine} />
-                <div className={`${styles.step} ${step === 4 ? styles.active : ''}`}>
+                <div className={`${styles.step} ${step === 4 ? styles.active : ''} ${step > 4 ? styles.done : ''}`}>
                   <span className={styles.stepNum}>4</span>
+                  <span className={styles.stepLabel}>Tus datos</span>
+                </div>
+                <div className={styles.stepLine} />
+                <div className={`${styles.step} ${step === 5 ? styles.active : ''}`}>
+                  <span className={styles.stepNum}>5</span>
                   <span className={styles.stepLabel}>Confirmar</span>
                 </div>
               </div>
@@ -304,12 +352,21 @@ function Booking() {
                 <div>
                   <div className={styles.stepTitle}>¿Qué tipo de sesión necesitas?</div>
                   <p className={styles.stepSubtitle}>Elige el servicio que mejor se adapta a lo que buscas</p>
-                  <div className={styles.serviceOptions}>
+                  <div className={styles.serviceOptions} role="radiogroup" aria-label="Tipo de sesión">
                     {Object.entries(SERVICES).map(([key, svc]) => (
                       <div
                         key={key}
+                        role="radio"
+                        tabIndex={0}
+                        aria-checked={selectedService === key}
                         className={`${styles.serviceOption} ${selectedService === key ? styles.selected : ''}`}
                         onClick={() => setSelectedService(key)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            setSelectedService(key);
+                          }
+                        }}
                       >
                         <div className={styles.soptTop}>
                           <span className={`${styles.soptTag} ${svc.tagPlain ? styles.soptTagPlain : ''}`}>{svc.tag}</span>
@@ -409,8 +466,104 @@ function Booking() {
                 </div>
               )}
 
-              {/* STEP 4 — confirm / login / pay */}
-              {step === 4 && !result && (
+              {/* STEP 4 — contact details */}
+              {step === 4 && (
+                <div>
+                  <div className={styles.stepTitle}>Tus datos</div>
+                  <p className={styles.stepSubtitle}>Solo lo necesario para preparar tu sesión.</p>
+
+                  <div style={{ marginBottom: '1rem' }}>
+                    <label htmlFor="booking-name" style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--purple-800)', marginBottom: '0.4rem' }}>
+                      Nombre
+                    </label>
+                    <input
+                      id="booking-name"
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      onBlur={() => setNameTouched(true)}
+                      aria-invalid={Boolean(nameError)}
+                      aria-describedby={nameError ? 'booking-name-error' : undefined}
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem 1rem',
+                        borderRadius: '10px',
+                        border: `1px solid ${nameError ? '#dc2626' : 'var(--border)'}`,
+                        fontSize: '0.9rem',
+                        boxSizing: 'border-box',
+                        fontFamily: 'inherit',
+                      }}
+                    />
+                    {nameError && (
+                      <p id="booking-name-error" role="alert" style={{ fontSize: '0.78rem', color: '#dc2626', margin: '0.4rem 0 0' }}>
+                        {nameError}
+                      </p>
+                    )}
+                  </div>
+
+                  <div style={{ marginBottom: '1rem' }}>
+                    <label htmlFor="booking-linkedin" style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--purple-800)', marginBottom: '0.4rem' }}>
+                      LinkedIn <span style={{ fontWeight: 400, color: 'var(--text-muted)' }}>(opcional)</span>
+                    </label>
+                    <input
+                      id="booking-linkedin"
+                      type="text"
+                      value={linkedin}
+                      onChange={(e) => setLinkedin(e.target.value)}
+                      placeholder="linkedin.com/in/tu-perfil"
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem 1rem',
+                        borderRadius: '10px',
+                        border: '1px solid var(--border)',
+                        fontSize: '0.9rem',
+                        boxSizing: 'border-box',
+                        fontFamily: 'inherit',
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <label htmlFor="booking-message" style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--purple-800)', marginBottom: '0.4rem' }}>
+                      ¿Qué te gustaría trabajar en esta sesión? <span style={{ fontWeight: 400, color: 'var(--text-muted)' }}>(opcional)</span>
+                    </label>
+                    <textarea
+                      id="booking-message"
+                      rows={3}
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem 1rem',
+                        borderRadius: '10px',
+                        border: '1px solid var(--border)',
+                        fontSize: '0.9rem',
+                        boxSizing: 'border-box',
+                        fontFamily: 'inherit',
+                        resize: 'vertical',
+                      }}
+                    />
+                  </div>
+
+                  <div className={styles.actionsRow}>
+                    <button className={styles.btnBack} onClick={() => setStep(3)}>
+                      ← Regresar
+                    </button>
+                    <button
+                      className={styles.formSubmit}
+                      onClick={() => {
+                        setNameTouched(true);
+                        if (canGoToStep5) setStep(5);
+                      }}
+                    >
+                      Continuar →
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 5 — confirm / login / pay */}
+              {step === 5 && !result && (
                 <div>
                   {!user ? (
                     <>
@@ -424,21 +577,33 @@ function Booking() {
                         </p>
                       ) : (
                         <form onSubmit={handleRequestLink}>
+                          <label htmlFor="booking-email" style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--purple-800)', marginBottom: '0.4rem' }}>
+                            Correo electrónico
+                          </label>
                           <input
+                            id="booking-email"
                             type="email"
                             required
                             placeholder="tu@correo.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '10px', border: '1px solid var(--border)', fontSize: '0.9rem', marginBottom: '1rem', boxSizing: 'border-box', fontFamily: 'inherit' }}
+                            onBlur={() => setEmailTouched(true)}
+                            aria-invalid={Boolean(emailError)}
+                            aria-describedby={emailError ? 'booking-email-error' : undefined}
+                            style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '10px', border: `1px solid ${emailError ? '#dc2626' : 'var(--border)'}`, fontSize: '0.9rem', marginBottom: emailError ? '0.4rem' : '1rem', boxSizing: 'border-box', fontFamily: 'inherit' }}
                           />
+                          {emailError && (
+                            <p id="booking-email-error" role="alert" style={{ fontSize: '0.78rem', color: '#dc2626', margin: '0 0 1rem' }}>
+                              {emailError}
+                            </p>
+                          )}
                           <button className={styles.formSubmit} type="submit" disabled={linkStatus === 'sending'}>
                             {linkStatus === 'sending' ? 'Enviando…' : 'Enviarme el enlace →'}
                           </button>
                         </form>
                       )}
-                      <button className={styles.btnBack} style={{ marginTop: '0.75rem', width: '100%' }} onClick={() => setStep(3)}>
-                        ← Cambiar fecha
+                      <button className={styles.btnBack} style={{ marginTop: '0.75rem', width: '100%' }} onClick={() => setStep(4)}>
+                        ← Regresar
                       </button>
                     </>
                   ) : (

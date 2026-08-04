@@ -132,6 +132,13 @@ function BookingsTab({ onUnauthorized }) {
                 <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
                   {b.email}{b.phone ? ` · ${b.phone}` : ''}
                 </div>
+                {b.linkedin && (
+                  <div style={{ fontSize: '0.78rem', marginTop: '0.25rem' }}>
+                    <a href={b.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--purple-600)' }}>
+                      {b.linkedin}
+                    </a>
+                  </div>
+                )}
                 {b.message && (
                   <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.25rem', fontStyle: 'italic' }}>
                     "{b.message}"

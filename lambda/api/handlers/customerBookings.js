@@ -68,16 +68,17 @@ async function listMyBookings(email, queryParams) {
 
 /**
  * POST /me/bookings
- * Body: { date, time, service, message?, packageId? }
+ * Body: { date, time, service, name, linkedin?, message?, packageId? }
  */
 async function createCustomerBooking(email, body) {
   if (!body) return { statusCode: 400, body: { error: 'Request body is required.' } };
 
-  const { date, time, service, message = '', packageId } = body;
+  const { date, time, service, name = '', linkedin = '', message = '', packageId } = body;
   const errors = [];
   if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) errors.push('date must be in YYYY-MM-DD format.');
   if (!time || !/^\d{2}:\d{2}$/.test(time)) errors.push('time must be in HH:MM format.');
   if (!service || !VALID_SERVICES.includes(service)) errors.push(`service must be one of: ${VALID_SERVICES.join(', ')}.`);
+  if (!name || typeof name !== 'string' || name.trim().length < 2) errors.push('name must be at least 2 characters.');
   if (errors.length) return { statusCode: 400, body: { errors } };
 
   try {
@@ -105,6 +106,8 @@ async function createCustomerBooking(email, body) {
       date,
       time,
       email,
+      name: name.trim(),
+      linkedin: linkedin.trim(),
       service,
       message: message.trim(),
       status: packageId ? 'confirmed' : 'pending',
