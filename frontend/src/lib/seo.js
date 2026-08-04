@@ -46,7 +46,10 @@ export function buildMetadata({
   const fullTitle = title === DEFAULT_TITLE ? title : `${title} | ${SITE_NAME}`;
 
   return {
-    title: fullTitle,
+    // `absolute` bypasses the layout's `%s | Fabiola Ledesma` template. Without
+    // it the brand lands twice ("Tu perfil | Fabiola Ledesma | Fabiola
+    // Ledesma"), since fullTitle already appended it.
+    title: { absolute: fullTitle },
     description,
     ...(keywords ? { keywords } : {}),
     alternates: { canonical: url },
