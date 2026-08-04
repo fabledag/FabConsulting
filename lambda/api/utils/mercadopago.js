@@ -156,7 +156,17 @@ async function getPayment(paymentId) {
  * where ts and v1 come from the `x-signature` header.
  */
 function verifyWebhookSignature({ signatureHeader, requestId, dataId }) {
-  if (!WEBHOOK_SECRET) {
+  // MP_WEBHOOK_SECRET may hold several comma-separated keys. Mercado Pago's
+  // panel shows a secret per application, and it wasn't clear whether the test
+  // and production tabs issue the same one — accepting a list means a
+  // mismatch can't silently reject real payments, and it also allows rotating
+  // a key without a window where notifications bounce.
+  const secrets = String(WEBHOOK_SECRET || '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  if (secrets.length === 0) {
     console.warn('[mp] MP_WEBHOOK_SECRET no configurado — no se puede verificar la firma.');
     return false;
   }
@@ -182,13 +192,15 @@ function verifyWebhookSignature({ signatureHeader, requestId, dataId }) {
     `id:${id};ts:${ts};`,
   ];
 
-  for (const manifest of candidates) {
-    const expected = crypto.createHmac('sha256', WEBHOOK_SECRET).update(manifest).digest('hex');
-    // Constant-time compare, so a wrong signature can't be brute-forced by
-    // measuring how long the comparison takes.
-    const a = Buffer.from(expected, 'utf8');
-    const b = Buffer.from(v1, 'utf8');
-    if (a.length === b.length && crypto.timingSafeEqual(a, b)) return true;
+  for (const secret of secrets) {
+    for (const manifest of candidates) {
+      const expected = crypto.createHmac('sha256', secret).update(manifest).digest('hex');
+      // Constant-time compare, so a wrong signature can't be brute-forced by
+      // measuring how long the comparison takes.
+      const a = Buffer.from(expected, 'utf8');
+      const b = Buffer.from(v1, 'utf8');
+      if (a.length === b.length && crypto.timingSafeEqual(a, b)) return true;
+    }
   }
 
   // Logged without the secret or the expected digest: enough to see which
