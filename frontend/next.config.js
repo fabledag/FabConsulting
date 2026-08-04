@@ -18,6 +18,12 @@ const nextConfig = {
   images: { unoptimized: true },
 
   reactStrictMode: true,
+
+  // `next dev` otherwise writes frontend/AGENTS.md + frontend/CLAUDE.md on
+  // every start. This repo already keeps its instructions in the root
+  // CLAUDE.md; a second, auto-regenerated one inside frontend/ would compete
+  // with it and show up as a permanently dirty file in git status.
+  agentRules: false,
 };
 
 export default nextConfig;
