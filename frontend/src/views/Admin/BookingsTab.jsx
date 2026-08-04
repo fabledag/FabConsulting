@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { adminApiFetch } from '@/lib/adminApi.js';
+import { BOOKING_STATUS, statusInfo, badgeStyle, formatDateTime, timeAgo } from '@/lib/status.js';
 
 const SERVICE_LABELS = {
   session: 'Conversación estratégica 1:1',
@@ -129,9 +130,24 @@ function BookingsTab({ onUnauthorized }) {
                 <div style={{ fontWeight: 600, color: 'var(--text-dark)', fontSize: '0.9rem' }}>
                   {SERVICE_LABELS[b.service] || b.service} — {b.name || b.email}
                 </div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                  {b.date} · {b.time} — <span style={{ textTransform: 'capitalize' }}>{b.status}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.2rem' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                    {b.date} · {b.time}
+                  </span>
+                  <span style={badgeStyle(statusInfo(BOOKING_STATUS, b.status))}>
+                    {statusInfo(BOOKING_STATUS, b.status).label}
+                  </span>
+                  {b.mpPaymentId && (
+                    <span style={{ fontSize: '0.72rem', color: '#065f46' }} title={`Pago Mercado Pago ${b.mpPaymentId}`}>
+                      · pagado en línea
+                    </span>
+                  )}
                 </div>
+                {b.createdAt && (
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>
+                    Reservada {timeAgo(b.createdAt)} — {formatDateTime(b.createdAt)}
+                  </div>
+                )}
                 <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
                   {b.email}{b.phone ? ` · ${b.phone}` : ''}
                 </div>

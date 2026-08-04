@@ -6,6 +6,7 @@ import { apiFetch } from '@/lib/api.js';
 import { useNavigate } from '@/lib/navigation.js';
 import SlotPicker from '../../components/SlotPicker/index.jsx';
 import { getDisplayName } from '../../utils/displayName.js';
+import { BOOKING_STATUS, PACKAGE_STATUS, statusInfo, badgeStyle, timeAgo } from '@/lib/status.js';
 
 const SERVICE_LABELS = {
   session: 'Conversación estratégica 1:1',
@@ -181,9 +182,19 @@ function Profile() {
                         <div style={{ fontWeight: 600, color: 'var(--text-dark)', fontSize: '0.9rem' }}>
                           {SERVICE_LABELS[b.service] || b.service}
                         </div>
-                        <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-                          {b.date} · {b.time} — <span style={{ textTransform: 'capitalize' }}>{b.status}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.2rem' }}>
+                          <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                            {b.date} · {b.time}
+                          </span>
+                          <span style={badgeStyle(statusInfo(BOOKING_STATUS, b.status))}>
+                            {statusInfo(BOOKING_STATUS, b.status).label}
+                          </span>
                         </div>
+                        {b.createdAt && (
+                          <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+                            Reservada {timeAgo(b.createdAt)}
+                          </div>
+                        )}
                       </div>
                       {b.canModify ? (
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -231,7 +242,11 @@ function Profile() {
                   <div key={p.id} style={{ border: '1px solid var(--border)', borderRadius: '10px', padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                       <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-dark)' }}>Mentoría</div>
-                      <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textTransform: 'capitalize' }}>{p.status.replace('_', ' ')}</div>
+                      <div style={{ marginTop: '0.25rem' }}>
+                        <span style={badgeStyle(statusInfo(PACKAGE_STATUS, p.status))}>
+                          {statusInfo(PACKAGE_STATUS, p.status).label}
+                        </span>
+                      </div>
                     </div>
                     <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '1.3rem', color: 'var(--purple-800)' }}>
                       {p.remainingCredits}/{p.totalCredits}

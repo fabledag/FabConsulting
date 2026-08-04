@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { adminApiFetch } from '@/lib/adminApi.js';
+import { PACKAGE_STATUS, statusInfo, badgeStyle, timeAgo } from '@/lib/status.js';
 
 const PACKAGE_LABELS = {
   'mentoria-4x6': 'Mentoría · 4 sesiones / 6 meses',
@@ -104,14 +105,20 @@ function PackagesTab({ onUnauthorized }) {
                 <div style={{ fontWeight: 600, color: 'var(--text-dark)', fontSize: '0.9rem' }}>
                   {PACKAGE_LABELS[p.packageType] || p.packageType} — {p.email}
                 </div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                  <span style={{ textTransform: 'capitalize' }}>{p.status.replace('_', ' ')}</span> · ${p.pricePaidMXN} MXN
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.2rem' }}>
+                  <span style={badgeStyle(statusInfo(PACKAGE_STATUS, p.status))}>
+                    {statusInfo(PACKAGE_STATUS, p.status).label}
+                  </span>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>${p.pricePaidMXN} MXN</span>
+                  {p.mpPaymentId && (
+                    <span style={{ fontSize: '0.72rem', color: '#065f46' }}>· pagado en línea</span>
+                  )}
                 </div>
                 <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
                   Créditos: {p.usedCredits}/{p.totalCredits} usados · {p.remainingCredits} disponibles
                 </div>
                 <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-                  Comprado: {p.purchasedAt?.slice(0, 10)}
+                  Comprado {timeAgo(p.purchasedAt)} ({p.purchasedAt?.slice(0, 10)})
                   {p.confirmedAt && ` · Confirmado: ${p.confirmedAt.slice(0, 10)}`}
                   {p.expiresAt && ` · Vence: ${p.expiresAt.slice(0, 10)}`}
                 </div>
