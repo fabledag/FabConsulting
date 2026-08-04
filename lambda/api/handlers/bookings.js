@@ -467,32 +467,27 @@ async function adminUpdateBooking(id, body) {
       }
     }
 
+    // Pull the event back off both calendars. Only meaningful if it had been
+    // confirmed — a pending booking never created one.
+    if (body.status === 'cancelled' && previousStatus === 'confirmed' && existingBooking.email) {
+      await sendBookingInvites(existingBooking, {
+        durationMinutes: existingBooking.durationMinutes || 60,
+        cancelled: true,
+      });
+    }
+
     // Notify the customer once their booking is actually confirmed. Credit-paid
     // mentoria bookings are already confirmed instantly by createCustomerBooking
     // (and already email the customer there) — this only fires for the PayPal
     // path, which previously sat at "pending" until an admin flipped it with
     // no signal to the customer at all.
     if (body.status === 'confirmed' && previousStatus !== 'confirmed' && existingBooking.email) {
-      try {
-        await sendEmail({
-          to: existingBooking.email,
-          subject: `Sesión confirmada — ${existingBooking.date} ${existingBooking.time}`,
-          html: emailLayout({
-            headerSubtitle: 'Sesión confirmada',
-            bodyHtml: `
-              <p style="margin:0 0 16px;color:#374151;font-size:15px;line-height:1.7;">
-                Confirmamos tu pago. Tu sesión ya quedó apartada.
-              </p>
-              <p style="margin:0;color:#374151;font-size:15px;"><strong>Fecha:</strong> ${existingBooking.date}</p>
-              <p style="margin:0;color:#374151;font-size:15px;"><strong>Hora:</strong> ${existingBooking.time}</p>
-            `,
-            ctaUrl: `${SITE_URL}/profile/`,
-            ctaLabel: 'Ver mi reserva',
-          }),
-        });
-      } catch (emailErr) {
-        console.error('adminUpdateBooking confirmation email error:', emailErr);
-      }
+      // This is the moment the session becomes real: the invite puts it on
+      // Fabiola's calendar and on the customer's, and doubles as the
+      // confirmation email both of them get.
+      await sendBookingInvites(existingBooking, {
+        durationMinutes: existingBooking.durationMinutes || 60,
+      });
 
       await createNotification(existingBooking.email, {
         type: 'booking_confirmed',

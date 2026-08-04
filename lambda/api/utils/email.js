@@ -1,6 +1,6 @@
 'use strict';
 
-const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
+const { SESClient, SendEmailCommand, SendRawEmailCommand } = require('@aws-sdk/client-ses');
 
 const sesClient = new SESClient({});
 
@@ -84,4 +84,81 @@ async function sendEmail({ to, subject, html, replyTo }) {
   );
 }
 
-module.exports = { sesClient, sendEmail, escapeHtml, emailLayout, SITE_URL };
+/**
+ * Sends an HTML email carrying an iCalendar invitation.
+ *
+ * Needs SendRawEmail rather than SendEmail because SES's simple API can't
+ * attach anything. The MIME shape matters for Gmail to treat this as a real
+ * invitation (and auto-add it to the calendar) rather than a file attachment:
+ *
+ *   multipart/mixed
+ *   ├── multipart/alternative
+ *   │   ├── text/plain
+ *   │   ├── text/html
+ *   │   └── text/calendar; method=REQUEST   ← the part Gmail reads
+ *   └── application/ics attachment          ← fallback for other clients
+ */
+async function sendEmailWithInvite({ to, subject, html, text, ics, filename = 'sesion.ics', method = 'REQUEST', replyTo }) {
+  if (!FROM_EMAIL) {
+    console.error('FROM_EMAIL environment variable is not set.');
+    throw new Error('Server configuration error: FROM_EMAIL not set.');
+  }
+
+  const recipients = Array.isArray(to) ? to : [to];
+  const boundaryMixed = `mixed_${Date.now().toString(36)}`;
+  const boundaryAlt = `alt_${Date.now().toString(36)}`;
+  const icsBase64 = Buffer.from(ics, 'utf8').toString('base64');
+  // Base64 bodies must be wrapped at 76 characters per RFC 2045.
+  const icsWrapped = icsBase64.match(/.{1,76}/g).join('\r\n');
+
+  const raw = [
+    `From: Fabiola Ledesma <${FROM_EMAIL}>`,
+    `To: ${recipients.join(', ')}`,
+    ...(replyTo ? [`Reply-To: ${replyTo}`] : []),
+    `Subject: =?UTF-8?B?${Buffer.from(subject, 'utf8').toString('base64')}?=`,
+    'MIME-Version: 1.0',
+    `Content-Type: multipart/mixed; boundary="${boundaryMixed}"`,
+    '',
+    `--${boundaryMixed}`,
+    `Content-Type: multipart/alternative; boundary="${boundaryAlt}"`,
+    '',
+    `--${boundaryAlt}`,
+    'Content-Type: text/plain; charset=UTF-8',
+    'Content-Transfer-Encoding: base64',
+    '',
+    Buffer.from(text || 'Detalles de tu sesión adjuntos.', 'utf8').toString('base64').match(/.{1,76}/g).join('\r\n'),
+    '',
+    `--${boundaryAlt}`,
+    'Content-Type: text/html; charset=UTF-8',
+    'Content-Transfer-Encoding: base64',
+    '',
+    Buffer.from(html, 'utf8').toString('base64').match(/.{1,76}/g).join('\r\n'),
+    '',
+    `--${boundaryAlt}`,
+    `Content-Type: text/calendar; charset=UTF-8; method=${method}`,
+    'Content-Transfer-Encoding: base64',
+    '',
+    icsWrapped,
+    '',
+    `--${boundaryAlt}--`,
+    '',
+    `--${boundaryMixed}`,
+    `Content-Type: application/ics; name="${filename}"`,
+    'Content-Transfer-Encoding: base64',
+    `Content-Disposition: attachment; filename="${filename}"`,
+    '',
+    icsWrapped,
+    '',
+    `--${boundaryMixed}--`,
+  ].join('\r\n');
+
+  return sesClient.send(
+    new SendRawEmailCommand({
+      Source: FROM_EMAIL,
+      Destinations: recipients,
+      RawMessage: { Data: Buffer.from(raw, 'utf8') },
+    })
+  );
+}
+
+module.exports = { sesClient, sendEmail, sendEmailWithInvite, escapeHtml, emailLayout, SITE_URL, FROM_EMAIL };

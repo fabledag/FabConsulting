@@ -13,6 +13,8 @@ const { v4: uuidv4 } = require('uuid');
 
 const { checkSlotAvailable } = require('./bookings');
 const { sendEmail, emailLayout } = require('../utils/email');
+const { sendBookingInvites } = require('../utils/bookingCalendar');
+const { notifyAdminOfPendingBooking } = require('../utils/adminNotify');
 const { createNotification } = require('../utils/notify');
 
 const ddbClient = new DynamoDBClient({});
@@ -137,9 +139,21 @@ async function createCustomerBooking(email, body) {
 
     await ddb.send(new PutCommand({ TableName: BOOKINGS_TABLE, Item: booking }));
 
+    // Credit-paid bookings are confirmed on the spot, so the calendar invites
+    // go out now. PayPal ones wait for Fabiola to validate the payment — she
+    // just gets a heads-up email. See utils/bookingCalendar.js.
+    if (packageId) {
+      await sendBookingInvites(booking, { durationMinutes: availability.durationMinutes });
+    } else {
+      await notifyAdminOfPendingBooking(booking);
+    }
+
     const title = packageId ? 'Sesión confirmada' : 'Sesión agendada — pendiente de pago';
+    // Only for pending bookings: a credit-paid one already got the richer
+    // confirmation email with the calendar invite attached, and two emails for
+    // one booking reads as a bug.
     try {
-      await sendEmail({
+      if (!packageId) await sendEmail({
         to: email,
         subject: `${title} — ${date} ${time}`,
         html: emailLayout({
@@ -319,6 +333,15 @@ async function cancelMyBooking(email, id) {
           ExpressionAttributeValues: { ':one': 1 },
         })
       );
+    }
+
+    // Free the slot on both calendars. Only confirmed bookings ever created an
+    // event, so a pending one has nothing to withdraw.
+    if (booking.status === 'confirmed') {
+      await sendBookingInvites(booking, {
+        durationMinutes: booking.durationMinutes || 60,
+        cancelled: true,
+      });
     }
 
     try {
