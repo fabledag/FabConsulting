@@ -12,6 +12,9 @@ const {
 const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
 const { v4: uuidv4 } = require('uuid');
 
+const { sendEmail, emailLayout } = require('../utils/email');
+const { createNotification } = require('../utils/notify');
+
 const ddbClient = new DynamoDBClient({});
 const ddb = DynamoDBDocumentClient.from(ddbClient);
 const sesClient = new SESClient({});
@@ -19,6 +22,7 @@ const sesClient = new SESClient({});
 const AVAILABILITY_TABLE = process.env.AVAILABILITY_TABLE;
 const BLOCKED_DATES_TABLE = process.env.BLOCKED_DATES_TABLE;
 const BOOKINGS_TABLE = process.env.BOOKINGS_TABLE;
+const PACKAGES_TABLE = process.env.PACKAGES_TABLE;
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 const FROM_EMAIL = process.env.FROM_EMAIL;
 const SITE_URL = process.env.SITE_URL || 'https://fabiolaledesma.com';
@@ -412,6 +416,7 @@ async function adminUpdateBooking(id, body) {
     }
 
     const existingBooking = scanResult.Items[0];
+    const previousStatus = existingBooking.status;
     const updatedAt = new Date().toISOString();
 
     await ddb.send(
@@ -423,6 +428,60 @@ async function adminUpdateBooking(id, body) {
         ExpressionAttributeValues: { ':status': body.status, ':updatedAt': updatedAt },
       })
     );
+
+    // Refund the mentoria credit when an admin cancels a booking that was
+    // paid for with one — mirrors the refund a customer gets when they
+    // cancel it themselves (see cancelMyBooking in customerBookings.js).
+    if (body.status === 'cancelled' && previousStatus !== 'cancelled' && existingBooking.packageId) {
+      try {
+        await ddb.send(
+          new UpdateCommand({
+            TableName: PACKAGES_TABLE,
+            Key: { id: existingBooking.packageId },
+            UpdateExpression: 'SET usedCredits = usedCredits - :one, remainingCredits = remainingCredits + :one',
+            ExpressionAttributeValues: { ':one': 1 },
+          })
+        );
+      } catch (creditErr) {
+        console.error('adminUpdateBooking credit refund error:', creditErr);
+      }
+    }
+
+    // Notify the customer once their booking is actually confirmed. Credit-paid
+    // mentoria bookings are already confirmed instantly by createCustomerBooking
+    // (and already email the customer there) — this only fires for the PayPal
+    // path, which previously sat at "pending" until an admin flipped it with
+    // no signal to the customer at all.
+    if (body.status === 'confirmed' && previousStatus !== 'confirmed' && existingBooking.email) {
+      try {
+        await sendEmail({
+          to: existingBooking.email,
+          subject: `Sesión confirmada — ${existingBooking.date} ${existingBooking.time}`,
+          html: emailLayout({
+            headerSubtitle: 'Sesión confirmada',
+            bodyHtml: `
+              <p style="margin:0 0 16px;color:#374151;font-size:15px;line-height:1.7;">
+                Confirmamos tu pago. Tu sesión ya quedó apartada.
+              </p>
+              <p style="margin:0;color:#374151;font-size:15px;"><strong>Fecha:</strong> ${existingBooking.date}</p>
+              <p style="margin:0;color:#374151;font-size:15px;"><strong>Hora:</strong> ${existingBooking.time}</p>
+            `,
+            ctaUrl: `${SITE_URL}/#/profile`,
+            ctaLabel: 'Ver mi reserva',
+          }),
+        });
+      } catch (emailErr) {
+        console.error('adminUpdateBooking confirmation email error:', emailErr);
+      }
+
+      await createNotification(existingBooking.email, {
+        type: 'booking_confirmed',
+        title: 'Sesión confirmada',
+        body: `${existingBooking.date} ${existingBooking.time}`,
+        relatedBookingId: existingBooking.id,
+        relatedPackageId: existingBooking.packageId || null,
+      });
+    }
 
     return {
       statusCode: 200,
