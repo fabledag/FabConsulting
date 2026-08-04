@@ -18,11 +18,9 @@ function CtaStrip() {
           marginBottom: '0.75rem',
           letterSpacing: '-0.02em',
         }}
-        dangerouslySetInnerHTML={{
-          __html:
-            'Si sabes que necesitas cambiar algo<br><em style="font-style:italic;color:#FF8A47">pero no tienes claridad de cómo…</em>',
-        }}
-      />
+      >
+        ¿Lista o listo para trabajar en tu <em style={{ fontStyle: 'italic', color: '#FF8A47' }}>siguiente paso</em>?
+      </h2>
       <p
         style={{
           fontSize: '0.95rem',
@@ -31,10 +29,10 @@ function CtaStrip() {
           lineHeight: 1.5,
         }}
       >
-        Lo vemos juntas. Sin rodeos.
+        Elige la sesión que mejor se adapte a lo que necesitas y reserva un horario.
       </p>
-      <a href="#agenda" className="btn-primary">
-        Agenda tu sesión →
+      <a href="#servicios" className="btn-primary">
+        Agenda tu asesoría →
       </a>
       </div>
     </section>

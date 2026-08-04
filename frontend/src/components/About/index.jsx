@@ -127,7 +127,24 @@ function About() {
 
         {/* Text */}
         <FadeUp style={{ display: 'flex', flexDirection: 'column' }}>
+          <h3
+            style={{
+              fontFamily: "'Fraunces', Georgia, serif",
+              fontSize: '1.1rem',
+              fontWeight: 600,
+              color: 'var(--purple-900)',
+              marginBottom: '0.75rem',
+            }}
+          >
+            ¿Por qué trabajar conmigo?
+          </h3>
           <div style={{ fontSize: '0.95rem', color: '#555', lineHeight: 1.7 }}>
+            <p style={{ marginBottom: '1rem' }}>
+              Durante mi carrera he acompañado equipos y profesionales en la definición de
+              estrategias, productos y decisiones de crecimiento. En estas sesiones comparto
+              una perspectiva práctica, directa y adaptada al momento profesional de cada
+              persona.
+            </p>
             <p style={{ marginBottom: '1rem' }}>
               Tengo más de <strong style={{ color: 'var(--text-dark)', fontWeight: 600 }}>
                 15 años diseñando productos digitales end-to-end

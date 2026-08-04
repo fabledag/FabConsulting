@@ -48,6 +48,7 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 1rem;
+  scroll-margin-top: 5rem;
 }
 
 .card {
@@ -57,22 +58,8 @@
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-}
-
-/* Cards 3/4 wrap tag+title+description in an inner div (so the price block
-   can sit beside it in the wide desktop layout) — that div needs its own
-   flex+gap, otherwise its children get none of the spacing .card's gap
-   gives cards 1/2 directly. */
-.cardTextGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.cardFeatured {
-  background: rgba(255, 255, 255, 0.13);
-  border-color: rgba(255, 255, 255, 0.25);
+  gap: 0.65rem;
+  scroll-margin-top: 5rem;
 }
 
 .cardH3 {
@@ -87,8 +74,37 @@
   font-size: 0.875rem;
   color: rgba(255, 255, 255, 0.65);
   line-height: 1.55;
-  flex: 1;
   margin: 0;
+}
+
+.cardForWho {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-style: italic;
+  margin: 0;
+}
+
+.topicsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.25rem 0;
+}
+
+.topicTag {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0.22rem 0.6rem;
+  border-radius: 999px;
+}
+
+.cardMeta {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.45);
+  display: flex;
+  gap: 0.75rem;
 }
 
 .tag {
@@ -105,13 +121,10 @@
   width: fit-content;
 }
 
-/* Price variants */
-.priceBlock {
-  margin-top: auto;
-  padding-top: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  flex-direction: column;
+.tagPlain {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
 .priceBlockInline {
@@ -120,39 +133,6 @@
   gap: 0.2rem;
   margin-top: auto;
   padding-top: 0.75rem;
-}
-
-.priceFrom {
-  font-size: 0.68rem;
-  color: rgba(255, 255, 255, 0.4);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 0.1rem;
-}
-
-.priceNum {
-  font-family: 'Fraunces', Georgia, serif;
-  font-size: 2rem;
-  font-weight: 600;
-  color: #ffffff;
-  line-height: 1;
-  letter-spacing: -0.02em;
-}
-
-.priceCurrency {
-  font-size: 1rem;
-  font-weight: 400;
-  opacity: 0.65;
-  font-family: inherit;
-}
-
-.priceUnit {
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.45);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-top: 0.15rem;
 }
 
 .priceNumSm {
@@ -173,9 +153,27 @@
   margin-bottom: 4px;
 }
 
+.cardNote {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.resultsNote {
+  text-align: center;
+  max-width: 640px;
+  margin: 2rem auto 0;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.75);
+  font-family: 'Fraunces', Georgia, serif;
+  font-style: italic;
+  line-height: 1.5;
+}
+
 .footer {
   text-align: center;
-  margin-top: 2rem;
+  margin-top: 1.5rem;
 }
 
 .note {
@@ -207,20 +205,11 @@
   }
 
   .grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: 1.25rem;
   }
 
   .footer {
     margin-top: 2.5rem;
-  }
-
-  .cardWide,
-  .cardFeatured {
-    grid-column: span 2;
-    display: grid !important;
-    grid-template-columns: 1fr auto;
-    gap: 2rem;
-    align-items: start;
   }
 }

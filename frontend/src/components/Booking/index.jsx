@@ -30,30 +30,39 @@ const TRUST_ITEMS = [
 
 const SERVICES = {
   session: {
-    name: 'Sesión 1:1',
-    label: 'Sesión 1:1 (60 min)',
-    desc: '60 min · Un problema específico o claridad sobre tu carrera',
+    name: 'Conversación estratégica 1:1',
+    label: 'Conversación estratégica 1:1 (60 min)',
+    desc: '60 min · Ordena tus ideas y define tus siguientes pasos',
     price: 800,
     display: '$800 MXN',
-    tag: 'Más popular',
+    tag: 'Más elegida',
+    duration: '60 minutos',
+    durationMinutes: 60,
+    includes: ['Diagnóstico de tu situación actual', 'Recomendaciones específicas', 'Próximos pasos por escrito'],
   },
   mock: {
-    name: 'Mock Interview',
-    label: 'Mock Interview',
-    desc: 'Simulación real + feedback honesto sin rodeos',
+    name: 'Simulación de entrevista',
+    label: 'Simulación de entrevista',
+    desc: 'Práctica real + retroalimentación honesta y específica',
     price: 900,
     display: '$900 MXN',
-    tag: 'Proceso',
+    tag: 'Preparación',
     tagPlain: true,
+    duration: '60 minutos',
+    durationMinutes: 60,
+    includes: ['Entrevista simulada completa', 'Retroalimentación honesta', 'Puntos concretos a mejorar'],
   },
   cv: {
-    name: 'Revisión CV + Portafolio',
-    label: 'Revisión CV + Portafolio',
+    name: 'CV, LinkedIn y portafolio',
+    label: 'Revisión de CV, LinkedIn y portafolio',
     desc: 'Feedback directo desde lo que realmente evalúan los hiring managers',
     price: 1200,
     display: '$1,200 MXN',
     tag: 'Profundo',
     tagPlain: true,
+    duration: '60 minutos',
+    durationMinutes: 60,
+    includes: ['Revisión línea por línea', 'Recomendaciones de estructura', 'Coherencia CV ↔ LinkedIn ↔ portafolio'],
   },
   mentoria: {
     name: 'Mentoría',
@@ -61,12 +70,33 @@ const SERVICES = {
     desc: '4 sesiones a lo largo de 6 meses · Ahorra $400 vs sueltas',
     price: 2800,
     display: '$2,800 MXN',
-    tag: 'Continuo',
+    tag: 'Acompañamiento continuo',
     tagPlain: true,
+    duration: '4 sesiones de 60 min, a lo largo de 6 meses',
+    includes: ['Acompañamiento continuo', 'Seguimiento entre sesiones', 'Estrategia de carrera a mediano plazo'],
   },
 };
 
+const MODALITY = 'Videollamada — el enlace se comparte por correo al confirmar tu reserva.';
+const TIMEZONE = 'Hora Ciudad de México (CST)';
+const CANCELLATION_POLICY = 'Puedes reagendar o cancelar tú mismo/a desde tu perfil hasta 24 horas antes de tu sesión.';
+
 const PENDING_SELECTION_KEY = 'pending_booking_selection';
+const PRESELECTED_SERVICE_KEY = 'preselected_service';
+
+function googleCalendarUrl(svc, slot) {
+  if (!svc.durationMinutes || !slot) return null;
+  const start = new Date(`${slot.date}T${slot.time}:00`);
+  const end = new Date(start.getTime() + svc.durationMinutes * 60000);
+  const fmt = (d) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: svc.name,
+    dates: `${fmt(start)}/${fmt(end)}`,
+    details: 'Sesión con Fabiola Ledesma. El enlace de videollamada llega por correo.',
+  });
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
 
 function Booking() {
   const { user, requestLink } = useAuth();
@@ -87,6 +117,16 @@ function Booking() {
   const canGoToStep2 = Boolean(selectedService);
   const canGoToStep3 = Boolean(selectedSlot);
 
+  // Pick up a service chosen from a Services card / career-stage link.
+  useEffect(() => {
+    const preselected = sessionStorage.getItem(PRESELECTED_SERVICE_KEY);
+    if (preselected && SERVICES[preselected]) {
+      setSelectedService(preselected);
+      setStep(2);
+    }
+    if (preselected) sessionStorage.removeItem(PRESELECTED_SERVICE_KEY);
+  }, []);
+
   // Restore an in-progress selection after the magic-link round trip.
   useEffect(() => {
     if (!user) return;
@@ -96,7 +136,7 @@ function Booking() {
       const parsed = JSON.parse(saved);
       if (parsed.selectedService) setSelectedService(parsed.selectedService);
       if (parsed.selectedSlot) setSelectedSlot(parsed.selectedSlot);
-      setStep(3);
+      setStep(4);
     } catch {
       // ignore malformed storage
     } finally {
@@ -104,9 +144,9 @@ function Booking() {
     }
   }, [user]);
 
-  // When logged in and reaching step 3 for the mentoria service, check credits.
+  // When logged in and reaching the confirm step for mentoria, check credits.
   useEffect(() => {
-    if (!user || step !== 3 || selectedService !== 'mentoria') {
+    if (!user || step !== 4 || selectedService !== 'mentoria') {
       setActivePackage(null);
       return;
     }
@@ -239,11 +279,16 @@ function Booking() {
                 <div className={styles.stepLine} />
                 <div className={`${styles.step} ${step === 2 ? styles.active : ''} ${step > 2 ? styles.done : ''}`}>
                   <span className={styles.stepNum}>2</span>
+                  <span className={styles.stepLabel}>Resumen</span>
+                </div>
+                <div className={styles.stepLine} />
+                <div className={`${styles.step} ${step === 3 ? styles.active : ''} ${step > 3 ? styles.done : ''}`}>
+                  <span className={styles.stepNum}>3</span>
                   <span className={styles.stepLabel}>Fecha</span>
                 </div>
                 <div className={styles.stepLine} />
-                <div className={`${styles.step} ${step === 3 ? styles.active : ''}`}>
-                  <span className={styles.stepNum}>3</span>
+                <div className={`${styles.step} ${step === 4 ? styles.active : ''}`}>
+                  <span className={styles.stepNum}>4</span>
                   <span className={styles.stepLabel}>Confirmar</span>
                 </div>
               </div>
@@ -278,30 +323,94 @@ function Booking() {
                     ))}
                   </div>
                   <button className={styles.formSubmit} disabled={!canGoToStep2} onClick={() => setStep(2)}>
-                    Elegir fecha →
+                    Continuar →
                   </button>
                 </div>
               )}
 
-              {/* STEP 2 */}
-              {step === 2 && (
+              {/* STEP 2 — summary before showing the calendar */}
+              {step === 2 && selectedService && (
                 <div>
-                  <div className={styles.stepTitle}>Elige tu fecha y horario</div>
-                  <p className={styles.stepSubtitle}>Hora Ciudad de México (CST)</p>
-                  <SlotPicker selectedKey={selectedSlot?.key} onSelect={setSelectedSlot} />
+                  <div className={styles.stepTitle}>{SERVICES[selectedService].name}</div>
+                  <p className={styles.stepSubtitle}>{SERVICES[selectedService].desc}</p>
+
+                  <div className={styles.paymentSummary}>
+                    <div className={styles.psRow}>
+                      <span className={styles.psLabel}>Duración</span>
+                      <span className={styles.psValue}>{SERVICES[selectedService].duration}</span>
+                    </div>
+                    <div className={styles.psRow}>
+                      <span className={styles.psLabel}>Precio</span>
+                      <span className={styles.psValue}>{SERVICES[selectedService].display}</span>
+                    </div>
+                    <div className={styles.psRow}>
+                      <span className={styles.psLabel}>Modalidad</span>
+                      <span className={styles.psValue}>Virtual</span>
+                    </div>
+                    <div className={styles.psRow}>
+                      <span className={styles.psLabel}>Zona horaria</span>
+                      <span className={styles.psValue}>{TIMEZONE}</span>
+                    </div>
+                  </div>
+
+                  <div style={{ marginBottom: '1rem' }}>
+                    <div style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--purple-800)', marginBottom: '0.4rem' }}>
+                      Qué incluye
+                    </div>
+                    <ul style={{ margin: 0, paddingLeft: '1.1rem', fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.7 }}>
+                      {SERVICES[selectedService].includes.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: 1.5, marginBottom: '0.5rem' }}>
+                    {MODALITY}
+                  </p>
+                  <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: 1.5, marginBottom: '1.25rem' }}>
+                    {CANCELLATION_POLICY}
+                  </p>
+
+                  <div style={{ background: 'var(--purple-50)', border: '1px solid var(--purple-100)', borderRadius: '10px', padding: '0.85rem 1rem', marginBottom: '1.25rem' }}>
+                    <strong style={{ display: 'block', fontSize: '0.82rem', color: 'var(--purple-800)', marginBottom: '0.2rem' }}>
+                      No necesitas tener todo preparado
+                    </strong>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                      Puedes reservar aunque todavía no tengas completamente claro qué necesitas. Al inicio de la
+                      sesión definiremos juntos el objetivo y las prioridades.
+                    </span>
+                  </div>
+
                   <div className={styles.actionsRow}>
                     <button className={styles.btnBack} onClick={() => setStep(1)}>
                       ← Regresar
                     </button>
-                    <button className={styles.formSubmit} disabled={!canGoToStep3} onClick={() => setStep(3)}>
+                    <button className={styles.formSubmit} onClick={() => setStep(3)}>
+                      Elegir fecha y horario →
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 3 — date & time */}
+              {step === 3 && (
+                <div>
+                  <div className={styles.stepTitle}>Elige tu fecha y horario</div>
+                  <p className={styles.stepSubtitle}>{TIMEZONE}</p>
+                  <SlotPicker selectedKey={selectedSlot?.key} onSelect={setSelectedSlot} />
+                  <div className={styles.actionsRow}>
+                    <button className={styles.btnBack} onClick={() => setStep(2)}>
+                      ← Regresar
+                    </button>
+                    <button className={styles.formSubmit} disabled={!canGoToStep3} onClick={() => setStep(4)}>
                       Continuar →
                     </button>
                   </div>
                 </div>
               )}
 
-              {/* STEP 3 */}
-              {step === 3 && !result && (
+              {/* STEP 4 — confirm / login / pay */}
+              {step === 4 && !result && (
                 <div>
                   {!user ? (
                     <>
@@ -328,7 +437,7 @@ function Booking() {
                           </button>
                         </form>
                       )}
-                      <button className={styles.btnBack} style={{ marginTop: '0.75rem', width: '100%' }} onClick={() => setStep(2)}>
+                      <button className={styles.btnBack} style={{ marginTop: '0.75rem', width: '100%' }} onClick={() => setStep(3)}>
                         ← Cambiar fecha
                       </button>
                     </>
@@ -372,7 +481,7 @@ function Booking() {
                         </button>
                       )}
 
-                      <button className={styles.btnBack} style={{ marginTop: '0.5rem', width: '100%' }} onClick={() => setStep(2)}>
+                      <button className={styles.btnBack} style={{ marginTop: '0.5rem', width: '100%' }} onClick={() => setStep(3)}>
                         ← Cambiar fecha
                       </button>
                     </>
@@ -381,23 +490,81 @@ function Booking() {
               )}
 
               {/* Confirmation */}
-              {result && (
-                <div>
-                  <div className={styles.stepTitle}>
-                    {result.booking?.status === 'confirmed' ? '¡Sesión confirmada!' : 'Todo listo'}
+              {result && (() => {
+                const isConfirmed = result.booking?.status === 'confirmed';
+                const svc = selectedService ? SERVICES[selectedService] : null;
+                const calUrl = svc && !result.package ? googleCalendarUrl(svc, selectedSlot) : null;
+                return (
+                  <div>
+                    <div className={styles.stepTitle}>
+                      {isConfirmed ? '¡Tu sesión está confirmada!' : '¡Ya casi! Falta tu pago'}
+                    </div>
+                    <p className={styles.stepSubtitle}>
+                      {isConfirmed
+                        ? 'Me dará mucho gusto acompañarte. Recibirás por correo la confirmación, el enlace de la videollamada y los detalles de tu reserva.'
+                        : 'Completa el pago en la pestaña de PayPal que se abrió para confirmar tu lugar. En cuanto lo recibamos, tu sesión queda apartada.'}
+                    </p>
+
+                    {selectedSlot && svc && !result.package && (
+                      <div className={styles.paymentSummary}>
+                        <div className={styles.psRow}>
+                          <span className={styles.psLabel}>Sesión</span>
+                          <span className={styles.psValue}>{svc.name}</span>
+                        </div>
+                        <div className={styles.psRow}>
+                          <span className={styles.psLabel}>Fecha</span>
+                          <span className={styles.psValue}>{selectedSlot.dateLabel}</span>
+                        </div>
+                        <div className={styles.psRow}>
+                          <span className={styles.psLabel}>Horario</span>
+                          <span className={styles.psValue}>{selectedSlot.timeLabel} (CST)</span>
+                        </div>
+                        <div className={styles.psRow}>
+                          <span className={styles.psLabel}>Duración</span>
+                          <span className={styles.psValue}>{svc.duration}</span>
+                        </div>
+                        <div className={styles.psRow}>
+                          <span className={styles.psLabel}>{isConfirmed ? 'Pagado' : 'Precio'}</span>
+                          <span className={styles.psValue}>{svc.display}</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {calUrl && (
+                      <a
+                        href={calUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.btnBack}
+                        style={{ display: 'block', textAlign: 'center', marginBottom: '0.75rem' }}
+                      >
+                        + Agregar a Google Calendar
+                      </a>
+                    )}
+
+                    <div style={{ background: 'var(--purple-50)', border: '1px solid var(--purple-100)', borderRadius: '10px', padding: '0.85rem 1rem', marginBottom: '0.75rem' }}>
+                      <strong style={{ display: 'block', fontSize: '0.82rem', color: 'var(--purple-800)', marginBottom: '0.2rem' }}>
+                        No necesitas llegar con todo resuelto
+                      </strong>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                        Durante la sesión definiremos juntos qué vale la pena priorizar.
+                      </span>
+                    </div>
+
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '0.5rem' }}>
+                      <strong style={{ color: 'var(--text-dark)' }}>¿Quieres compartir tu CV, portafolio o contexto antes de la sesión?</strong>{' '}
+                      Puedes responder al correo de confirmación y adjuntarlo ahí — es completamente opcional.
+                    </p>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '1.25rem' }}>
+                      {CANCELLATION_POLICY}
+                    </p>
+
+                    <a href="/#/profile" className={styles.formSubmit} style={{ display: 'block', textAlign: 'center' }}>
+                      Ver mi perfil →
+                    </a>
                   </div>
-                  <p className={styles.stepSubtitle}>
-                    {result.booking?.status === 'confirmed'
-                      ? 'Tu sesión quedó confirmada usando uno de tus créditos.'
-                      : result.paypalUrl
-                        ? 'Completa el pago en la pestaña de PayPal que se abrió para confirmar tu lugar.'
-                        : 'Revisa tu correo para los siguientes pasos.'}
-                  </p>
-                  <a href="/#/profile" className={styles.formSubmit} style={{ display: 'block', textAlign: 'center' }}>
-                    Ver mi perfil →
-                  </a>
-                </div>
-              )}
+                );
+              })()}
             </div>
           </FadeUp>
         </div>

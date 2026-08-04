@@ -80,6 +80,15 @@
   color: var(--purple-600);
 }
 
+.link:focus-visible,
+.accountLink:focus-visible,
+.hamburger:focus-visible,
+.logo:focus-visible {
+  outline: 2px solid var(--purple-600);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
 .accountLink {
   display: inline-flex;
   align-items: center;

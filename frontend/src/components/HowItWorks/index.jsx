@@ -3,23 +3,23 @@ import FadeUp from '../FadeUp/index.jsx';
 const STEPS = [
   {
     num: '01',
-    title: 'Entendemos tu contexto',
-    desc: 'Qué estás viviendo, qué quieres lograr y dónde estás atorado. Sin suposiciones.',
+    title: 'Elige tu sesión',
+    desc: 'Selecciona el tipo de acompañamiento que mejor corresponde con tu necesidad.',
   },
   {
     num: '02',
-    title: 'Identificamos el problema real',
-    desc: 'Muchas veces no es lo que crees. Vemos más allá de los síntomas.',
+    title: 'Reserva un horario',
+    desc: 'Consulta la disponibilidad y elige la fecha que mejor te funcione.',
   },
   {
     num: '03',
-    title: 'Definimos una estrategia clara',
-    desc: 'Sin teoría innecesaria. Solo lo que sí te va a servir en tu contexto específico.',
+    title: 'Comparte tu contexto',
+    desc: 'Después de reservar podrás enviar tu CV, portafolio, perfil o una breve explicación de lo que quieres trabajar.',
   },
   {
     num: '04',
-    title: 'Te llevas un plan accionable',
-    desc: 'Saldrás con claridad y pasos concretos, no con más dudas.',
+    title: 'Recibe recomendaciones',
+    desc: 'Trabajaremos sobre tu caso y terminaremos con recomendaciones y próximos pasos.',
   },
 ];
 
@@ -36,7 +36,7 @@ function HowItWorks() {
 
       <FadeUp delay="0.05s">
         <h2 className="section-title">
-          Así es una <em>asesoría conmigo</em>
+          Así será <em>tu experiencia</em>
         </h2>
       </FadeUp>
 
@@ -112,7 +112,7 @@ function HowItWorks() {
           }
         }
         .hiw-card {
-          height: 230px;
+          height: 260px;
         }
       `}</style>
       </div>

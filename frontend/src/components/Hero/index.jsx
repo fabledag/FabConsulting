@@ -1,4 +1,5 @@
 import styles from './Hero.module.css';
+import fabiolaImg from '../../assets/fabiola.jpg';
 
 const STATS = [
   { num: '15+', label: 'años diseñando\nproductos E2E' },
@@ -9,10 +10,10 @@ const STATS = [
 
 const CARD_SERVICES = [
   'Crecimiento profesional',
-  'Búsqueda de trabajo / CV',
-  'Decisiones en producto y UX',
+  'CV, LinkedIn y portafolio',
+  'Aplicación práctica de IA',
   'Transiciones de carrera',
-  'Mock interviews',
+  'Simulación de entrevistas',
 ];
 
 function Hero() {
@@ -22,30 +23,26 @@ function Hero() {
       {/* ─── Content ─────────────────────────────────── */}
       <div className={styles.heroContent}>
         <div className={styles.eyebrow}>
-          Sr. Design Manager · +15 años de experiencia
+          Senior Design Manager · Cofundadora de GEDX · Docente y mentora
         </div>
 
         <h1 className={styles.h1}>
-          Te ayudo a tomar <em>mejores decisiones</em> en tu carrera UX
+          Consultoría estratégica en <em>UX, IA</em> y Product Design
         </h1>
 
         <p className={styles.sub}>
-          Acompaño a diseñadores y profesionales a crecer, cambiar de trabajo o
-          desbloquear su siguiente nivel — con claridad y estrategia real.
+          Acompaño a profesionales que quieren impulsar su carrera, fortalecer
+          su perfil y tomar mejores decisiones — con sesiones personalizadas
+          basadas en experiencia real en diseño, estrategia y liderazgo.
         </p>
 
         <div className={styles.actions}>
-          <a href="#agenda" className="btn-primary">
-            Agendar mi asesoría
+          <a href="#servicios" className="btn-primary">
+            Agenda tu asesoría
           </a>
           <a href="#servicios" className="btn-ghost">
-            Ver servicios →
+            Conoce las sesiones →
           </a>
-        </div>
-
-        <div className={styles.urgency}>
-          <span className={styles.urgencyDot} />
-          <span>3 espacios disponibles esta semana</span>
         </div>
 
         <div className={styles.stats}>
@@ -72,6 +69,14 @@ function Hero() {
             <strong>15+</strong> años de experiencia
           </div>
 
+          <div className={styles.cardPhotoRow}>
+            <img src={fabiolaImg} alt="Fabiola Ledesma" className={styles.cardPhoto} />
+            <div>
+              <div className={styles.cardName}>Fabiola Ledesma</div>
+              <div className={styles.cardRole}>Senior Design Manager</div>
+            </div>
+          </div>
+
           <div className={styles.cardTag}>Asesoría 1:1</div>
 
           <h3>
@@ -96,7 +101,7 @@ function Hero() {
               <span className={styles.availText}> · respondo en &lt;24h</span>
             </div>
             <a
-              href="#agenda"
+              href="#servicios"
               className="btn-primary"
               style={{ padding: '0.55rem 1.25rem', fontSize: '0.82rem' }}
             >

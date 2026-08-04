@@ -4,10 +4,11 @@ import { useAuth } from '../../hooks/useAuth.js';
 import { getDisplayName } from '../../utils/displayName.js';
 
 const NAV_LINKS = [
+  { href: '#inicio', label: 'Inicio' },
+  { href: '#servicios', label: 'Asesorías' },
   { href: '#sobre-mi', label: 'Sobre mí' },
-  { href: '#como-funciona', label: 'Cómo funciona' },
-  { href: '#servicios', label: 'Servicios' },
-  { href: '#agenda', label: 'Agendar asesoría', cta: true },
+  { href: '#faq', label: 'Preguntas frecuentes' },
+  { href: '#servicios', label: 'Agenda tu sesión', cta: true },
 ];
 
 function Nav() {
@@ -21,27 +22,46 @@ function Nav() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // Lock background scroll while the mobile menu is open.
+  useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [open]);
+
+  // Close on Escape for keyboard users.
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [open]);
+
   const close = () => setOpen(false);
 
   return (
-    <nav className={[styles.nav, scrolled ? styles.navScrolled : ''].join(' ')}>
+    <nav className={[styles.nav, scrolled ? styles.navScrolled : ''].join(' ')} aria-label="Principal">
       <div className={`wrap ${styles.navInner}`}>
-        <a href="#" className={styles.logo}>Fabiola Ledesma</a>
+        <a href="#inicio" className={styles.logo}>Fabiola Ledesma</a>
 
         <button
           className={[styles.hamburger, open ? styles.isOpen : ''].join(' ')}
           onClick={() => setOpen((v) => !v)}
           aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
           aria-expanded={open}
+          aria-controls="nav-links"
         >
           <span />
           <span />
           <span />
         </button>
 
-        <ul className={[styles.links, open ? styles.open : ''].join(' ')}>
-          {NAV_LINKS.map(({ href, label, cta }) => (
-            <li key={href}>
+        <ul id="nav-links" className={[styles.links, open ? styles.open : ''].join(' ')}>
+          {NAV_LINKS.map(({ href, label, cta }, i) => (
+            <li key={`${href}-${i}`}>
               <a
                 href={href}
                 className={[styles.link, cta ? styles.navCta : ''].join(' ')}
