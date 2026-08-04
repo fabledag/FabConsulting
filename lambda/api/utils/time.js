@@ -17,6 +17,17 @@
 
 const TIME_ZONE = 'America/Mexico_City';
 
+/**
+ * Minimum notice before a session, in whole calendar days.
+ *
+ * Business rule set by Fabiola (2026-08-04): "reservas con mínimo dos días de
+ * anticipación". Counted in calendar days, not rolling hours — if today is the
+ * 4th, the earliest bookable date is the 6th, at any of its times. That's what
+ * "dos días de anticipación" means in plain Spanish, and it's what the site
+ * tells visitors, so keep the two in step if this ever changes.
+ */
+const MIN_LEAD_DAYS = 2;
+
 /** Offset of Mexico City from UTC, in minutes, at a given instant. */
 function offsetMinutesAt(instant) {
   const dtf = new Intl.DateTimeFormat('en-US', {
@@ -78,6 +89,37 @@ function isSlotInPast(date, time) {
   return ts <= Date.now();
 }
 
+/**
+ * Earliest date a visitor may book, as YYYY-MM-DD: today in Mexico City plus
+ * MIN_LEAD_DAYS. Anything before this is refused by the API and never listed
+ * by /availability.
+ */
+function earliestBookableDate() {
+  const { date } = nowInMexicoCity();
+  const [y, m, d] = date.split('-').map(Number);
+  // Built in UTC purely as a calendar calculation — no clock involved, so the
+  // zone can't shift the result.
+  const shifted = new Date(Date.UTC(y, m - 1, d + MIN_LEAD_DAYS));
+  const p = (n) => String(n).padStart(2, '0');
+  return `${shifted.getUTCFullYear()}-${p(shifted.getUTCMonth() + 1)}-${p(shifted.getUTCDate())}`;
+}
+
+/** Human-readable Spanish date ("jueves 6 de agosto"), for error messages. */
+function formatDateEs(date) {
+  const [y, m, d] = date.split('-').map(Number);
+  return new Intl.DateTimeFormat('es-MX', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    timeZone: 'UTC',
+  }).format(new Date(Date.UTC(y, m - 1, d)));
+}
+
+/** True when the date is sooner than the required notice allows. */
+function isBeforeMinimumNotice(date) {
+  return date < earliestBookableDate();
+}
+
 /** Milliseconds from now until the slot starts (negative once it has passed). */
 function msUntilSlot(date, time) {
   return slotTimestamp(date, time) - Date.now();
@@ -85,8 +127,12 @@ function msUntilSlot(date, time) {
 
 module.exports = {
   TIME_ZONE,
+  MIN_LEAD_DAYS,
   slotTimestamp,
   nowInMexicoCity,
   isSlotInPast,
   msUntilSlot,
+  earliestBookableDate,
+  isBeforeMinimumNotice,
+  formatDateEs,
 };

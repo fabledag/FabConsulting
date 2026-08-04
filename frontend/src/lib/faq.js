@@ -29,6 +29,11 @@ export const FAQ_ITEMS = [
       'Después de confirmar tu reserva recibirás por correo el enlace de la videollamada y los detalles para conectarte a la hora acordada.',
   },
   {
+    q: '¿Con cuánta anticipación debo reservar?',
+    plain:
+      'Las sesiones se agendan con al menos 2 días de anticipación, para poder preparar tu caso antes de que nos veamos. El calendario solo te muestra las fechas que ya cumplen ese margen.',
+  },
+  {
     q: '¿Puedo reprogramar mi sesión?',
     plain:
       'Sí. Puedes reagendar o cancelar tú mismo/a desde tu perfil hasta 24 horas antes de tu sesión. Dentro de esa ventana, escríbeme directamente para ver opciones.',

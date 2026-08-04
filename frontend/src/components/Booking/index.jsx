@@ -37,6 +37,9 @@ const SERVICES = SERVICES_BY_KEY;
 const MODALITY = 'Videollamada — el enlace se comparte por correo al confirmar tu reserva.';
 const TIMEZONE = 'Hora Ciudad de México (CST)';
 const CANCELLATION_POLICY = 'Puedes reagendar o cancelar tú mismo/a desde tu perfil hasta 24 horas antes de tu sesión.';
+// Mirrors MIN_LEAD_DAYS in lambda/api/utils/time.js. The API is the one that
+// enforces it; this only sets expectations so the rule isn't a surprise.
+const MIN_LEAD_NOTICE = 'Las sesiones se agendan con al menos 2 días de anticipación.';
 
 
 function googleCalendarUrl(svc, slot) {
@@ -388,7 +391,7 @@ function Booking() {
                     {MODALITY}
                   </p>
                   <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: 1.5, marginBottom: '1.25rem' }}>
-                    {CANCELLATION_POLICY}
+                    {CANCELLATION_POLICY} {MIN_LEAD_NOTICE}
                   </p>
 
                   <div style={{ background: 'var(--purple-50)', border: '1px solid var(--purple-100)', borderRadius: '10px', padding: '0.85rem 1rem', marginBottom: '1.25rem' }}>
@@ -416,7 +419,9 @@ function Booking() {
               {step === 3 && (
                 <div>
                   <div className={styles.stepTitle}>Elige tu fecha y horario</div>
-                  <p className={styles.stepSubtitle}>{TIMEZONE}</p>
+                  <p className={styles.stepSubtitle}>
+                    {TIMEZONE} · {MIN_LEAD_NOTICE}
+                  </p>
                   <SlotPicker selectedKey={selectedSlot?.key} onSelect={setSelectedSlot} />
                   <div className={styles.actionsRow}>
                     <button className={styles.btnBack} onClick={() => setStep(2)}>

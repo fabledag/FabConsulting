@@ -13,7 +13,7 @@ const {
 const ddbClient = new DynamoDBClient({});
 const ddb = DynamoDBDocumentClient.from(ddbClient);
 
-const { nowInMexicoCity } = require('../utils/time');
+const { nowInMexicoCity, earliestBookableDate } = require('../utils/time');
 
 const AVAILABILITY_TABLE = process.env.AVAILABILITY_TABLE;
 const BLOCKED_DATES_TABLE = process.env.BLOCKED_DATES_TABLE;
@@ -110,14 +110,17 @@ async function getPublicAvailability(queryParams) {
     // side of midnight. See utils/time.js.
     const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
     const { date: today, time: nowTime } = nowInMexicoCity();
+    // Sessions need MIN_LEAD_DAYS of notice, so the calendar starts there
+    // rather than today. Past dates are excluded by the same comparison.
+    const earliest = earliestBookableDate();
     const calendar = [];
 
     for (let day = 1; day <= daysInMonth; day++) {
       const dateStr = `${year}-${pad(month)}-${pad(day)}`;
       const dow = new Date(Date.UTC(year, month - 1, day)).getUTCDay();
 
-      // Skip past dates
-      if (dateStr < today) continue;
+      // Skip past dates and anything inside the notice window
+      if (dateStr < earliest) continue;
 
       const slots = [];
 

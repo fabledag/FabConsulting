@@ -14,7 +14,14 @@ const { v4: uuidv4 } = require('uuid');
 
 const { sendEmail, emailLayout } = require('../utils/email');
 const { createNotification } = require('../utils/notify');
-const { isSlotInPast, msUntilSlot } = require('../utils/time');
+const {
+  isSlotInPast,
+  msUntilSlot,
+  isBeforeMinimumNotice,
+  earliestBookableDate,
+  formatDateEs,
+  MIN_LEAD_DAYS,
+} = require('../utils/time');
 
 const ddbClient = new DynamoDBClient({});
 const ddb = DynamoDBDocumentClient.from(ddbClient);
@@ -208,6 +215,16 @@ async function checkSlotAvailable(date, time) {
   // naively made afternoon slots look six hours in the past. See utils/time.js.
   if (isSlotInPast(date, time)) {
     return { ok: false, statusCode: 400, error: 'Ese horario ya pasó. Elige uno disponible.' };
+  }
+
+  // Minimum notice. /availability already hides these dates, so reaching this
+  // means a stale page or a direct API call — either way it must be refused.
+  if (isBeforeMinimumNotice(date)) {
+    return {
+      ok: false,
+      statusCode: 400,
+      error: `Las sesiones se agendan con al menos ${MIN_LEAD_DAYS} días de anticipación. La fecha más próxima disponible es el ${formatDateEs(earliestBookableDate())}.`,
+    };
   }
 
   // 1. Check if the date is blocked
