@@ -46,6 +46,24 @@ function Login() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--cream)', padding: '1.5rem' }}>
       <div style={{ width: '100%', maxWidth: '420px', background: '#ffffff', borderRadius: '16px', border: '1px solid var(--border)', boxShadow: '0 4px 24px rgba(82,58,168,0.08)', padding: '2.5rem 2rem' }}>
+        <a
+          href="/"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            marginBottom: '1.25rem',
+            padding: '0.4rem 0.9rem',
+            border: '1px solid rgba(82,58,168,0.15)',
+            borderRadius: '999px',
+            color: 'var(--text-muted)',
+            textDecoration: 'none',
+            fontSize: '0.8rem',
+          }}
+        >
+          ← Regresar
+        </a>
+
         <a href="/" style={{ display: 'inline-block', marginBottom: '1.5rem', color: 'var(--purple-800)', fontWeight: 700, textDecoration: 'none', fontSize: '1.1rem' }}>
           Fabiola Ledesma
         </a>
