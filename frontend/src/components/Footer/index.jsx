@@ -15,8 +15,6 @@ const columnLabelStyle = {
 };
 
 function Footer() {
-  const year = new Date().getFullYear();
-
   return (
     <footer style={{ backgroundColor: '#523AA8', color: 'rgba(255,255,255,0.75)' }}>
       <div className="wrap" style={{ paddingTop: '3rem', paddingBottom: '2rem' }}>
@@ -72,19 +70,6 @@ function Footer() {
               GEDX Agency ↗
             </a>
           </div>
-        </div>
-
-        <div
-          style={{
-            borderTop: '1px solid rgba(255,255,255,0.15)',
-            marginTop: '2.5rem',
-            paddingTop: '1.25rem',
-            fontSize: '0.78rem',
-            opacity: 0.4,
-            textAlign: 'center',
-          }}
-        >
-          © {year} Fabiola Ledesma · CDMX
         </div>
 
         <style>{`

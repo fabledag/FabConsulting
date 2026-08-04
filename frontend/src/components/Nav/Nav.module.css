@@ -196,6 +196,7 @@
   .links {
     display: flex !important;
     flex-direction: row;
+    align-items: center;
     list-style: none;
     position: static;
     background: none;
@@ -206,6 +207,11 @@
     border: none;
     bottom: auto;
     overflow: visible;
+  }
+
+  .links li {
+    display: flex;
+    align-items: center;
   }
 
   .links a {
