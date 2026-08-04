@@ -95,18 +95,9 @@ function Hero() {
           </ul>
 
           <div className={styles.cardFooter}>
-            <div>
-              <span className="availability-dot" />
-              <span className={styles.availStrong}>Disponible</span>
-              <span className={styles.availText}> · respondo en &lt;24h</span>
-            </div>
-            <a
-              href="#servicios"
-              className="btn-primary"
-              style={{ padding: '0.55rem 1.25rem', fontSize: '0.82rem' }}
-            >
-              Agendar →
-            </a>
+            <span className="availability-dot" />
+            <span className={styles.availStrong}>Disponible</span>
+            <span className={styles.availText}> · respondo en &lt;24h</span>
           </div>
         </div>
       </div>

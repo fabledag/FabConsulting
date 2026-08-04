@@ -45,7 +45,10 @@ function Nav() {
   return (
     <nav className={[styles.nav, scrolled ? styles.navScrolled : ''].join(' ')} aria-label="Principal">
       <div className={`wrap ${styles.navInner}`}>
-        <a href="#inicio" className={styles.logo}>Fabiola Ledesma</a>
+        <a href="#inicio" className={styles.logo}>
+          <span className={styles.logoName}>Fabiola Ledesma</span>
+          <span className={styles.logoTagline}>Consultoría en UX, IA y Product Design</span>
+        </a>
 
         <button
           className={[styles.hamburger, open ? styles.isOpen : ''].join(' ')}

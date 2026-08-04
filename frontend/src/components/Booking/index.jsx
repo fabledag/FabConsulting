@@ -7,24 +7,24 @@ import styles from './Booking.module.css';
 
 const TRUST_ITEMS = [
   {
-    icon: 'fa-solid fa-bullseye',
-    title: '100% personalizado',
-    body: 'Todo lo que hablemos es para tu situación específica, no respuestas de manual ni consejos genéricos.',
+    icon: 'fa-solid fa-list-check',
+    title: '5 pasos, a tu ritmo',
+    body: 'Elige tu sesión, revisa los detalles, selecciona fecha y cuéntame brevemente qué te gustaría trabajar.',
   },
   {
-    icon: 'fa-solid fa-lightbulb',
-    title: 'Recomendaciones con criterio',
-    body: 'Te doy perspectiva real desde +15 años en la industria, no teoría de curso.',
+    icon: 'fa-solid fa-unlock-keyhole',
+    title: 'Sin contraseñas',
+    body: 'Confirmas tu cuenta con un enlace a tu correo — no necesitas crear ni recordar ninguna contraseña.',
   },
   {
-    icon: 'fa-solid fa-envelope',
-    title: 'Correo de confirmación automático',
-    body: 'Al agendar recibirás un correo con todos los detalles de pago para reservar tu lugar.',
+    icon: 'fa-solid fa-envelope-circle-check',
+    title: 'Te aviso en cuanto se confirme',
+    body: 'Si pagas con PayPal, tu sesión queda apartada y te confirmo por correo en cuanto recibo el pago. Si usas un crédito de Mentoría, queda confirmada al instante.',
   },
   {
-    icon: 'fa-solid fa-lock',
-    title: 'Tu sesión se confirma con el pago',
-    body: 'Una vez recibido el depósito, te confirmo la sesión y queda tu lugar apartado.',
+    icon: 'fa-solid fa-calendar-check',
+    title: 'Tú tienes el control',
+    body: 'Desde tu perfil puedes reagendar o cancelar tu sesión cuando quieras, hasta 24h antes.',
   },
 ];
 
@@ -300,8 +300,8 @@ function Booking() {
             </FadeUp>
             <FadeUp delay="0.1s">
               <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.65, marginBottom: '1.75rem' }}>
-                Elige el tipo de sesión que necesitas, tu horario, y confirma con tu cuenta. Podrás reagendar o
-                cancelar tú mismo/a desde tu perfil cuando quieras (hasta 24h antes).
+                Elige tu sesión, revisa los detalles, selecciona fecha y horario, cuéntame qué te gustaría trabajar
+                y confirma con tu cuenta — sin contraseñas, con un enlace a tu correo.
               </p>
             </FadeUp>
             <FadeUp delay="0.15s">
