@@ -99,9 +99,15 @@ function buildInvite({
     `DESCRIPTION:${escapeIcs(description)}`,
     'LOCATION:Videollamada',
     `ORGANIZER;CN=${escapeIcs(ORGANIZER_NAME)}:mailto:${organizerEmail}`,
+    // PARTSTAT=ACCEPTED;RSVP=FALSE on purpose. With NEEDS-ACTION + RSVP=TRUE,
+    // Gmail mails the RSVP back to the ORGANIZER — no-reply@fabdesign.digital,
+    // an address the domain cannot receive on. Every accept/decline then bounced
+    // around for 21 hours and landed in the inbox as a delivery-delay notice.
+    // Nothing is lost: RSVP status never synced back anyway (see note above),
+    // the booking state lives in the admin panel.
     ...attendees.map(
       (a) =>
-        `ATTENDEE;CN=${escapeIcs(a.name || a.email)};ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:${a.email}`
+        `ATTENDEE;CN=${escapeIcs(a.name || a.email)};ROLE=REQ-PARTICIPANT;PARTSTAT=ACCEPTED;RSVP=FALSE:mailto:${a.email}`
     ),
     `SEQUENCE:${sequence}`,
     `STATUS:${cancelled ? 'CANCELLED' : 'CONFIRMED'}`,
