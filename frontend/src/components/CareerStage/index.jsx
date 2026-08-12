@@ -10,7 +10,7 @@ const OPTIONS = [
 
 function CareerStage() {
   return (
-    <section id="momento-carrera" style={{ backgroundColor: 'var(--cream)' }}>
+    <section id="momento-carrera" style={{ backgroundColor: 'var(--page-bg)' }}>
       <div className="wrap" style={{ paddingTop: '3.5rem', paddingBottom: '3.5rem' }}>
         <FadeUp>
           <span className="section-eyebrow">Empecemos por aquí</span>

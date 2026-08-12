@@ -1,7 +1,7 @@
 /* Services.module.css */
 
 .services {
-  background: linear-gradient(135deg, var(--purple-900) 0%, var(--purple-800) 100%);
+  background: linear-gradient(135deg, var(--red-900) 0%, var(--red-800) 100%);
   color: #ffffff;
 }
 

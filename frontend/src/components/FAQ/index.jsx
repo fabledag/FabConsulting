@@ -25,7 +25,7 @@ function FAQ() {
   const [openIndex, setOpenIndex] = useState(null);
 
   return (
-    <section id="faq" style={{ backgroundColor: 'var(--cream)' }}>
+    <section id="faq" style={{ backgroundColor: 'var(--page-bg)' }}>
       <div className="wrap" style={{ paddingTop: '3.5rem', paddingBottom: '3.5rem' }}>
         <FadeUp style={{ textAlign: 'center' }}>
           <span className="section-eyebrow">Preguntas frecuentes</span>
