@@ -13,7 +13,7 @@ export const metadata = {
  */
 export default function NotFound() {
   return (
-    <div style={{ background: 'var(--page-bg)', minHeight: '100vh' }}>
+    <div style={{ background: 'var(--cream)', minHeight: '100vh' }}>
       <Nav />
       <main
         className="wrap"

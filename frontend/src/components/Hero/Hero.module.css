@@ -1,7 +1,7 @@
 /* Hero.module.css */
 
 .hero {
-  background: linear-gradient(135deg, var(--red-600) 0%, var(--red-800) 100%);
+  background: linear-gradient(135deg, #FAF9F6 0%, #F0EBF8 100%);
 }
 
 .heroInner {

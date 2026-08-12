@@ -131,14 +131,14 @@ function Profile() {
 
   if (authLoading || !user) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--page-bg)' }}>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--cream)' }}>
         <p style={{ color: 'var(--text-muted)' }}>Cargando…</p>
       </div>
     );
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--page-bg)' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--cream)' }}>
       <div className="wrap" style={{ paddingTop: '2.5rem', paddingBottom: '4rem', maxWidth: '860px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
           <a href="/" style={{ color: 'var(--purple-800)', fontWeight: 700, textDecoration: 'none' }}>

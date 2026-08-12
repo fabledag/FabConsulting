@@ -244,7 +244,7 @@ function Booking() {
   }
 
   return (
-    <section id="agenda" style={{ backgroundColor: 'var(--page-bg)' }}>
+    <section id="agenda" style={{ backgroundColor: 'var(--cream)' }}>
       <div className="wrap" style={{ paddingTop: '3.5rem', paddingBottom: '3.5rem' }}>
         <div className={styles.bookingInnerResponsive}>
           {/* Info column */}

@@ -45,7 +45,7 @@ function Admin() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--page-bg)' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--cream)' }}>
       <div className="wrap" style={{ paddingTop: '2.5rem', paddingBottom: '4rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
           <a href="/" style={{ color: 'var(--purple-800)', fontWeight: 700, textDecoration: 'none' }}>

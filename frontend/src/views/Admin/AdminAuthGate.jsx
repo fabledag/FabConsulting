@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 function shell(children) {
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--page-bg)', padding: '1.5rem' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--cream)', padding: '1.5rem' }}>
       <div style={{ width: '100%', maxWidth: '420px', background: '#ffffff', borderRadius: '16px', border: '1px solid var(--border)', boxShadow: '0 4px 24px rgba(82,58,168,0.08)', padding: '2.5rem 2rem' }}>
         <a href="/" style={{ display: 'inline-block', marginBottom: '1.5rem', color: 'var(--purple-800)', fontWeight: 700, textDecoration: 'none', fontSize: '1.1rem' }}>
           Fabiola Ledesma

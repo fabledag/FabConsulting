@@ -3,7 +3,7 @@
    of the same site rather than a bolted-on SEO surface. */
 
 .page {
-  background: var(--page-bg);
+  background: var(--cream);
   min-height: 100vh;
 }
 
@@ -42,7 +42,7 @@
 
 /* ── Hero ───────────────────────────────────────── */
 .hero {
-  background: linear-gradient(135deg, var(--red-900), var(--red-800));
+  background: linear-gradient(135deg, var(--purple-900), var(--purple-800));
   color: #ffffff;
   padding: 2.5rem 0 3rem;
   margin-top: 1.25rem;

@@ -27,7 +27,7 @@ function HowItWorks() {
   return (
     <section
       id="como-funciona"
-      style={{ backgroundColor: 'var(--page-bg)' }}
+      style={{ backgroundColor: 'var(--cream)' }}
     >
       <div className="wrap" style={{ paddingTop: '3.5rem', paddingBottom: '3.5rem' }}>
       <FadeUp>
