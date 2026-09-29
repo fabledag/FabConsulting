@@ -6,6 +6,7 @@ import WhatsAppFloat from '@/components/WhatsAppFloat/index.jsx';
 import JsonLd from '@/components/JsonLd.jsx';
 import WorkshopCta from '@/components/Workshops/WorkshopCta.jsx';
 import FabIcon from '@/components/FabIcon/index.jsx';
+import Parallax from '@/components/Parallax/index.jsx';
 import WorkshopInquiryForm from '@/components/Workshops/WorkshopInquiryForm.jsx';
 import {
   WORKSHOPS,
@@ -111,6 +112,7 @@ export default function TalleresEmpresariales() {
               </div>
             </div>
 
+            <Parallax speed={-0.06} minWidth={960}>
             <aside className={styles.heroCard} aria-label="Quién facilita los talleres">
               <div className={styles.heroCardTop}>
                 <Image
@@ -140,6 +142,7 @@ export default function TalleresEmpresariales() {
                 </div>
               </div>
             </aside>
+            </Parallax>
           </div>
         </section>
 

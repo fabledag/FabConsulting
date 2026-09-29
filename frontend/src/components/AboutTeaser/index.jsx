@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import FadeUp from '../FadeUp/index.jsx';
+import Parallax from '../Parallax/index.jsx';
 import styles from './AboutTeaser.module.css';
 
 /**
@@ -12,17 +13,21 @@ function AboutTeaser() {
     <section id="presentacion" className={styles.section} aria-labelledby="presentacion-title">
       <div className={`wrap ${styles.inner}`}>
         <FadeUp className={styles.photoWrap}>
-          <Image
-            src="/fabiola.jpg"
-            alt="Fabiola Ledesma, Senior Design Manager y consultora en UX, IA y Product Design"
-            width={1086}
-            height={1448}
-            sizes="(min-width: 900px) 420px, 90vw"
-            className={styles.photo}
-          />
-          <span className={styles.photoBadge}>
-            <strong>15+</strong> años diseñando productos digitales
-          </span>
+          {/* Photo and badge float together, a touch ahead of the scroll. */}
+          <Parallax speed={-0.06} className={styles.photoFloat}>
+            <Image
+              src="/fabiola.jpg"
+              alt="Fabiola Ledesma, Senior Design Manager y consultora en UX, IA y Product Design"
+              width={1086}
+              height={1448}
+              sizes="(min-width: 900px) 420px, 90vw"
+              className={styles.photo}
+            />
+            {/* Top of the photo, away from the "Conoce mi trayectoria" button. */}
+            <span className={styles.photoBadge}>
+              <strong>15+</strong> años diseñando productos digitales
+            </span>
+          </Parallax>
         </FadeUp>
 
         <FadeUp delay="0.05s" className={styles.copy}>

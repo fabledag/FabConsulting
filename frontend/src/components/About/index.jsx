@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import FadeUp from '../FadeUp/index.jsx';
+import Parallax from '../Parallax/index.jsx';
 
 const LOGOS = [
   { label: 'BBVA' },
@@ -90,6 +91,7 @@ function About({ asPage = false }) {
           {asPage ? (
             // /sobre-mi/ shows the stage photo; the studio portrait is the
             // one used on the home page's "Sobre mí".
+            <Parallax speed={-0.05} minWidth={640}>
             <Image
               src="/images/fabiola-escenario.jpg"
               alt="Fabiola Ledesma dando una conferencia en un escenario, con micrófono"
@@ -98,6 +100,7 @@ function About({ asPage = false }) {
               sizes="(min-width: 900px) 240px, (min-width: 640px) 220px, 80vw"
               className="about-stage-photo"
             />
+            </Parallax>
           ) : (
           <div
             className="about-photo-frame"

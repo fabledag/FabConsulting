@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import FadeUp from '../FadeUp/index.jsx';
 import FabIcon from '../FabIcon/index.jsx';
+import Parallax from '../Parallax/index.jsx';
 import { WORKSHOPS, WORKSHOPS_PATH, WORKSHOP_VALUES, WORKSHOP_AUDIENCES } from '@/lib/workshops.js';
 import styles from './WorkshopsTeaser.module.css';
 
@@ -51,7 +52,8 @@ function WorkshopsTeaser() {
           </div>
         </FadeUp>
 
-        <div className={styles.cards}>
+        {/* Cards float slightly ahead of the scroll over the dark band. */}
+        <Parallax speed={-0.05} className={styles.cards}>
           {WORKSHOPS.map((w, i) => (
             <FadeUp key={w.key} delay={`${0.08 + i * 0.08}s`}>
               <Link href={`${WORKSHOPS_PATH}#${w.anchor}`} className={styles.card}>
@@ -67,7 +69,7 @@ function WorkshopsTeaser() {
               </Link>
             </FadeUp>
           ))}
-        </div>
+        </Parallax>
       </div>
     </section>
   );

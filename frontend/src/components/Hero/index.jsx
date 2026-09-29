@@ -1,4 +1,5 @@
 import { WORKSHOPS_PATH } from '@/lib/workshops.js';
+import Parallax from '../Parallax/index.jsx';
 import styles from './Hero.module.css';
 
 const STATS = [
@@ -13,6 +14,8 @@ function Hero() {
     // The abstract background (public/images/hero-bg*.jpg) replaced the
     // "Claridad sobre tu siguiente paso" card on 2026-09-29.
     <section className={styles.hero} id="inicio">
+      {/* Desktop: the artwork on its own layer, drifting slower than the page. */}
+      <Parallax speed={0.18} minWidth={900} className={styles.heroBg} />
       <div className={`wrap ${styles.heroInner}`}>
       {/* ─── Content ─────────────────────────────────── */}
       <div className={styles.heroContent}>

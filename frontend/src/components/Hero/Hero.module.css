@@ -15,7 +15,13 @@
   background-position: top left, right bottom;
 }
 
+.heroBg {
+  display: none;
+}
+
 .heroInner {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: 1fr;
   padding-top: 2.5rem;
@@ -115,9 +121,23 @@
 /* lg: 900px — artwork as a full background, copy on its light left half. */
 @media (min-width: 900px) {
   .hero {
+    position: relative;
+    overflow: hidden;
+    background-image: none;
+  }
+
+  /* Taller than the hero so the parallax drift never uncovers an edge. */
+  .heroBg {
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -28%;
+    bottom: -8%;
     background-image: url('/images/hero-bg.jpg');
     background-size: cover;
     background-position: 62% center;
+    pointer-events: none;
   }
 
   .heroInner {

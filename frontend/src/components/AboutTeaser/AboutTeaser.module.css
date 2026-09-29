@@ -41,27 +41,36 @@
   box-shadow: 0 24px 60px rgba(30, 17, 69, 0.18), 0 6px 18px rgba(30, 17, 69, 0.08);
 }
 
+.photoFloat {
+  position: relative;
+}
+
+/* White card at the top of the photo — a different colour from the purple
+   "Conoce mi trayectoria" button so the two don't compete. */
 .photoBadge {
   position: absolute;
   left: -0.75rem;
-  bottom: 1.75rem;
+  top: 1.5rem;
   display: inline-flex;
   align-items: baseline;
-  gap: 0.35rem;
+  gap: 0.4rem;
   max-width: 85%;
-  background: var(--purple-800);
-  color: #ffffff;
+  background: #ffffff;
+  color: var(--purple-900);
   font-size: 0.85rem;
+  font-weight: 500;
   line-height: 1.3;
   padding: 0.6rem 1rem;
   border-radius: 12px;
-  box-shadow: 0 10px 28px rgba(30, 17, 69, 0.3);
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 30px rgba(30, 17, 69, 0.16);
 }
 
 .photoBadge strong {
   font-family: 'Fraunces', Georgia, serif;
   font-size: 1.5rem;
   font-weight: 600;
+  color: var(--orange-display);
 }
 
 .copy {
