@@ -221,3 +221,14 @@
   outline: 3px solid var(--orange);
   outline-offset: 2px;
 }
+
+/* The global .btn-primary is nowrap; inside a card on a ~320px phone that
+   forced the card (and the page) wider than the screen. */
+.card {
+  min-width: 0;
+}
+
+.cardCta {
+  white-space: normal;
+  text-align: center;
+}

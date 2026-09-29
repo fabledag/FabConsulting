@@ -6,7 +6,7 @@ import SlotPicker from '../SlotPicker/index.jsx';
 import { useAuth } from '../../hooks/useAuth.js';
 import { apiFetch, getLastEmail } from '@/lib/api.js';
 import { SERVICES_BY_KEY } from '@/lib/services.js';
-import { takePreselectedService, takePendingSelection, savePendingSelection } from '@/lib/bookingStorage.js';
+import { takePreselectedService, takePendingSelection, savePendingSelection, PRESELECT_EVENT } from '@/lib/bookingStorage.js';
 import styles from './Booking.module.css';
 
 const TRUST_ITEMS = [
@@ -87,13 +87,21 @@ function Booking() {
   const canGoToStep5 = name.trim().length >= 2;
   const emailError = emailTouched && email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? 'Revisa que el correo tenga un formato válido.' : '';
 
-  // Pick up a service chosen from a Services card / career-stage link.
+  // Pick up a service chosen from a Services card or a /asesorias page —
+  // on mount (arriving from another page) and on PRESELECT_EVENT (a card on
+  // this same page, where Booking is already mounted and the mount-time read
+  // has long passed).
   useEffect(() => {
-    const preselected = takePreselectedService();
-    if (preselected && SERVICES[preselected]) {
-      setSelectedService(preselected);
-      setStep(2);
-    }
+    const apply = (e) => {
+      const preselected = takePreselectedService() || e?.detail;
+      if (preselected && SERVICES[preselected]) {
+        setSelectedService(preselected);
+        setStep(2);
+      }
+    };
+    apply();
+    window.addEventListener(PRESELECT_EVENT, apply);
+    return () => window.removeEventListener(PRESELECT_EVENT, apply);
   }, []);
 
   // Restore an in-progress selection after the magic-link round trip.
@@ -737,7 +745,7 @@ function Booking() {
                       {CANCELLATION_POLICY}
                     </p>
 
-                    <a href="/#/profile" className={styles.formSubmit} style={{ display: 'block', textAlign: 'center' }}>
+                    <a href="/profile/" className={styles.formSubmit} style={{ display: 'block', textAlign: 'center' }}>
                       Ver mi perfil →
                     </a>
                   </div>

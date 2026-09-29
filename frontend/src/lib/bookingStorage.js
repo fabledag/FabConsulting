@@ -44,9 +44,20 @@ function remove(key) {
   }
 }
 
+// Fired alongside the write so a Booking widget that's already mounted (a
+// card on the same page as #agenda) picks the service up immediately. On a
+// fresh page load there's no listener yet and Booking reads storage on mount.
+export const PRESELECT_EVENT = 'booking:preselect';
+
 /** Service chosen from a landing card or a /asesorias page. */
 export function setPreselectedService(key) {
   write(PRESELECTED_KEY, key);
+  try {
+    // The key rides along too, for when storage itself is blocked.
+    window.dispatchEvent(new CustomEvent(PRESELECT_EVENT, { detail: key }));
+  } catch {
+    /* ignore */
+  }
 }
 
 export function takePreselectedService() {

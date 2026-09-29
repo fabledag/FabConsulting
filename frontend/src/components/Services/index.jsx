@@ -58,7 +58,7 @@ function Services() {
 
             <a
               href="#agenda"
-              className="btn-primary"
+              className={`btn-primary ${styles.cardCta}`}
               style={{ justifyContent: 'center', width: '100%' }}
               onClick={() => selectService(key)}
             >

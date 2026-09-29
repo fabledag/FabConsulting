@@ -17,8 +17,7 @@ const columnLabelStyle = {
   marginBottom: '0.9rem',
 };
 
-// `anchorBase="/"` on pages other than home, so #servicios points back there.
-function Footer({ anchorBase = '' }) {
+function Footer() {
   return (
     <footer style={{ backgroundColor: '#523AA8', color: 'rgba(255,255,255,0.75)' }}>
       <div className="wrap" style={{ paddingTop: '3rem', paddingBottom: '2rem' }}>
@@ -53,7 +52,7 @@ function Footer({ anchorBase = '' }) {
               <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" style={linkStyle}>
                 Instagram
               </a>
-              <a href={`${anchorBase}#servicios`} style={linkStyle}>
+              <a href="/#servicios" style={linkStyle}>
                 Agenda tu asesoría
               </a>
             </div>

@@ -1,14 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import styles from './Nav.module.css';
 import { useAuth } from '../../hooks/useAuth.js';
 import { getDisplayName } from '../../utils/displayName.js';
 import { WORKSHOPS_PATH } from '@/lib/workshops.js';
 
-// `#…` entries are sections of the home page; `anchorBase` turns them into
-// `/#…` on other pages, where those sections don't exist. Full paths are
-// left alone.
+// `#…` entries are sections of the home page. On any other page they become
+// `/#…`, since those sections only exist on home. Full paths are left alone.
+// (Kept relative on home itself so a `?utm=…` query isn't dropped by a
+// reload on every click.)
 const NAV_LINKS = [
   { href: '#inicio', label: 'Inicio' },
   { href: '#servicios', label: 'Asesorías' },
@@ -18,8 +20,9 @@ const NAV_LINKS = [
   { href: '#servicios', label: 'Agenda tu sesión', cta: true },
 ];
 
-function Nav({ anchorBase = '' }) {
-  const resolve = (href) => (href.startsWith('#') ? `${anchorBase}${href}` : href);
+function Nav() {
+  const onHome = usePathname() === '/';
+  const resolve = (href) => (href.startsWith('#') && !onHome ? `/${href}` : href);
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { user } = useAuth();
@@ -83,7 +86,7 @@ function Nav({ anchorBase = '' }) {
             </li>
           ))}
           <li>
-            <a href={user ? '/#/profile' : '/#/login'} className={styles.accountLink} onClick={close}>
+            <a href={user ? '/profile/' : '/login/'} className={styles.accountLink} onClick={close}>
               <i className="fa-solid fa-circle-user" aria-hidden="true" />
               {user ? `Mi cuenta · ${getDisplayName(user)}` : 'Iniciar sesión'}
             </a>

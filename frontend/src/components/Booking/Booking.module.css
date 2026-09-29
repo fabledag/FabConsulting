@@ -82,6 +82,21 @@
   margin: 0 0.5rem;
 }
 
+/* Five nowrap labels don't fit on a phone and pushed the page sideways.
+   Narrow screens keep every number but only the current step's label. */
+@media (max-width: 560px) {
+  .stepLabel {
+    display: none;
+  }
+  .step.active .stepLabel {
+    display: inline;
+  }
+  .stepLine {
+    min-width: 0.5rem;
+    margin: 0 0.3rem;
+  }
+}
+
 .stepTitle {
   font-family: 'Fraunces', Georgia, serif;
   font-size: 1.1rem;
@@ -381,4 +396,15 @@
   color: #dc2626;
   font-weight: 700;
   margin-left: 0.1rem;
+}
+
+/* Two service columns don't fit on the smallest phones (~320px). */
+.serviceOption {
+  min-width: 0;
+}
+
+@media (max-width: 380px) {
+  .serviceOptions {
+    grid-template-columns: 1fr;
+  }
 }

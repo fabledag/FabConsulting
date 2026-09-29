@@ -56,9 +56,7 @@ export default function TalleresEmpresariales() {
   return (
     <div className={styles.page}>
       <JsonLd schema={pageSchema} />
-      {/* Section links point back to the home page (/#servicios…): those
-          sections don't exist here. */}
-      <Nav anchorBase="/" />
+      <Nav />
 
       <main>
         <div className="wrap">
@@ -176,7 +174,7 @@ export default function TalleresEmpresariales() {
         </section>
       </main>
 
-      <Footer anchorBase="/" />
+      <Footer />
       <WhatsAppFloat />
     </div>
   );
