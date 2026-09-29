@@ -1,17 +1,45 @@
 /* Workshops.module.css — /talleres-empresariales/ only.
-   Reuses the global tokens and .btn-primary/.btn-ghost/.section-* classes
-   without overriding them; everything here is scoped to this page. */
+   Reuses the global tokens and .btn-primary/.section-* classes without
+   overriding them; everything here is scoped to this page. The hero is a
+   dark band with orange accents so the business offer reads as a product. */
 
 .page {
   background: var(--cream);
   min-height: 100vh;
 }
 
-/* ── Breadcrumb + header ── */
+/* ── Hero ── */
+.hero {
+  position: relative;
+  overflow: hidden;
+  color: #ffffff;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(255, 138, 71, 0.2), transparent 45%),
+    radial-gradient(circle at 5% 95%, rgba(155, 133, 214, 0.28), transparent 50%),
+    linear-gradient(135deg, var(--purple-900) 0%, #2d1b69 55%, var(--purple-800) 100%);
+}
+
+.heroInner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  padding-top: 1.5rem;
+  padding-bottom: 3.5rem;
+  align-items: center;
+}
+
+@media (min-width: 960px) {
+  .heroInner {
+    grid-template-columns: 1.3fr 1fr;
+    gap: 3.5rem;
+    padding-bottom: 5rem;
+  }
+}
+
 .breadcrumb {
   font-size: 0.78rem;
-  color: var(--text-muted);
-  padding-top: 1.5rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 2rem;
 }
 
 .breadcrumb ol {
@@ -25,73 +53,238 @@
 }
 
 .breadcrumb a {
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.65);
   text-decoration: none;
 }
 
 .breadcrumb a:hover {
-  color: var(--purple-800);
+  color: #ffffff;
 }
 
 .breadcrumb [aria-current='page'] {
-  color: var(--purple-900);
+  color: #ffffff;
   font-weight: 500;
 }
 
-.header {
-  padding: 2rem 0 3rem;
-  max-width: 68ch;
+.heroEyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--purple-900);
+  background: var(--orange);
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  margin-bottom: 1.1rem;
 }
 
 .title {
   font-family: 'Fraunces', Georgia, serif;
-  font-size: clamp(2rem, 5.5vw, 3rem);
-  font-weight: 400;
-  line-height: 1.12;
-  color: var(--purple-900);
-  margin: 0 0 1rem;
+  font-size: clamp(2.1rem, 5.5vw, 3.3rem);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  margin: 0 0 1.1rem;
 }
 
 .title em {
   font-style: italic;
-  color: var(--purple-600);
+  color: var(--orange);
 }
 
 .intro {
-  font-size: 1rem;
+  font-size: 1.05rem;
   line-height: 1.7;
-  color: var(--text-muted);
-  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  margin: 0 0 1.5rem;
+  max-width: 58ch;
+}
+
+.values {
+  list-style: none;
+  margin: 0 0 2rem;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.values li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
+}
+
+.values i {
+  color: var(--orange);
 }
 
 .headerActions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
-  margin-top: 1.75rem;
+}
+
+/* White primary / outlined secondary: the purple .btn-primary would vanish
+   on the dark hero, and orange is reserved for accents, not buttons. */
+.ctaPrimary,
+.ctaGhost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-decoration: none;
+  padding: 0.85rem 1.6rem;
+  border-radius: 10px;
+  transition: transform 0.2s, background-color 0.2s, border-color 0.2s;
+}
+
+.ctaPrimary {
+  background: #ffffff;
+  color: var(--purple-800);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.ctaPrimary:hover {
+  transform: translateY(-1px);
+  background: var(--purple-50);
+}
+
+.ctaGhost {
+  color: #ffffff;
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
+}
+
+.ctaGhost:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #ffffff;
+}
+
+.heroCard {
+  background: #ffffff;
+  color: var(--text-dark);
+  border-radius: 18px;
+  padding: 1.75rem;
+  box-shadow: 0 24px 60px rgba(10, 4, 40, 0.45);
+}
+
+.heroCardTop {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.heroPhoto {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--purple-100);
+}
+
+.heroCardName {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--purple-900);
+}
+
+.heroCardRole {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.heroFacts {
+  list-style: none;
+  margin: 1.25rem 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.heroFacts li {
+  position: relative;
+  padding-left: 1.4rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.heroFacts li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.45em;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: var(--orange);
+}
+
+.heroFacts strong {
+  color: var(--purple-900);
+}
+
+.heroCardFoot {
+  background: var(--purple-50);
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+}
+
+.heroCardLabel {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--purple-600);
+  margin-bottom: 0.5rem;
+}
+
+.audiences {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.audiences span {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--purple-800);
+  background: #ffffff;
+  border: 1px solid var(--purple-200);
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
 }
 
 /* ── Workshops ── */
 .workshopsSection {
-  background: linear-gradient(135deg, var(--purple-900) 0%, var(--purple-800) 100%);
-  color: #ffffff;
-  padding: 3.5rem 0;
+  padding: 4rem 0;
   scroll-margin-top: 4rem;
 }
 
-/* Descendant selector so it beats the global .section-title color. */
-.workshopsSection .sectionTitleLight {
-  color: #ffffff;
-}
-
-.workshopsSection .sectionTitleLight em {
-  color: var(--orange);
+.sectionHead {
+  margin-bottom: 2rem;
 }
 
 .grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
 @media (min-width: 900px) {
@@ -101,58 +294,87 @@
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 12px;
-  padding: 1.75rem 1.5rem;
+  position: relative;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-top: 5px solid var(--purple-800);
+  border-radius: 16px;
+  padding: 2rem 1.75rem 1.75rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.1rem;
+  box-shadow: 0 12px 36px rgba(82, 58, 168, 0.08);
   scroll-margin-top: 5rem;
 }
 
-.tag {
-  align-self: flex-start;
-  font-size: 0.68rem;
+.card:nth-child(2) {
+  border-top-color: var(--orange);
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cardIcon {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  font-size: 1.4rem;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--purple-800), var(--purple-600));
+  box-shadow: 0 8px 20px rgba(82, 58, 168, 0.3);
+}
+
+.card:nth-child(2) .cardIcon {
+  background: linear-gradient(135deg, var(--orange-dark), var(--orange));
+  box-shadow: 0 8px 20px rgba(229, 112, 48, 0.3);
+}
+
+.cardNum {
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--purple-900);
-  background: var(--orange);
-  padding: 0.25rem 0.65rem;
-  border-radius: 999px;
+  color: var(--purple-400);
 }
 
 .cardTitle {
   font-family: 'Fraunces', Georgia, serif;
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 600;
-  line-height: 1.25;
-  color: #ffffff;
+  line-height: 1.2;
+  color: var(--purple-900);
   margin: 0;
 }
 
 .cardDesc {
-  font-size: 0.95rem;
+  font-size: 0.98rem;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--text-dark);
   margin: 0;
 }
 
 .cardBlock p {
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--text-muted);
   margin: 0;
 }
 
 .cardLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(200, 185, 255, 0.95);
-  margin: 0 0 0.4rem;
+  color: var(--purple-600);
+  margin: 0 0 0.5rem;
 }
 
 .topics {
@@ -160,33 +382,42 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 0.4rem;
+  gap: 0.55rem;
 }
 
 .topics li {
-  position: relative;
-  padding-left: 1.1rem;
-  font-size: 0.875rem;
+  display: flex;
+  gap: 0.6rem;
+  font-size: 0.9rem;
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--text-dark);
 }
 
-.topics li::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0.55em;
-  width: 6px;
-  height: 6px;
+.topics i {
+  flex-shrink: 0;
+  margin-top: 0.2rem;
+  width: 1.1rem;
+  height: 1.1rem;
   border-radius: 50%;
-  background: var(--orange);
+  display: grid;
+  place-items: center;
+  font-size: 0.6rem;
+  color: #ffffff;
+  background: #22c55e;
 }
 
 .exercise {
-  background: rgba(255, 255, 255, 0.06);
-  border-left: 3px solid var(--orange);
-  border-radius: 0 8px 8px 0;
-  padding: 0.85rem 1rem;
+  background: var(--purple-50);
+  border: 1px dashed var(--purple-200);
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+}
+
+.exercise p {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--purple-900);
+  margin: 0;
 }
 
 .cardCta {
@@ -194,30 +425,61 @@
   justify-content: center;
   white-space: normal;
   text-align: center;
-}
-
-/* The purple button would vanish on the purple section. */
-.workshopsSection .cardCta {
-  background-color: #ffffff;
-  color: var(--purple-800);
-}
-
-.workshopsSection .cardCta:hover {
-  background-color: var(--purple-50);
+  padding-top: 0.9rem;
+  padding-bottom: 0.9rem;
 }
 
 .scopeNote {
-  margin: 1.75rem 0 0;
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  margin: 2rem 0 0;
   font-size: 0.9rem;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.7);
-  max-width: 68ch;
+  color: var(--text-muted);
+  max-width: 72ch;
+}
+
+.scopeNote i {
+  color: var(--purple-600);
 }
 
 /* ── Process ── */
 .processSection {
-  padding: 3.5rem 0;
-  background: #ffffff;
+  padding: 4rem 0;
+  background: linear-gradient(135deg, var(--purple-900) 0%, var(--purple-800) 100%);
+  color: #ffffff;
+}
+
+.sectionHeadLight {
+  margin-bottom: 2rem;
+}
+
+.darkEyebrow {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(200, 185, 255, 0.95);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  margin-bottom: 0.75rem;
+}
+
+.darkTitle {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #ffffff;
+  margin: 0;
+}
+
+.darkTitle em {
+  font-style: italic;
+  color: var(--orange);
 }
 
 .process {
@@ -242,32 +504,48 @@
 }
 
 .processStep {
-  background: var(--cream);
-  border: 1px solid var(--border);
-  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
   padding: 1.5rem;
 }
 
+.processTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.processIcon {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+  color: var(--purple-900);
+  background: var(--orange);
+}
+
 .processNum {
-  display: block;
   font-family: 'Fraunces', Georgia, serif;
-  font-size: 2.25rem;
+  font-size: 2rem;
   line-height: 1;
-  color: var(--purple-200);
-  margin-bottom: 0.75rem;
+  color: rgba(255, 255, 255, 0.2);
 }
 
 .processTitle {
-  font-size: 1rem;
+  font-size: 1.02rem;
   font-weight: 600;
-  color: var(--purple-900);
+  color: #ffffff;
   margin: 0 0 0.4rem;
 }
 
 .processDesc {
   font-size: 0.875rem;
   line-height: 1.6;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.7);
   margin: 0;
 }
 
@@ -440,4 +718,32 @@ textarea.input {
 .page button:focus-visible {
   outline: 3px solid var(--orange);
   outline-offset: 2px;
+}
+
+.formSteps {
+  list-style: none;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.formSteps li {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--purple-900);
+}
+
+.formSteps i {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-size: 0.85rem;
+  color: var(--purple-800);
+  background: var(--purple-100);
 }

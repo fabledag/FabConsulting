@@ -1,39 +1,47 @@
+import Link from 'next/link';
+import { WORKSHOPS_PATH } from '@/lib/workshops.js';
+import { SERVICES } from '@/lib/services.js';
+import styles from './CtaStrip.module.css';
+
+/**
+ * Closing "siguientes pasos": the two ways to work together, plus a pointer
+ * to the FAQ page. Used on home and on the content pages, so the section
+ * link is `/#servicios` (on home that's a plain same-page scroll).
+ */
+// Read from services.js so a price change never leaves this line stale.
+const FROM_PRICE = Math.min(...SERVICES.map((s) => s.price)).toLocaleString('en-US');
+
 function CtaStrip() {
   return (
-    <section
-      style={{
-        background: '#1E1145',
-        color: '#ffffff',
-        textAlign: 'center',
-      }}
-    >
-      <div className="wrap" style={{ paddingTop: '4rem', paddingBottom: '4rem' }}>
-      <h2
-        style={{
-          fontFamily: "'Fraunces', Georgia, serif",
-          fontSize: '1.6rem',
-          fontWeight: 600,
-          color: '#ffffff',
-          lineHeight: 1.25,
-          marginBottom: '0.75rem',
-          letterSpacing: '-0.02em',
-        }}
-      >
-        ¿Lista o listo para trabajar en tu <em style={{ fontStyle: 'italic', color: '#FF8A47' }}>siguiente paso</em>?
-      </h2>
-      <p
-        style={{
-          fontSize: '0.95rem',
-          color: 'rgba(255,255,255,0.6)',
-          marginBottom: '1.75rem',
-          lineHeight: 1.5,
-        }}
-      >
-        Elige la sesión que mejor se adapte a lo que necesitas y reserva un horario.
-      </p>
-      <a href="#servicios" className="btn-primary">
-        Agenda tu asesoría →
-      </a>
+    <section className={styles.section} aria-labelledby="siguientes-pasos-title">
+      <div className={`wrap ${styles.inner}`}>
+        <h2 id="siguientes-pasos-title" className={styles.title}>
+          ¿Lista o listo para dar tu <em>siguiente paso</em>?
+        </h2>
+        <p className={styles.sub}>Elige cómo quieres que trabajemos juntos.</p>
+
+        <div className={styles.paths}>
+          <a href="/#servicios" className={styles.path}>
+            <span className={styles.pathIcon} aria-hidden="true"><i className="fa-solid fa-user" /></span>
+            <span className={styles.pathBody}>
+              <span className={styles.pathTitle}>Para ti</span>
+              <span className={styles.pathDesc}>Asesorías 1:1 desde ${FROM_PRICE} MXN</span>
+            </span>
+            <span className={styles.pathCta}>Agenda tu asesoría →</span>
+          </a>
+          <Link href={WORKSHOPS_PATH} className={styles.path}>
+            <span className={styles.pathIcon} aria-hidden="true"><i className="fa-solid fa-people-group" /></span>
+            <span className={styles.pathBody}>
+              <span className={styles.pathTitle}>Para tu equipo</span>
+              <span className={styles.pathDesc}>Talleres a la medida del contexto del equipo</span>
+            </span>
+            <span className={styles.pathCta}>Talleres para empresas →</span>
+          </Link>
+        </div>
+
+        <p className={styles.faq}>
+          ¿Tienes dudas? <Link href="/preguntas-frecuentes/">Revisa las preguntas frecuentes</Link>
+        </p>
       </div>
     </section>
   );

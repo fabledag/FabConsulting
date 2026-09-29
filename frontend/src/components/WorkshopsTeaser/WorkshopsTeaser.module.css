@@ -1,84 +1,249 @@
-/* WorkshopsTeaser.module.css — home-page summary of the workshops. */
+/* WorkshopsTeaser.module.css — home-page pitch for the workshops.
+   Dark band with orange accents so the business offer reads as its own
+   product, distinct from the individual sessions above it. */
 
 .section {
-  background: var(--purple-50);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 85% 15%, rgba(255, 138, 71, 0.18), transparent 45%),
+    radial-gradient(circle at 10% 90%, rgba(155, 133, 214, 0.25), transparent 50%),
+    linear-gradient(135deg, var(--purple-900) 0%, #2d1b69 55%, var(--purple-800) 100%);
+  color: #ffffff;
 }
 
 .inner {
-  padding-top: 3.5rem;
-  padding-bottom: 3.5rem;
-}
-
-.header {
-  max-width: 62ch;
-  margin-bottom: 1.75rem;
-}
-
-.intro {
-  font-size: 0.95rem;
-  line-height: 1.65;
-  color: var(--text-muted);
-  margin: 0;
-}
-
-.grid {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1rem;
+  gap: 2.5rem;
+  align-items: center;
 }
 
-@media (min-width: 768px) {
-  .grid {
-    grid-template-columns: 1fr 1fr;
+@media (min-width: 960px) {
+  .inner {
+    grid-template-columns: 1.05fr 1fr;
+    gap: 3.5rem;
+    padding-top: 5rem;
+    padding-bottom: 5rem;
   }
 }
 
-.card {
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--purple-900);
+  background: var(--orange);
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: clamp(1.9rem, 4.5vw, 2.75rem);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  margin: 0 0 1rem;
+}
+
+.title em {
+  font-style: italic;
+  color: var(--orange);
+}
+
+.intro {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0 0 1.5rem;
+  max-width: 52ch;
+}
+
+.values {
+  list-style: none;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.values li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
+}
+
+.values i {
+  color: var(--orange);
+}
+
+.audiences {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 2rem;
+}
+
+.audiencesLabel {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin-right: 0.25rem;
+}
+
+.audience {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(200, 185, 255, 0.95);
+  border-bottom: 1px dashed rgba(200, 185, 255, 0.4);
+}
+
+.audience + .audience::before {
+  content: '·';
+  margin-right: 0.4rem;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* Local buttons: the global .btn-primary is purple and would disappear on
+   this band. White primary + outlined secondary keep the brand's purple
+   text without introducing orange buttons. */
+.ctaPrimary,
+.ctaGhost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-decoration: none;
+  padding: 0.85rem 1.6rem;
+  border-radius: 10px;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s, border-color 0.2s;
+}
+
+.ctaPrimary {
   background: #ffffff;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.5rem;
+  color: var(--purple-800);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.ctaPrimary:hover {
+  transform: translateY(-1px);
+  background: var(--purple-50);
+}
+
+.ctaGhost {
+  color: #ffffff;
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
+}
+
+.ctaGhost:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #ffffff;
+}
+
+.cards {
+  display: grid;
+  gap: 1rem;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  background: #ffffff;
+  color: var(--text-dark);
+  text-decoration: none;
+  border-radius: 16px;
+  padding: 1.4rem 1.4rem;
+  box-shadow: 0 14px 40px rgba(10, 4, 40, 0.35);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 48px rgba(10, 4, 40, 0.45);
+}
+
+.cardIcon {
+  flex-shrink: 0;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-size: 1.3rem;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--purple-800), var(--purple-600));
+}
+
+.cardBody {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.cardKicker {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--orange-dark);
 }
 
 .cardTitle {
   font-family: 'Fraunces', Georgia, serif;
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.25;
   color: var(--purple-900);
-  margin: 0;
 }
 
 .cardDesc {
-  font-size: 0.9rem;
-  line-height: 1.6;
+  font-size: 0.85rem;
+  line-height: 1.5;
   color: var(--text-muted);
-  margin: 0;
 }
 
-.cardLink {
-  margin-top: auto;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--purple-800);
-  text-decoration: none;
+.cardArrow {
+  margin-left: auto;
+  flex-shrink: 0;
+  color: var(--purple-600);
+  transition: transform 0.2s;
 }
 
-.cardLink:hover {
-  text-decoration: underline;
+.card:hover .cardArrow {
+  transform: translateX(3px);
 }
 
-.cardLink:focus-visible {
+.ctaPrimary:focus-visible,
+.ctaGhost:focus-visible,
+.card:focus-visible {
   outline: 3px solid var(--orange);
-  outline-offset: 2px;
-  border-radius: 2px;
-}
-
-.actions {
-  margin-top: 1.75rem;
+  outline-offset: 3px;
 }

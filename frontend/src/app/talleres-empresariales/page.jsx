@@ -1,11 +1,19 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import Nav from '@/components/Nav/index.jsx';
 import Footer from '@/components/Footer/index.jsx';
 import WhatsAppFloat from '@/components/WhatsAppFloat/index.jsx';
 import JsonLd from '@/components/JsonLd.jsx';
 import WorkshopCta from '@/components/Workshops/WorkshopCta.jsx';
 import WorkshopInquiryForm from '@/components/Workshops/WorkshopInquiryForm.jsx';
-import { WORKSHOPS, WORKSHOP_PROCESS, SCOPE_NOTE, WORKSHOPS_PATH } from '@/lib/workshops.js';
+import {
+  WORKSHOPS,
+  WORKSHOP_PROCESS,
+  WORKSHOP_VALUES,
+  WORKSHOP_AUDIENCES,
+  SCOPE_NOTE,
+  WORKSHOPS_PATH,
+} from '@/lib/workshops.js';
 import { buildMetadata, absoluteUrl, breadcrumbSchema } from '@/lib/seo.js';
 import styles from '@/components/Workshops/Workshops.module.css';
 
@@ -59,47 +67,100 @@ export default function TalleresEmpresariales() {
       <Nav />
 
       <main>
-        <div className="wrap">
-          <nav className={styles.breadcrumb} aria-label="Ruta de navegación">
-            <ol>
-              <li><Link href="/">Inicio</Link></li>
-              <li aria-hidden="true">›</li>
-              <li aria-current="page">Talleres para empresas</li>
-            </ol>
-          </nav>
+        {/* ── Hero ── */}
+        <section className={styles.hero} aria-labelledby="talleres-h1">
+          <div className={`wrap ${styles.heroInner}`}>
+            <div className={styles.heroCopy}>
+              <nav className={styles.breadcrumb} aria-label="Ruta de navegación">
+                <ol>
+                  <li><Link href="/">Inicio</Link></li>
+                  <li aria-hidden="true">›</li>
+                  <li aria-current="page">Talleres para empresas</li>
+                </ol>
+              </nav>
 
-          <header className={styles.header}>
-            <span className="section-eyebrow">Para equipos</span>
-            <h1 className={styles.title}>
-              Talleres para <em>empresas</em>
-            </h1>
-            <p className={styles.intro}>
-              Talleres para equipos de diseño, producto, innovación y negocio que necesitan alinear
-              decisiones, presentar propuestas con claridad o explorar cómo el diseño y la IA pueden
-              aportar a un reto concreto. Cada taller se adapta al contexto del equipo y se trabaja
-              sobre casos propios.
-            </p>
-            <div className={styles.headerActions}>
-              <a href="#solicitud" className="btn-primary">
-                Solicita información
-              </a>
-              <a href="#talleres" className="btn-ghost">
-                Ver los talleres
-              </a>
+              <span className={styles.heroEyebrow}>
+                <i className="fa-solid fa-building" aria-hidden="true" /> Talleres para empresas
+              </span>
+              <h1 id="talleres-h1" className={styles.title}>
+                Talleres para <em>equipos</em> que necesitan alinear y avanzar
+              </h1>
+              <p className={styles.intro}>
+                Talleres para equipos de diseño, producto, innovación y negocio que necesitan alinear
+                decisiones, presentar propuestas con claridad o explorar cómo el diseño y la IA pueden
+                aportar a un reto concreto.
+              </p>
+
+              <ul className={styles.values}>
+                {WORKSHOP_VALUES.map(({ icon, label }) => (
+                  <li key={label}>
+                    <i className={icon} aria-hidden="true" />
+                    {label}
+                  </li>
+                ))}
+              </ul>
+
+              <div className={styles.headerActions}>
+                <a href="#solicitud" className={styles.ctaPrimary}>
+                  Solicita una propuesta
+                </a>
+                <a href="#talleres" className={styles.ctaGhost}>
+                  Ver los talleres
+                </a>
+              </div>
             </div>
-          </header>
-        </div>
 
+            <aside className={styles.heroCard} aria-label="Quién facilita los talleres">
+              <div className={styles.heroCardTop}>
+                <Image
+                  src="/fabiola.jpg"
+                  alt="Fabiola Ledesma"
+                  width={64}
+                  height={64}
+                  className={styles.heroPhoto}
+                  priority
+                />
+                <div>
+                  <div className={styles.heroCardName}>Fabiola Ledesma</div>
+                  <div className={styles.heroCardRole}>Facilitadora · Senior Design Manager</div>
+                </div>
+              </div>
+              <ul className={styles.heroFacts}>
+                <li><strong>15+</strong> años diseñando productos digitales</li>
+                <li><strong>8+</strong> años liderando equipos de diseño en banca digital</li>
+                <li>Formación de talento digital en <strong>Colectivo23</strong></li>
+              </ul>
+              <div className={styles.heroCardFoot}>
+                <span className={styles.heroCardLabel}>Ideal para equipos de</span>
+                <div className={styles.audiences}>
+                  {WORKSHOP_AUDIENCES.map((a) => (
+                    <span key={a}>{a}</span>
+                  ))}
+                </div>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        {/* ── Talleres ── */}
         <section id="talleres" className={styles.workshopsSection} aria-labelledby="talleres-title">
           <div className="wrap">
-            <h2 id="talleres-title" className={`section-title ${styles.sectionTitleLight}`}>
-              Dos talleres, <em>un mismo enfoque práctico</em>
-            </h2>
+            <div className={styles.sectionHead}>
+              <span className="section-eyebrow">Los talleres</span>
+              <h2 id="talleres-title" className="section-title">
+                Dos talleres, <em>un mismo enfoque práctico</em>
+              </h2>
+            </div>
 
             <div className={styles.grid}>
-              {WORKSHOPS.map((w) => (
+              {WORKSHOPS.map((w, i) => (
                 <article key={w.key} id={w.anchor} className={styles.card} aria-labelledby={`${w.anchor}-title`}>
-                  <span className={styles.tag}>Taller</span>
+                  <div className={styles.cardHead}>
+                    <span className={styles.cardIcon} aria-hidden="true">
+                      <i className={w.icon} />
+                    </span>
+                    <span className={styles.cardNum}>Taller {String(i + 1).padStart(2, '0')}</span>
+                  </div>
                   <h3 id={`${w.anchor}-title`} className={styles.cardTitle}>{w.name}</h3>
                   <p className={styles.cardDesc}>{w.desc}</p>
 
@@ -112,13 +173,18 @@ export default function TalleresEmpresariales() {
                     <h4 className={styles.cardLabel}>Temas</h4>
                     <ul className={styles.topics}>
                       {w.topics.map((t) => (
-                        <li key={t}>{t}</li>
+                        <li key={t}>
+                          <i className="fa-solid fa-check" aria-hidden="true" />
+                          <span>{t}</span>
+                        </li>
                       ))}
                     </ul>
                   </div>
 
-                  <div className={`${styles.cardBlock} ${styles.exercise}`}>
-                    <h4 className={styles.cardLabel}>Ejercicio de aplicación propuesto</h4>
+                  <div className={styles.exercise}>
+                    <h4 className={styles.cardLabel}>
+                      <i className="fa-solid fa-pen-ruler" aria-hidden="true" /> Ejercicio de aplicación propuesto
+                    </h4>
                     <p>{w.exercise}</p>
                   </div>
 
@@ -129,22 +195,32 @@ export default function TalleresEmpresariales() {
               ))}
             </div>
 
-            <p className={styles.scopeNote}>{SCOPE_NOTE}</p>
+            <p className={styles.scopeNote}>
+              <i className="fa-solid fa-circle-info" aria-hidden="true" /> {SCOPE_NOTE}
+            </p>
           </div>
         </section>
 
+        {/* ── Proceso ── */}
         <section id="como-lo-trabajamos" className={styles.processSection} aria-labelledby="proceso-title">
           <div className="wrap">
-            <span className="section-eyebrow">Cómo lo trabajamos</span>
-            <h2 id="proceso-title" className="section-title">
-              Del reto del equipo a <em>próximos pasos</em>
-            </h2>
+            <div className={styles.sectionHeadLight}>
+              <span className={styles.darkEyebrow}>Cómo lo trabajamos</span>
+              <h2 id="proceso-title" className={styles.darkTitle}>
+                Del reto del equipo a <em>próximos pasos</em>
+              </h2>
+            </div>
             <ol className={styles.process}>
-              {WORKSHOP_PROCESS.map(({ title, desc }, i) => (
+              {WORKSHOP_PROCESS.map(({ icon, title, desc }, i) => (
                 <li key={title} className={styles.processStep}>
-                  <span className={styles.processNum} aria-hidden="true">
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
+                  <div className={styles.processTop}>
+                    <span className={styles.processIcon} aria-hidden="true">
+                      <i className={icon} />
+                    </span>
+                    <span className={styles.processNum} aria-hidden="true">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                  </div>
                   <h3 className={styles.processTitle}>{title}</h3>
                   <p className={styles.processDesc}>{desc}</p>
                 </li>
@@ -153,6 +229,7 @@ export default function TalleresEmpresariales() {
           </div>
         </section>
 
+        {/* ── Solicitud ── */}
         <section id="solicitud" className={styles.formSection} aria-labelledby="solicitud-title">
           <div className={`wrap ${styles.formWrap}`}>
             <div className={styles.formIntro}>
@@ -164,6 +241,11 @@ export default function TalleresEmpresariales() {
                 Comparte el contexto y lo que necesitan lograr. Con esa información preparo una
                 propuesta de alcance y dinámica para conversarla contigo.
               </p>
+              <ul className={styles.formSteps}>
+                <li><i className="fa-solid fa-envelope-open-text" aria-hidden="true" /> Te respondo por correo</li>
+                <li><i className="fa-solid fa-comments" aria-hidden="true" /> Conversamos el objetivo</li>
+                <li><i className="fa-solid fa-file-signature" aria-hidden="true" /> Recibes una propuesta</li>
+              </ul>
               <p className={styles.formIntroNote}>{SCOPE_NOTE}</p>
               <p className={styles.formIntroNote}>
                 ¿Buscas una asesoría individual? <Link href="/#servicios">Conoce las asesorías 1:1</Link>.

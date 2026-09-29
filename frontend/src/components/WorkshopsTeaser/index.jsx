@@ -1,46 +1,71 @@
 import Link from 'next/link';
 import FadeUp from '../FadeUp/index.jsx';
-import { WORKSHOPS, WORKSHOPS_PATH } from '@/lib/workshops.js';
+import { WORKSHOPS, WORKSHOPS_PATH, WORKSHOP_VALUES, WORKSHOP_AUDIENCES } from '@/lib/workshops.js';
 import styles from './WorkshopsTeaser.module.css';
 
 /**
- * Home-page summary of the business workshops. Sits after the Services
- * catalog and before "Sobre mí" — never between a Services card and the
- * booking widget. It only links out to /talleres-empresariales/; nothing here
- * touches the booking preselection.
+ * Home-page pitch for the business workshops. Sits after the Services
+ * catalog; it only links out to /talleres-empresariales/ and never touches
+ * the booking preselection.
  */
 function WorkshopsTeaser() {
   return (
     <section id="talleres" className={styles.section} aria-labelledby="talleres-teaser-title">
       <div className={`wrap ${styles.inner}`}>
-        <FadeUp className={styles.header}>
-          <span className="section-eyebrow">Para empresas</span>
-          <h2 id="talleres-teaser-title" className="section-title">
-            Talleres para <em>equipos</em>
+        <FadeUp className={styles.pitch}>
+          <span className={styles.eyebrow}>
+            <i className="fa-solid fa-building" aria-hidden="true" /> Para empresas
+          </span>
+          <h2 id="talleres-teaser-title" className={styles.title}>
+            Talleres para <em>equipos</em> que necesitan alinear y avanzar
           </h2>
           <p className={styles.intro}>
-            Para equipos de diseño, producto, innovación y negocio. Cada taller se adapta al
-            contexto del equipo y se trabaja sobre casos propios.
+            Sesiones prácticas para equipos de diseño, producto, innovación y negocio, trabajadas
+            sobre los retos reales del equipo.
           </p>
+
+          <ul className={styles.values}>
+            {WORKSHOP_VALUES.map(({ icon, label }) => (
+              <li key={label}>
+                <i className={icon} aria-hidden="true" />
+                {label}
+              </li>
+            ))}
+          </ul>
+
+          <div className={styles.audiences}>
+            <span className={styles.audiencesLabel}>Ideal para equipos de</span>
+            {WORKSHOP_AUDIENCES.map((a) => (
+              <span key={a} className={styles.audience}>{a}</span>
+            ))}
+          </div>
+
+          <div className={styles.actions}>
+            <Link href={`${WORKSHOPS_PATH}#solicitud`} className={styles.ctaPrimary}>
+              Solicita una propuesta
+            </Link>
+            <Link href={WORKSHOPS_PATH} className={styles.ctaGhost}>
+              Ver los talleres
+            </Link>
+          </div>
         </FadeUp>
 
-        <div className={styles.grid}>
+        <div className={styles.cards}>
           {WORKSHOPS.map((w, i) => (
-            <FadeUp key={w.key} className={styles.card} delay={`${i * 0.05}s`}>
-              <h3 className={styles.cardTitle}>{w.name}</h3>
-              <p className={styles.cardDesc}>{w.desc}</p>
-              <Link href={`${WORKSHOPS_PATH}#${w.anchor}`} className={styles.cardLink}>
-                Ver temas y ejercicio
-                <span aria-hidden="true"> →</span>
+            <FadeUp key={w.key} delay={`${0.08 + i * 0.08}s`}>
+              <Link href={`${WORKSHOPS_PATH}#${w.anchor}`} className={styles.card}>
+                <span className={styles.cardIcon} aria-hidden="true">
+                  <i className={w.icon} />
+                </span>
+                <span className={styles.cardBody}>
+                  <span className={styles.cardKicker}>Taller {String(i + 1).padStart(2, '0')}</span>
+                  <span className={styles.cardTitle}>{w.name}</span>
+                  <span className={styles.cardDesc}>{w.short}</span>
+                </span>
+                <i className={`fa-solid fa-arrow-right ${styles.cardArrow}`} aria-hidden="true" />
               </Link>
             </FadeUp>
           ))}
-        </div>
-
-        <div className={styles.actions}>
-          <Link href={WORKSHOPS_PATH} className="btn-primary">
-            Talleres para empresas
-          </Link>
         </div>
       </div>
     </section>

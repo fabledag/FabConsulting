@@ -15,13 +15,16 @@ const NAV_LINKS = [
   { href: '#inicio', label: 'Inicio' },
   { href: '#servicios', label: 'Asesorías' },
   { href: WORKSHOPS_PATH, label: 'Talleres' },
-  { href: '#sobre-mi', label: 'Sobre mí' },
-  { href: '#faq', label: 'Preguntas frecuentes' },
+  { href: '/sobre-mi/', label: 'Sobre mí' },
+  { href: '/preguntas-frecuentes/', label: 'Preguntas frecuentes' },
   { href: '#servicios', label: 'Agenda tu sesión', cta: true },
 ];
 
 function Nav() {
-  const onHome = usePathname() === '/';
+  // Compared without the trailing slash: `trailingSlash: true` URLs vs
+  // whatever form usePathname reports.
+  const pathname = (usePathname() || '/').replace(/(.)\/$/, '$1');
+  const onHome = pathname === '/';
   const resolve = (href) => (href.startsWith('#') && !onHome ? `/${href}` : href);
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -79,6 +82,7 @@ function Nav() {
               <a
                 href={resolve(href)}
                 className={[styles.link, cta ? styles.navCta : ''].join(' ')}
+                aria-current={!href.startsWith('#') && pathname === href.replace(/\/$/, '') ? 'page' : undefined}
                 onClick={close}
               >
                 {label}

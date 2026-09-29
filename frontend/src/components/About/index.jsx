@@ -47,7 +47,9 @@ const CREDENTIALS = [
   },
 ];
 
-function About() {
+// `asPage` renders the heading as the page's h1 on /sobre-mi/.
+function About({ asPage = false }) {
+  const Heading = asPage ? 'h1' : 'h2';
   return (
     <section
       id="sobre-mi"
@@ -59,7 +61,7 @@ function About() {
       </FadeUp>
 
       <FadeUp delay="0.05s">
-        <h2
+        <Heading
           className="section-title about-title-lg"
           dangerouslySetInnerHTML={{
             __html: 'No es teoría.<br>Es <em>experiencia real</em>.',

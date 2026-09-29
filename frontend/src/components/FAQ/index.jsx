@@ -23,7 +23,10 @@ function Answer({ item }) {
   return item.plain;
 }
 
-function FAQ() {
+// `asPage` renders the title as the page's h1 on /preguntas-frecuentes/.
+function FAQ({ asPage = false }) {
+  const Heading = asPage ? 'h1' : 'h2';
+  const QHeading = asPage ? 'h2' : 'h3';
   const [openIndex, setOpenIndex] = useState(null);
 
   return (
@@ -33,7 +36,7 @@ function FAQ() {
           <span className="section-eyebrow">Preguntas frecuentes</span>
         </FadeUp>
         <FadeUp delay="0.05s" style={{ textAlign: 'center' }}>
-          <h2 className="section-title">Antes de reservar</h2>
+          <Heading className="section-title">Antes de reservar</Heading>
         </FadeUp>
 
         <div className={styles.list}>
@@ -43,7 +46,7 @@ function FAQ() {
             const triggerId = `faq-trigger-${i}`;
             return (
               <div key={item.q} className={styles.item}>
-                <h3 style={{ margin: 0 }}>
+                <QHeading style={{ margin: 0 }}>
                   <button
                     id={triggerId}
                     className={styles.trigger}
@@ -54,7 +57,7 @@ function FAQ() {
                     <span>{item.q}</span>
                     <i className={`fa-solid fa-plus ${styles.icon} ${isOpen ? styles.iconOpen : ''}`} aria-hidden="true" />
                   </button>
-                </h3>
+                </QHeading>
                 {/* Always rendered, toggled with `hidden`, rather than mounted
                     on open. The answers have to exist in the exported HTML —
                     conditionally rendering them meant crawlers (and the FAQ

@@ -97,7 +97,8 @@ ${postLines}
 - [Talleres para empresas](${absoluteUrl(WORKSHOPS_PATH)})
 - [Blog](${absoluteUrl('/blog')})
 - [Agendar una sesión](${SITE_URL}/#agenda)
-- [Preguntas frecuentes](${SITE_URL}/#faq)
+- [Sobre Fabiola](${absoluteUrl('/sobre-mi')})
+- [Preguntas frecuentes](${absoluteUrl('/preguntas-frecuentes')})
 - [Instagram @fab_designux](${INSTAGRAM_URL})
 - [LinkedIn](${LINKEDIN_URL})
 `;

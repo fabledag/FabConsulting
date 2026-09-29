@@ -55,6 +55,12 @@ function Footer() {
               <a href="/#servicios" style={linkStyle}>
                 Agenda tu asesoría
               </a>
+              <a href="/sobre-mi/" style={linkStyle}>
+                Sobre mí
+              </a>
+              <a href="/preguntas-frecuentes/" style={linkStyle}>
+                Preguntas frecuentes
+              </a>
             </div>
             <p style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.45)', lineHeight: 1.5, margin: 0 }}>
               Puedes reagendar o cancelar tu sesión hasta 24h antes desde tu perfil.

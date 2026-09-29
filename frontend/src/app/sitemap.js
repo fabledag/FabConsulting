@@ -21,6 +21,8 @@ export default async function sitemap() {
     { url: absoluteUrl('/'), changeFrequency: 'weekly', priority: 1.0 },
     { url: absoluteUrl('/asesorias'), changeFrequency: 'monthly', priority: 0.9 },
     { url: absoluteUrl(WORKSHOPS_PATH), changeFrequency: 'monthly', priority: 0.8 },
+    { url: absoluteUrl('/sobre-mi'), changeFrequency: 'monthly', priority: 0.7 },
+    { url: absoluteUrl('/preguntas-frecuentes'), changeFrequency: 'monthly', priority: 0.7 },
     { url: absoluteUrl('/blog'), changeFrequency: 'weekly', priority: 0.7 },
   ].map((r) => ({ ...r, lastModified: now }));
 
