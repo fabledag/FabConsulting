@@ -125,9 +125,6 @@
   border-radius: 999px;
 }
 
-.values i {
-  color: var(--orange);
-}
 
 .headerActions {
   display: flex;
@@ -318,20 +315,16 @@
 }
 
 .cardIcon {
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 16px;
+  width: 4.25rem;
+  height: 4.25rem;
+  border-radius: 18px;
   display: grid;
   place-items: center;
-  font-size: 1.4rem;
-  color: #ffffff;
-  background: linear-gradient(135deg, var(--purple-800), var(--purple-600));
-  box-shadow: 0 8px 20px rgba(82, 58, 168, 0.3);
+  background: var(--purple-50);
 }
 
 .card:nth-child(2) .cardIcon {
-  background: linear-gradient(135deg, var(--orange-dark), var(--orange));
-  box-shadow: 0 8px 20px rgba(229, 112, 48, 0.3);
+  background: #fff3eb;
 }
 
 .cardNum {
@@ -393,17 +386,8 @@
   color: var(--text-dark);
 }
 
-.topics i {
-  flex-shrink: 0;
-  margin-top: 0.2rem;
-  width: 1.1rem;
-  height: 1.1rem;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  font-size: 0.6rem;
-  color: #ffffff;
-  background: #22c55e;
+.topics img {
+  margin-top: 0.05rem;
 }
 
 .exercise {
@@ -432,7 +416,7 @@
 .scopeNote {
   display: flex;
   gap: 0.5rem;
-  align-items: baseline;
+  align-items: center;
   margin: 2rem 0 0;
   font-size: 0.9rem;
   line-height: 1.6;
@@ -440,8 +424,8 @@
   max-width: 72ch;
 }
 
-.scopeNote i {
-  color: var(--purple-600);
+.scopeNote img {
+  align-self: center;
 }
 
 /* ── Process ── */
@@ -518,14 +502,13 @@
 }
 
 .processIcon {
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 12px;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 14px;
   display: grid;
   place-items: center;
-  font-size: 1.1rem;
-  color: var(--purple-900);
-  background: var(--orange);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .processNum {
@@ -737,13 +720,11 @@ textarea.input {
   color: var(--purple-900);
 }
 
-.formSteps i {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 10px;
+.formStepIcon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 12px;
   display: grid;
   place-items: center;
-  font-size: 0.85rem;
-  color: var(--purple-800);
   background: var(--purple-100);
 }

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import FadeUp from '../FadeUp/index.jsx';
+import FabIcon from '../FabIcon/index.jsx';
 import { WORKSHOPS, WORKSHOPS_PATH, WORKSHOP_VALUES, WORKSHOP_AUDIENCES } from '@/lib/workshops.js';
 import styles from './WorkshopsTeaser.module.css';
 
@@ -14,7 +15,7 @@ function WorkshopsTeaser() {
       <div className={`wrap ${styles.inner}`}>
         <FadeUp className={styles.pitch}>
           <span className={styles.eyebrow}>
-            <i className="fa-solid fa-building" aria-hidden="true" /> Para empresas
+            <FabIcon name="empresa" size={18} /> Para empresas
           </span>
           <h2 id="talleres-teaser-title" className={styles.title}>
             Talleres para <em>equipos</em> que necesitan alinear y avanzar
@@ -27,7 +28,7 @@ function WorkshopsTeaser() {
           <ul className={styles.values}>
             {WORKSHOP_VALUES.map(({ icon, label }) => (
               <li key={label}>
-                <i className={icon} aria-hidden="true" />
+                <FabIcon name={icon} size={24} tone="crema" />
                 {label}
               </li>
             ))}
@@ -54,8 +55,8 @@ function WorkshopsTeaser() {
           {WORKSHOPS.map((w, i) => (
             <FadeUp key={w.key} delay={`${0.08 + i * 0.08}s`}>
               <Link href={`${WORKSHOPS_PATH}#${w.anchor}`} className={styles.card}>
-                <span className={styles.cardIcon} aria-hidden="true">
-                  <i className={w.icon} />
+                <span className={styles.cardIcon}>
+                  <FabIcon name={w.icon} size={44} />
                 </span>
                 <span className={styles.cardBody}>
                   <span className={styles.cardKicker}>Taller {String(i + 1).padStart(2, '0')}</span>

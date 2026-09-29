@@ -11,6 +11,7 @@
  * team (see SCOPE_NOTE).
  */
 
+/** `icon` fields name files in public/icons/fab-design/ (see FabIcon). */
 export const WORKSHOPS_PATH = '/talleres-empresariales/';
 
 export const SCOPE_NOTE =
@@ -20,7 +21,7 @@ export const WORKSHOPS = [
   {
     key: 'comunicacion-estrategica',
     anchor: 'taller-comunicacion-estrategica',
-    icon: 'fa-solid fa-comments',
+    icon: 'comunicacion',
     short: 'Estructurar mensajes y propuestas que faciliten decisiones.',
     name: 'Comunicación estratégica para equipos',
     desc: 'Un taller para estructurar mensajes, presentar propuestas y facilitar conversaciones que ayuden a tomar decisiones.',
@@ -38,7 +39,7 @@ export const WORKSHOPS = [
   {
     key: 'diseno-estrategico-ia',
     anchor: 'taller-diseno-estrategico-ia',
-    icon: 'fa-solid fa-wand-magic-sparkles',
+    icon: 'estrategia-ia',
     short: 'Identificar oportunidades de IA y diseñar un primer experimento.',
     name: 'Diseño estratégico e IA aplicada al negocio',
     desc: 'Un taller para identificar oportunidades y explorar cómo el diseño y la IA pueden contribuir a resolver un reto concreto.',
@@ -58,22 +59,22 @@ export const WORKSHOPS_BY_KEY = Object.fromEntries(WORKSHOPS.map((w) => [w.key, 
 
 export const WORKSHOP_PROCESS = [
   {
-    icon: 'fa-solid fa-magnifying-glass',
+    icon: 'exploracion',
     title: 'Entendemos el reto',
     desc: 'Nos compartes el contexto, los participantes y lo que necesitan lograr.',
   },
   {
-    icon: 'fa-solid fa-clipboard-list',
+    icon: 'propuesta',
     title: 'Definimos una propuesta',
     desc: 'Acordamos objetivos, alcance y dinámica de trabajo.',
   },
   {
-    icon: 'fa-solid fa-people-group',
+    icon: 'equipo',
     title: 'Trabajamos sobre un caso',
     desc: 'Combinamos conceptos, ejercicios y conversación para llevar el aprendizaje a una situación del equipo.',
   },
   {
-    icon: 'fa-solid fa-flag-checkered',
+    icon: 'proximos-pasos',
     title: 'Cerramos con próximos pasos',
     desc: 'Recuperamos los aprendizajes y definimos cómo continuar aplicándolos.',
   },
@@ -82,9 +83,9 @@ export const WORKSHOP_PROCESS = [
 /** How the workshops work, as short selling points. Describes the format
  *  only — no outcomes are promised. */
 export const WORKSHOP_VALUES = [
-  { icon: 'fa-solid fa-briefcase', label: 'Sobre casos reales del equipo' },
-  { icon: 'fa-solid fa-sliders', label: 'Adaptados a su contexto' },
-  { icon: 'fa-solid fa-hand-pointer', label: 'Prácticos y participativos' },
+  { icon: 'casos-reales', label: 'Sobre casos reales del equipo' },
+  { icon: 'personalizacion', label: 'Adaptados a su contexto' },
+  { icon: 'participacion', label: 'Prácticos y participativos' },
 ];
 
 export const WORKSHOP_AUDIENCES = ['Diseño', 'Producto', 'Innovación', 'Negocio', 'Liderazgo'];

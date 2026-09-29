@@ -5,6 +5,7 @@ import Footer from '@/components/Footer/index.jsx';
 import WhatsAppFloat from '@/components/WhatsAppFloat/index.jsx';
 import JsonLd from '@/components/JsonLd.jsx';
 import WorkshopCta from '@/components/Workshops/WorkshopCta.jsx';
+import FabIcon from '@/components/FabIcon/index.jsx';
 import WorkshopInquiryForm from '@/components/Workshops/WorkshopInquiryForm.jsx';
 import {
   WORKSHOPS,
@@ -80,7 +81,7 @@ export default function TalleresEmpresariales() {
               </nav>
 
               <span className={styles.heroEyebrow}>
-                <i className="fa-solid fa-building" aria-hidden="true" /> Talleres para empresas
+                <FabIcon name="empresa" size={18} /> Talleres para empresas
               </span>
               <h1 id="talleres-h1" className={styles.title}>
                 Talleres para <em>equipos</em> que necesitan alinear y avanzar
@@ -94,7 +95,7 @@ export default function TalleresEmpresariales() {
               <ul className={styles.values}>
                 {WORKSHOP_VALUES.map(({ icon, label }) => (
                   <li key={label}>
-                    <i className={icon} aria-hidden="true" />
+                    <FabIcon name={icon} size={24} tone="crema" />
                     {label}
                   </li>
                 ))}
@@ -156,8 +157,8 @@ export default function TalleresEmpresariales() {
               {WORKSHOPS.map((w, i) => (
                 <article key={w.key} id={w.anchor} className={styles.card} aria-labelledby={`${w.anchor}-title`}>
                   <div className={styles.cardHead}>
-                    <span className={styles.cardIcon} aria-hidden="true">
-                      <i className={w.icon} />
+                    <span className={styles.cardIcon}>
+                      <FabIcon name={w.icon} size={44} />
                     </span>
                     <span className={styles.cardNum}>Taller {String(i + 1).padStart(2, '0')}</span>
                   </div>
@@ -174,7 +175,7 @@ export default function TalleresEmpresariales() {
                     <ul className={styles.topics}>
                       {w.topics.map((t) => (
                         <li key={t}>
-                          <i className="fa-solid fa-check" aria-hidden="true" />
+                          <FabIcon name="check" size={20} />
                           <span>{t}</span>
                         </li>
                       ))}
@@ -183,7 +184,7 @@ export default function TalleresEmpresariales() {
 
                   <div className={styles.exercise}>
                     <h4 className={styles.cardLabel}>
-                      <i className="fa-solid fa-pen-ruler" aria-hidden="true" /> Ejercicio de aplicación propuesto
+                      <FabIcon name="ejercicio" size={20} /> Ejercicio de aplicación propuesto
                     </h4>
                     <p>{w.exercise}</p>
                   </div>
@@ -196,7 +197,7 @@ export default function TalleresEmpresariales() {
             </div>
 
             <p className={styles.scopeNote}>
-              <i className="fa-solid fa-circle-info" aria-hidden="true" /> {SCOPE_NOTE}
+              <FabIcon name="informacion" size={20} /> {SCOPE_NOTE}
             </p>
           </div>
         </section>
@@ -214,8 +215,8 @@ export default function TalleresEmpresariales() {
               {WORKSHOP_PROCESS.map(({ icon, title, desc }, i) => (
                 <li key={title} className={styles.processStep}>
                   <div className={styles.processTop}>
-                    <span className={styles.processIcon} aria-hidden="true">
-                      <i className={icon} />
+                    <span className={styles.processIcon}>
+                      <FabIcon name={icon} size={32} tone="crema" />
                     </span>
                     <span className={styles.processNum} aria-hidden="true">
                       {String(i + 1).padStart(2, '0')}
@@ -242,9 +243,9 @@ export default function TalleresEmpresariales() {
                 propuesta de alcance y dinámica para conversarla contigo.
               </p>
               <ul className={styles.formSteps}>
-                <li><i className="fa-solid fa-envelope-open-text" aria-hidden="true" /> Te respondo por correo</li>
-                <li><i className="fa-solid fa-comments" aria-hidden="true" /> Conversamos el objetivo</li>
-                <li><i className="fa-solid fa-file-signature" aria-hidden="true" /> Recibes una propuesta</li>
+                <li><span className={styles.formStepIcon}><FabIcon name="correo" size={24} /></span> Te respondo por correo</li>
+                <li><span className={styles.formStepIcon}><FabIcon name="comunicacion" size={24} /></span> Conversamos el objetivo</li>
+                <li><span className={styles.formStepIcon}><FabIcon name="acuerdo" size={24} /></span> Recibes una propuesta</li>
               </ul>
               <p className={styles.formIntroNote}>{SCOPE_NOTE}</p>
               <p className={styles.formIntroNote}>
