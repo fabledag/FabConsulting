@@ -130,8 +130,8 @@
 }
 
 .serviceOption:hover {
-  border-color: var(--purple-400);
-  background: var(--purple-50);
+  border-color: var(--orange);
+  background: #fff5ee;
 }
 
 .serviceOption:focus-visible {
@@ -139,7 +139,8 @@
   outline-offset: 2px;
 }
 
-.serviceOption.selected {
+.serviceOption.selected,
+.serviceOption.selected:hover {
   border-color: var(--purple-600);
   background: var(--purple-50);
 }
@@ -180,8 +181,9 @@
 
 .soptPrice {
   font-family: 'Fraunces', Georgia, serif;
-  font-size: 1.2rem;
-  font-weight: 300;
+  font-size: 1.6rem;
+  font-weight: 600; /* heaviest Fraunces weight the layout loads */
+  line-height: 1.1;
   color: var(--purple-800);
   letter-spacing: -0.02em;
 }
@@ -398,12 +400,13 @@
   margin-left: 0.1rem;
 }
 
-/* Two service columns don't fit on the smallest phones (~320px). */
+/* Two service columns are too narrow on phones: the tags and names wrap
+   awkwardly, so stack them. */
 .serviceOption {
   min-width: 0;
 }
 
-@media (max-width: 380px) {
+@media (max-width: 480px) {
   .serviceOptions {
     grid-template-columns: 1fr;
   }
