@@ -7,14 +7,14 @@ export default {
     extend: {
       colors: {
         'purple-900': '#1E1145',
-        'purple-800': '#523AA8',
+        'purple-800': '#543BAA',
         'purple-600': '#7C5DC4',
         'purple-200': '#E8DFF5',
         'purple-100': '#EDE8FA',
         'purple-50':  '#F5F2FD',
-        'orange':     '#FF8A47',
+        'orange':     '#FD8A46',
         'orange-dark':'#E57030',
-        'cream':      '#FAF9F6',
+        'cream':      '#FAF8F5',
         'text-dark':  '#2C2C2C',
         'text-muted': '#6B6878',
         'border':     '#E5E0F0',

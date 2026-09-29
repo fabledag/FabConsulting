@@ -1,24 +1,30 @@
-/* Hero.module.css */
+/* Hero.module.css
+   Background: Fabiola's abstract artwork (Assets/Fotos/background.png,
+   exported to public/images/hero-bg*.jpg). Its left side is light, so the copy
+   sits there; the purple/orange shapes fill the right. */
 
 .hero {
-  background: linear-gradient(135deg, #FAF9F6 0%, #F0EBF8 100%);
+  background-color: var(--cream);
+  /* Phones: the shapes sit under the content as a band at the bottom, with
+     the cream washing over the top so the copy never sits on dark purple. */
+  background-image:
+    linear-gradient(to bottom, var(--cream) 0%, rgba(250, 248, 245, 0.96) 68%, rgba(250, 248, 245, 0) 92%),
+    url('/images/hero-bg-960.jpg');
+  background-repeat: no-repeat;
+  background-size: 100% 100%, 230% auto;
+  background-position: top left, right bottom;
 }
 
 .heroInner {
   display: grid;
   grid-template-columns: 1fr;
   padding-top: 2.5rem;
-  padding-bottom: 3rem;
+  padding-bottom: 12rem;
   align-items: center;
 }
 
 .heroContent {
-  order: 1;
-}
-
-.heroVisual {
-  display: none;
-  order: 2;
+  max-width: 40rem;
 }
 
 .eyebrow {
@@ -46,7 +52,15 @@
 
 .h1 em {
   font-style: italic;
-  color: var(--purple-600);
+}
+
+.h1 .ux {
+  color: var(--purple-800);
+}
+
+/* Deeper tone of the logo orange: large text still needs 3:1 on cream. */
+.h1 .ia {
+  color: var(--orange-display);
 }
 
 .sub {
@@ -63,26 +77,23 @@
   margin-bottom: 1.25rem;
 }
 
-.urgency {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  margin-bottom: 1.5rem;
-  background: rgba(82, 58, 168, 0.07);
-  border: 1px solid rgba(82, 58, 168, 0.15);
-  padding: 0.55rem 1rem;
-  border-radius: 999px;
-  font-size: 0.78rem;
-  color: var(--text-muted);
+/* "Talleres para empresas": orange outline button. Border in the logo
+   orange; the label uses the text-safe orange (4.5:1 on cream). */
+.actions .ctaWorkshops {
+  color: var(--orange-text);
+  border-color: var(--orange);
+  background-color: rgba(255, 255, 255, 0.6);
 }
 
-.urgencyDot {
-  width: 7px;
-  height: 7px;
-  background: #22c55e;
-  border-radius: 50%;
-  flex-shrink: 0;
-  animation: pulse-green 2s infinite;
+.actions .ctaWorkshops:hover {
+  color: var(--orange-text);
+  border-color: var(--orange-text);
+  background-color: #fff4ec;
+}
+
+.actions .ctaWorkshops:focus-visible {
+  outline: 3px solid var(--orange);
+  outline-offset: 2px;
 }
 
 .stats {
@@ -108,146 +119,6 @@
   margin-top: 0.2rem;
 }
 
-/* Hero card */
-.card {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 1.75rem;
-  border: 1px solid var(--border);
-  box-shadow: 0 8px 32px rgba(82, 58, 168, 0.1);
-  position: relative;
-}
-
-.card h3 {
-  font-family: 'Fraunces', Georgia, serif;
-  font-size: 1.375rem;
-  font-weight: 600;
-  color: var(--purple-900);
-  margin-bottom: 0.4rem;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
-}
-
-.card p {
-  font-size: 0.875rem;
-  color: var(--text-muted);
-  margin-bottom: 1rem;
-}
-
-.cardPhotoRow {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  margin-bottom: 1rem;
-}
-
-.cardPhoto {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-  border: 2px solid var(--purple-100);
-}
-
-.cardName {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--purple-900);
-  line-height: 1.3;
-}
-
-.cardRole {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  line-height: 1.3;
-}
-
-.cardTag {
-  display: inline-block;
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--purple-600);
-  background: var(--purple-50);
-  padding: 0.22rem 0.6rem;
-  border-radius: 999px;
-  margin-bottom: 0.75rem;
-}
-
-.floatingBadge {
-  position: absolute;
-  top: -1.1rem;
-  right: 1.25rem;
-  background: linear-gradient(135deg, var(--purple-800) 0%, var(--purple-900) 100%);
-  color: #ffffff;
-  font-size: 0.78rem;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  padding: 0.45rem 1.1rem;
-  border-radius: 999px;
-  white-space: nowrap;
-  box-shadow: 0 4px 16px rgba(82, 58, 168, 0.45);
-  border: 1.5px solid rgba(255, 255, 255, 0.18);
-}
-
-.floatingBadge strong {
-  font-family: 'Fraunces', Georgia, serif;
-  font-size: 1.2rem;
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  margin-right: 3px;
-  vertical-align: middle;
-}
-
-.serviceList {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  margin-bottom: 1rem;
-  padding: 0;
-}
-
-.serviceList li {
-  font-size: 0.875rem;
-  color: var(--text-dark);
-  padding-left: 1.2rem;
-  position: relative;
-  line-height: 1.4;
-}
-
-.serviceList li::before {
-  content: '✓';
-  position: absolute;
-  left: 0;
-  color: var(--purple-600);
-  font-weight: 700;
-  font-size: 0.8rem;
-}
-
-.cardFooter {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 1.25rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border);
-  flex-wrap: wrap;
-}
-
-.availText {
-  font-size: 0.82rem;
-  color: var(--text-muted);
-}
-
-.availStrong {
-  font-weight: 600;
-  font-size: 0.82rem;
-  color: var(--text-dark);
-}
-
 /* sm: 640px */
 @media (min-width: 640px) {
   .actions {
@@ -260,19 +131,22 @@
   }
 }
 
-/* lg: 900px */
+/* lg: 900px — artwork as a full background, copy on its light left half. */
 @media (min-width: 900px) {
-  .heroInner {
-    grid-template-columns: 1fr 1fr;
-    padding-top: 4rem;
-    padding-bottom: 5rem;
-    gap: 4rem;
-    min-height: 88vh;
-    align-items: center;
+  .hero {
+    background-image: url('/images/hero-bg.jpg');
+    background-size: cover;
+    background-position: 62% center;
   }
 
-  .heroVisual {
-    display: block;
+  .heroInner {
+    padding-top: 4rem;
+    padding-bottom: 5rem;
+    min-height: 88vh;
+  }
+
+  .heroContent {
+    max-width: 46%;
   }
 
   .h1 {

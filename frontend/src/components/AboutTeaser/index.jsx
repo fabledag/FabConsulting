@@ -4,8 +4,8 @@ import FadeUp from '../FadeUp/index.jsx';
 import styles from './AboutTeaser.module.css';
 
 /**
- * Short "Sobre mí" for the home page. The full story, skills and credentials
- * live on /sobre-mi/; this keeps home to a quick introduction.
+ * "Sobre mí" on the home page: a large portrait and a short, prominent
+ * introduction. The full story, skills and credentials live on /sobre-mi/.
  */
 function AboutTeaser() {
   return (
@@ -15,10 +15,14 @@ function AboutTeaser() {
           <Image
             src="/fabiola.jpg"
             alt="Fabiola Ledesma, Senior Design Manager y consultora en UX, IA y Product Design"
-            width={160}
-            height={160}
+            width={1086}
+            height={1448}
+            sizes="(min-width: 900px) 420px, 90vw"
             className={styles.photo}
           />
+          <span className={styles.photoBadge}>
+            <strong>15+</strong> años diseñando productos digitales
+          </span>
         </FadeUp>
 
         <FadeUp delay="0.05s" className={styles.copy}>
@@ -26,13 +30,21 @@ function AboutTeaser() {
           <h2 id="presentacion-title" className={styles.title}>
             Hola, soy Fabiola. <em>Diseño, lidero y enseño.</em>
           </h2>
-          <p>
-            Llevo más de 15 años diseñando productos digitales de punta a punta y más de 8 liderando
-            equipos de diseño en banca digital. Formo talento en Colectivo23 y cofundé la agencia
-            GEDX. En cada sesión comparto una perspectiva práctica y directa, adaptada a tu momento.
+          <p className={styles.lead}>
+            Llevo más de 15 años diseñando productos digitales de punta a punta y más de 8
+            liderando equipos de diseño en banca digital.
           </p>
-          <Link href="/sobre-mi/" className={styles.link}>
-            Conoce mi trayectoria <span aria-hidden="true">→</span>
+          <p>
+            Formo talento en Colectivo23 y cofundé la agencia GEDX. En cada sesión y en cada taller
+            comparto una perspectiva práctica y directa, adaptada al momento de cada persona y de
+            cada equipo.
+          </p>
+          <blockquote className={styles.quote}>
+            “Muchas personas talentosas no avanzan no por falta de habilidades, sino por falta de
+            claridad.”
+          </blockquote>
+          <Link href="/sobre-mi/" className={`btn-primary ${styles.cta}`}>
+            Conoce mi trayectoria →
           </Link>
         </FadeUp>
       </div>

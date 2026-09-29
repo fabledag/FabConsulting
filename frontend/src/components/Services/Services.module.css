@@ -24,7 +24,7 @@
 }
 
 .services .title em {
-  color: #FF8A47;
+  color: var(--orange);
 }
 
 @media (min-width: 900px) {
@@ -114,7 +114,7 @@
   text-transform: uppercase;
   letter-spacing: 0.1em;
   background: rgba(255, 138, 71, 0.18);
-  color: #FF8A47;
+  color: var(--orange);
   padding: 0.2rem 0.6rem;
   border-radius: 999px;
   border: 1px solid rgba(255, 138, 71, 0.3);

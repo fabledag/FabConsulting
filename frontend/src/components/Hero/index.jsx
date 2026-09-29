@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { WORKSHOPS_PATH } from '@/lib/workshops.js';
 import styles from './Hero.module.css';
 
@@ -9,16 +8,10 @@ const STATS = [
   { num: 'GEDX', label: 'Cofundadora\nagencia digital' },
 ];
 
-const CARD_SERVICES = [
-  'Crecimiento profesional',
-  'CV, LinkedIn y portafolio',
-  'Aplicación práctica de IA',
-  'Transiciones de carrera',
-  'Simulación de entrevistas',
-];
-
 function Hero() {
   return (
+    // The abstract background (public/images/hero-bg*.jpg) replaced the
+    // "Claridad sobre tu siguiente paso" card on 2026-09-29.
     <section className={styles.hero} id="inicio">
       <div className={`wrap ${styles.heroInner}`}>
       {/* ─── Content ─────────────────────────────────── */}
@@ -28,7 +21,8 @@ function Hero() {
         </div>
 
         <h1 className={styles.h1}>
-          Consultoría estratégica en <em>UX, IA</em> y Product Design
+          Consultoría estratégica en <em className={styles.ux}>UX</em>,{' '}
+          <em className={styles.ia}>IA</em> y Product Design
         </h1>
 
         <p className={styles.sub}>
@@ -42,7 +36,7 @@ function Hero() {
           <a href="#servicios" className="btn-primary">
             Agenda tu asesoría
           </a>
-          <a href={WORKSHOPS_PATH} className="btn-ghost">
+          <a href={WORKSHOPS_PATH} className={`btn-ghost ${styles.ctaWorkshops}`}>
             Talleres para empresas →
           </a>
         </div>
@@ -61,53 +55,6 @@ function Hero() {
               </div>
             </div>
           ))}
-        </div>
-      </div>
-
-      {/* ─── Visual / Card (desktop only) ───────────── */}
-      <div className={styles.heroVisual}>
-        <div className={styles.card}>
-          <div className={styles.floatingBadge}>
-            <strong>15+</strong> años de experiencia
-          </div>
-
-          <div className={styles.cardPhotoRow}>
-            <Image
-              src="/fabiola.jpg"
-              alt="Fabiola Ledesma"
-              width={44}
-              height={44}
-              className={styles.cardPhoto}
-              priority
-            />
-            <div>
-              <div className={styles.cardName}>Fabiola Ledesma</div>
-              <div className={styles.cardRole}>Senior Design Manager</div>
-            </div>
-          </div>
-
-          <div className={styles.cardTag}>Asesoría 1:1</div>
-
-          <h3>
-            Claridad sobre tu siguiente paso
-          </h3>
-
-          <p>
-            Sesiones estratégicas para diseñadores que quieren avanzar con
-            dirección.
-          </p>
-
-          <ul className={styles.serviceList}>
-            {CARD_SERVICES.map((s) => (
-              <li key={s}>{s}</li>
-            ))}
-          </ul>
-
-          <div className={styles.cardFooter}>
-            <span className="availability-dot" />
-            <span className={styles.availStrong}>Disponible</span>
-            <span className={styles.availText}> · respondo en &lt;24h</span>
-          </div>
         </div>
       </div>
       </div>

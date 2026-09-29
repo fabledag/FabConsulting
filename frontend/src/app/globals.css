@@ -5,16 +5,21 @@
 /* ── CSS Variables ─────────────────────────────── */
 :root {
   --purple-900: #1E1145;
-  --purple-800: #523AA8;
+  --purple-800: #543BAA; /* Fab Design logo */
   --purple-700: #654BBC;
   --purple-600: #7C5DC4;
   --purple-400: #9B85D6;
   --purple-200: #E8DFF5;
   --purple-100: #EDE8FA;
   --purple-50:  #F5F2FD;
-  --orange:     #FF8A47;
+  --orange:     #FD8A46; /* Fab Design logo dot */
   --orange-dark:#E57030;
-  --cream:      #FAF9F6;
+  --cream:      #FAF8F5; /* Fab Design logo lettering */
+  /* Orange *text* on light backgrounds. The logo orange only reaches ~2.1:1
+     there, so text uses deeper tones of the same hue: display for large
+     headings (3:1), text for body-size copy and buttons (4.5:1). */
+  --orange-display: #D9621F;
+  --orange-text:    #B84F12;
   --text-dark:  #2C2C2C;
   --text-muted: #6B6878;
   --border:     #E5E0F0;

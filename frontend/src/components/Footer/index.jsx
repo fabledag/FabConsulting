@@ -19,7 +19,7 @@ const columnLabelStyle = {
 
 function Footer() {
   return (
-    <footer style={{ backgroundColor: '#523AA8', color: 'rgba(255,255,255,0.75)' }}>
+    <footer style={{ backgroundColor: 'var(--purple-800)', color: 'rgba(255,255,255,0.75)' }}>
       <div className="wrap" style={{ paddingTop: '3rem', paddingBottom: '2rem' }}>
         <div className="footer-grid">
           {/* Brand */}
