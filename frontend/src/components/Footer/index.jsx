@@ -63,13 +63,13 @@ function Footer() {
           <div>
             <div style={columnLabelStyle}>Enlaces</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', marginBottom: '1rem' }}>
-              <a href="/#servicios" style={linkStyle}>
+              <a href="/#servicios" className="footer-link" style={linkStyle}>
                 Agenda tu asesoría
               </a>
-              <a href="/sobre-mi/" style={linkStyle}>
+              <a href="/sobre-mi/" className="footer-link" style={linkStyle}>
                 Sobre mí
               </a>
-              <a href="/preguntas-frecuentes/" style={linkStyle}>
+              <a href="/preguntas-frecuentes/" className="footer-link" style={linkStyle}>
                 Preguntas frecuentes
               </a>
             </div>
@@ -84,12 +84,12 @@ function Footer() {
             <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, marginBottom: '0.65rem' }}>
               Talleres de comunicación estratégica y de diseño e IA aplicada al negocio para equipos.
             </p>
-            <a href={WORKSHOPS_PATH} style={{ ...linkStyle, color: '#ffffff', fontWeight: 600 }}>
+            <a href={WORKSHOPS_PATH} className="footer-link" style={{ ...linkStyle, color: '#ffffff', fontWeight: 600 }}>
               Talleres para empresas →
             </a>
             <p style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.45)', lineHeight: 1.5, margin: '0.9rem 0 0' }}>
               Consultoría y servicios de agencia:{' '}
-              <a href="https://gedx.com.mx" target="_blank" rel="noopener noreferrer" style={{ ...linkStyle, fontSize: '0.78rem' }}>
+              <a href="https://gedx.com.mx" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ ...linkStyle, fontSize: '0.78rem' }}>
                 GEDX ↗
               </a>
             </p>
@@ -97,6 +97,17 @@ function Footer() {
         </div>
 
         <style>{`
+          /* Text links only (not the social icons). !important because
+             their base colour comes from inline styles. */
+          .footer-link:hover,
+          .footer-link:focus-visible {
+            color: var(--orange) !important;
+          }
+          .footer-link:focus-visible {
+            outline: 2px solid var(--orange);
+            outline-offset: 3px;
+            border-radius: 2px;
+          }
           .footer-social {
             display: flex;
             gap: 0.6rem;
