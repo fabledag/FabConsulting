@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import FabIcon from '../FabIcon/index.jsx';
 import { WORKSHOPS_PATH } from '@/lib/workshops.js';
 import { SERVICES } from '@/lib/services.js';
 import styles from './CtaStrip.module.css';
@@ -22,7 +23,7 @@ function CtaStrip() {
 
         <div className={styles.paths}>
           <a href="/#servicios" className={styles.path}>
-            <span className={styles.pathIcon} aria-hidden="true"><i className="fa-solid fa-user" /></span>
+            <span className={styles.pathIcon}><FabIcon name="para-ti" size={28} /></span>
             <span className={styles.pathBody}>
               <span className={styles.pathTitle}>Para ti</span>
               <span className={styles.pathDesc}>Asesorías 1:1 desde ${FROM_PRICE} MXN</span>
@@ -30,7 +31,7 @@ function CtaStrip() {
             <span className={styles.pathCta}>Agenda tu asesoría →</span>
           </a>
           <Link href={WORKSHOPS_PATH} className={styles.path}>
-            <span className={styles.pathIcon} aria-hidden="true"><i className="fa-solid fa-people-group" /></span>
+            <span className={styles.pathIcon}><FabIcon name="para-tu-equipo" size={28} /></span>
             <span className={styles.pathBody}>
               <span className={styles.pathTitle}>Para tu equipo</span>
               <span className={styles.pathDesc}>Talleres a la medida del contexto del equipo</span>

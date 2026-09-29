@@ -79,7 +79,6 @@
   border-radius: 12px;
   display: grid;
   place-items: center;
-  color: var(--purple-900);
   background: var(--orange);
 }
 
