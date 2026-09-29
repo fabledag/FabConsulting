@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { adminApiFetch, getAdminToken, setAdminToken } from '@/lib/adminApi.js';
 
 /**
@@ -9,7 +9,16 @@ import { adminApiFetch, getAdminToken, setAdminToken } from '@/lib/adminApi.js';
  * needs this.
  */
 export function useAdminAuth() {
-  const [loggedIn, setLoggedIn] = useState(() => Boolean(getAdminToken()));
+  // Read the stored token after mount, not in the state initializer: the page
+  // is pre-rendered without `localStorage`, so reading it during render made
+  // the client's first paint differ from the HTML (React hydration error
+  // #418). `checked` lets the page wait instead of flashing the login form.
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [checked, setChecked] = useState(false);
+  useEffect(() => {
+    setLoggedIn(Boolean(getAdminToken()));
+    setChecked(true);
+  }, []);
 
   const login = useCallback(async (password) => {
     const data = await adminApiFetch('/admin/login', { method: 'POST', body: { password } });
@@ -30,5 +39,5 @@ export function useAdminAuth() {
     await adminApiFetch('/admin/reset-password', { method: 'POST', body: { token, newPassword } });
   }, []);
 
-  return { loggedIn, login, logout, requestPasswordReset, resetPassword };
+  return { loggedIn, checked, login, logout, requestPasswordReset, resetPassword };
 }

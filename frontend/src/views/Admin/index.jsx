@@ -5,19 +5,20 @@ import { useAdminAuth } from '../../hooks/useAdminAuth.js';
 import { useNavigate } from '@/lib/navigation.js';
 import AdminAuthGate from './AdminAuthGate.jsx';
 import BookingsTab from './BookingsTab.jsx';
-import PackagesTab from './PackagesTab.jsx';
 import AvailabilityTab from './AvailabilityTab.jsx';
 import BlogTab from './BlogTab.jsx';
 
+// The Mentoría tab (PackagesTab) was hidden on 2026-09-29, when the package
+// stopped being sold — there were no packages to manage. The component and the
+// /admin/packages endpoints are kept in case it comes back.
 const TABS = [
   { key: 'bookings', label: 'Reservas' },
-  { key: 'packages', label: 'Mentoría' },
   { key: 'availability', label: 'Disponibilidad' },
   { key: 'blog', label: 'Blog' },
 ];
 
 function Admin() {
-  const { loggedIn, login, logout, requestPasswordReset, resetPassword } = useAdminAuth();
+  const { loggedIn, checked, login, logout, requestPasswordReset, resetPassword } = useAdminAuth();
   const navigate = useNavigate();
   const [tab, setTab] = useState('bookings');
 
@@ -39,6 +40,10 @@ function Admin() {
       />
     );
   }
+
+  // Until the stored token has been read (after mount), render nothing rather
+  // than a login form that would flash for an already-signed-in admin.
+  if (!checked) return null;
 
   if (!loggedIn) {
     return <AdminAuthGate initialView="login" onLogin={login} requestPasswordReset={requestPasswordReset} />;
@@ -88,7 +93,6 @@ function Admin() {
         </div>
 
         {tab === 'bookings' && <BookingsTab onUnauthorized={logout} />}
-        {tab === 'packages' && <PackagesTab onUnauthorized={logout} />}
         {tab === 'availability' && <AvailabilityTab onUnauthorized={logout} />}
         {tab === 'blog' && <BlogTab onUnauthorized={logout} />}
       </div>
