@@ -11,9 +11,9 @@ import styles from '../asesorias/asesorias.module.css';
 const PATH = '/sobre-mi';
 
 export const metadata = buildMetadata({
-  title: 'Sobre mí: Fabiola Ledesma, Senior Design Manager',
+  title: 'Sobre mí — Senior Design Manager en UX e IA',
   description:
-    'Senior Design Manager con más de 15 años diseñando productos digitales, más de 8 liderando equipos de diseño en banca digital, practitioner en Colectivo23 y cofundadora de GEDX.',
+    'Senior Design Manager con 15+ años diseñando productos digitales y 8 liderando equipos de diseño en banca digital. Mentora en Colectivo23 y cofundadora de GEDX.',
   path: PATH,
 });
 

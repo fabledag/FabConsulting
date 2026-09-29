@@ -35,16 +35,18 @@ export async function GET() {
     (w) => `- **${w.name}** — ${w.desc} Dirigido a: ${w.forWho}\n  Temas: ${w.topics.join(' ')}`
   ).join('\n');
 
-  const body = `# Fabiola Ledesma — Asesorías en UX, IA y Product Design
+  const body = `# Fabiola Ledesma — Asesorías y talleres en UX, IA y Product Design
 
 > Asesorías individuales, en español, para profesionales de UX y Product Design
 > que quieren mejorar su carrera, su CV, su portafolio o su preparación para
-> entrevistas. Impartidas por Fabiola Ledesma, Senior Design Manager con más de
-> 15 años diseñando productos digitales y cofundadora de la agencia GEDX.
+> entrevistas, y talleres para equipos de diseño, producto y negocio sobre
+> comunicación estratégica y diseño e IA aplicada. Impartidos por Fabiola
+> Ledesma, Senior Design Manager con más de 15 años diseñando productos
+> digitales y cofundadora de la agencia GEDX.
 
 Sitio: ${SITE_URL}
 Idioma: español (México)
-Modalidad: videollamada individual
+Modalidad: asesorías por videollamada individual; talleres según se acuerde con cada equipo
 Zona horaria de referencia: Ciudad de México (CST)
 Moneda: peso mexicano (MXN)
 

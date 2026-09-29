@@ -20,9 +20,9 @@ import { buildMetadata, absoluteUrl, breadcrumbSchema } from '@/lib/seo.js';
 import styles from '@/components/Workshops/Workshops.module.css';
 
 export const metadata = buildMetadata({
-  title: 'Talleres para empresas: comunicación estratégica, diseño e IA',
+  title: 'Talleres para empresas en diseño e IA',
   description:
-    'Talleres para equipos de diseño, producto, innovación y negocio: comunicación estratégica para presentar propuestas y alinear áreas, y diseño estratégico e IA aplicada a un reto concreto.',
+    'Talleres para equipos de diseño, producto y negocio: comunicación estratégica para alinear áreas, y diseño estratégico e IA aplicada a un reto real.',
   path: WORKSHOPS_PATH,
   keywords: [
     'talleres para empresas',

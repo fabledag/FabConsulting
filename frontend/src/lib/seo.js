@@ -9,6 +9,7 @@
  */
 
 import { SERVICES } from './services.js';
+import { WORKSHOPS, WORKSHOPS_PATH } from './workshops.js';
 
 export const SITE_URL = 'https://fabdesign.digital';
 export const SITE_NAME = 'Fabiola Ledesma';
@@ -21,8 +22,10 @@ export const LINKEDIN_URL = 'https://linkedin.com/in/fabiolaledesma';
 export const INSTAGRAM_URL = 'https://www.instagram.com/fab_designux/';
 
 export const DEFAULT_TITLE = 'Fabiola Ledesma | Asesorías en UX, IA y Product Design';
-export const DEFAULT_DESCRIPTION =
-  'Asesorías personalizadas para profesionales que quieren mejorar su carrera, CV, portafolio o preparación para entrevistas en UX y Product Design.';
+// Lowest session price, read from services.js so the description can't go stale.
+const FROM_PRICE = Math.min(...SERVICES.map((s) => s.price));
+
+export const DEFAULT_DESCRIPTION = `Asesorías 1:1 desde $${FROM_PRICE} MXN y talleres para equipos en UX, IA y Product Design: carrera, CV, portafolio, entrevistas y comunicación estratégica.`;
 
 /** Canonical absolute URL for a route. Keeps the trailing slash that the
  *  static export emits, so canonical tags match the real served URL. */
@@ -93,7 +96,9 @@ export const personSchema = {
   description:
     'Senior Design Manager con más de 15 años diseñando productos digitales. Cofundadora de GEDX. Asesora a profesionales de UX y Product Design en México en estrategia, carrera y aplicación práctica de IA.',
   url: `${SITE_URL}/`,
-  image: OG_IMAGE,
+  // Her actual portrait, not the social card: this is what search engines
+  // and assistants attach to the person entity.
+  image: `${SITE_URL}/fabiola.jpg`,
   sameAs: [LINKEDIN_URL, INSTAGRAM_URL, 'https://gedx.com.mx'],
   address: {
     '@type': 'PostalAddress',
@@ -134,14 +139,15 @@ function offerFor(service) {
 export const professionalServiceSchema = {
   '@type': 'ProfessionalService',
   '@id': `${SITE_URL}/#servicio`,
-  name: 'Fabiola Ledesma — Asesorías en UX, IA y Product Design',
+  name: 'Fabiola Ledesma — Asesorías y talleres en UX, IA y Product Design',
   description:
-    'Asesorías individuales para profesionales que quieren mejorar su carrera, CV, portafolio o preparación para entrevistas en UX y Product Design.',
+    'Asesorías individuales para profesionales de UX y Product Design (carrera, CV, portafolio y entrevistas) y talleres para equipos de diseño, producto y negocio sobre comunicación estratégica y diseño e IA aplicada.',
   url: `${SITE_URL}/`,
   image: OG_IMAGE,
   provider: { '@id': `${SITE_URL}/#fabiola` },
   areaServed: { '@type': 'Country', name: 'México' },
-  serviceType: 'Asesoría en UX y Product Design',
+  serviceType: ['Asesoría en UX y Product Design', 'Talleres para empresas'],
+  priceRange: `$${Math.min(...SERVICES.map((s) => s.price))}–$${Math.max(...SERVICES.map((s) => s.price))} MXN`,
   availableChannel: {
     '@type': 'ServiceChannel',
     serviceUrl: `${SITE_URL}/#agenda`,
@@ -149,8 +155,28 @@ export const professionalServiceSchema = {
   },
   hasOfferCatalog: {
     '@type': 'OfferCatalog',
-    name: 'Asesorías individuales',
-    itemListElement: SERVICES.map(offerFor),
+    name: 'Asesorías y talleres',
+    itemListElement: [
+      {
+        '@type': 'OfferCatalog',
+        name: 'Asesorías individuales',
+        itemListElement: SERVICES.map(offerFor),
+      },
+      {
+        // No price: scope, duration and modality are agreed per team.
+        '@type': 'OfferCatalog',
+        name: 'Talleres para empresas',
+        itemListElement: WORKSHOPS.map((w) => ({
+          '@type': 'Offer',
+          itemOffered: {
+            '@type': 'Service',
+            name: w.name,
+            description: w.desc,
+            url: `${absoluteUrl(WORKSHOPS_PATH)}#${w.anchor}`,
+          },
+        })),
+      },
+    ],
   },
 };
 

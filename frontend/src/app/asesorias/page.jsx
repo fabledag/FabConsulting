@@ -10,7 +10,7 @@ import styles from './asesorias.module.css';
 export const metadata = buildMetadata({
   title: 'Asesorías en UX, IA y Product Design',
   description:
-    'Tres asesorías individuales para profesionales de UX y Product Design: conversación estratégica, revisión de CV y portafolio (con LinkedIn incluido) y simulación de entrevista.',
+    'Tres asesorías 1:1 para profesionales de UX y Product Design: conversación estratégica, revisión de CV y portafolio (con LinkedIn) y simulación de entrevista.',
   path: '/asesorias',
 });
 

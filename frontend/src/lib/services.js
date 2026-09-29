@@ -48,7 +48,7 @@ export const SERVICES = [
     cta: 'Agenda una conversación',
 
     // Dedicated page
-    seoTitle: 'Conversación estratégica 1:1 en UX y Product Design',
+    seoTitle: 'Conversación estratégica 1:1 en UX y producto',
     seoDescription:
       'Sesión individual de 60 minutos para ordenar tus ideas, resolver dudas de carrera y definir tus siguientes pasos en UX y Product Design. $500 MXN.',
     heroKicker: 'Asesoría individual',
@@ -115,7 +115,7 @@ export const SERVICES = [
     ],
     cta: 'Quiero revisar mi perfil',
 
-    seoTitle: 'Revisión de CV, portafolio y LinkedIn para diseñadores UX',
+    seoTitle: 'Revisión de CV, portafolio y LinkedIn UX',
     seoDescription:
       'Revisión de tu CV, tu portafolio o ambos —con LinkedIn incluido si lo eliges— desde la perspectiva de quien contrata diseñadores. 60 minutos, $700 MXN.',
     heroKicker: 'Revisión de perfil y portafolio',
@@ -190,7 +190,7 @@ export const SERVICES = [
     ],
     cta: 'Quiero practicar una entrevista',
 
-    seoTitle: 'Simulación de entrevista para roles de UX y Product Design',
+    seoTitle: 'Simulación de entrevista para diseñadores UX',
     seoDescription:
       'Entrevista simulada con retroalimentación honesta sobre tus respuestas, tu narrativa y tu manejo de preguntas difíciles. 60 minutos, $800 MXN.',
     heroKicker: 'Preparación para entrevista',

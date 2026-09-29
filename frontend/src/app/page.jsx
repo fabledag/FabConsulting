@@ -34,6 +34,12 @@ export const metadata = buildMetadata({
 export default function HomePage() {
   return (
     <>
+      {/* The hero artwork is the largest thing above the fold (the LCP) but
+          it's a CSS background, so the browser would only find it after the
+          stylesheet. Preload the size each breakpoint actually uses. React
+          hoists these into <head>. */}
+      <link rel="preload" as="image" href="/images/hero-bg.jpg" media="(min-width: 900px)" fetchPriority="high" />
+      <link rel="preload" as="image" href="/images/hero-bg-960.jpg" media="(max-width: 899px)" fetchPriority="high" />
       <LegacyHashRedirect />
       <Nav />
       <main>
