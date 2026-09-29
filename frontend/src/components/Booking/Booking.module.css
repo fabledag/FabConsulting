@@ -141,8 +141,10 @@
 
 .serviceOption.selected,
 .serviceOption.selected:hover {
-  border-color: var(--purple-600);
-  background: var(--purple-50);
+  border-color: var(--orange);
+  background: #fff5ee;
+  /* Same colours as hover; the ring is what marks it as chosen. */
+  box-shadow: 0 0 0 3px rgba(253, 138, 70, 0.22);
 }
 
 .soptTop {
