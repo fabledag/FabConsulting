@@ -40,17 +40,16 @@ const ddb = DynamoDBDocumentClient.from(ddbClient);
 const BOOKINGS_TABLE = process.env.BOOKINGS_TABLE;
 const PACKAGES_TABLE = process.env.PACKAGES_TABLE;
 
+// What Mercado Pago charges. Must match `price` in frontend/src/lib/services.js.
 const SERVICE_PRICES = {
   session: 500,
-  cv: 600,
-  portfolio: 700,
-  mock: 550,
-  mentoria: 1800,
+  cv: 700,
+  mock: 800,
 };
 
 const SERVICE_LABELS = {
   session: 'Conversación estratégica 1:1',
-  cv: 'Revisión de CV y LinkedIn',
+  cv: 'Revisión de CV y portafolio',
   portfolio: 'Revisión de portafolio o book',
   mock: 'Simulación de entrevista',
   mentoria: 'Mentoría — 4 sesiones en 6 meses',
@@ -86,7 +85,7 @@ async function findBookingById(bookingId) {
  * Body: { bookingId } or { packageId }
  *
  * Prices come from this file, never from the request — otherwise a customer
- * could post their own amount and pay $1 for a $1,800 package.
+ * could post their own amount and pay $1 for a $700 session.
  */
 async function createCheckout(email, body) {
   if (!isConfigured()) {
@@ -135,7 +134,10 @@ async function createCheckout(email, body) {
       return { statusCode: 200, body: { checkoutUrl, preferenceId } };
     }
 
-    // Package (Mentoría)
+    // Package (Mentoría) — no longer sold since 2026-09-29.
+    if (!SERVICE_PRICES.mentoria) {
+      return { statusCode: 410, body: { error: 'El paquete de Mentoría ya no está disponible.' } };
+    }
     const pkgResult = await ddb.send(new GetCommand({ TableName: PACKAGES_TABLE, Key: { id: body.packageId } }));
     const pkg = pkgResult.Item;
     if (!pkg) return { statusCode: 404, body: { error: 'No encontramos ese paquete.' } };

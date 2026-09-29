@@ -3,7 +3,7 @@ import { buildMetadata } from '@/lib/seo.js';
 
 export const metadata = buildMetadata({
   title: 'Tu perfil',
-  description: 'Gestiona tus sesiones agendadas, tus créditos de Mentoría y tus notificaciones.',
+  description: 'Gestiona tus sesiones agendadas y tus notificaciones.',
   path: '/profile',
   noindex: true,
 });

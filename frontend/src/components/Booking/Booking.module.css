@@ -408,3 +408,64 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* "¿Qué quieres revisar?" — CV/portfolio review only. */
+.reviewGroup {
+  border: 0;
+  margin: 0 0 1rem;
+  padding: 0;
+  min-width: 0;
+}
+
+.reviewLegend {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--purple-800);
+  padding: 0;
+  margin-bottom: 0.2rem;
+}
+
+.reviewHint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin: 0 0 0.6rem;
+}
+
+.reviewOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.reviewOption {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  color: var(--text-dark);
+  background: #ffffff;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  padding: 0.5rem 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.reviewOption:has(input:checked) {
+  border-color: var(--purple-600);
+  background: var(--purple-50);
+  color: var(--purple-900);
+  font-weight: 600;
+}
+
+.reviewOption input {
+  accent-color: var(--purple-800);
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+}
+
+.reviewOption:has(input:focus-visible) {
+  outline: 3px solid var(--orange);
+  outline-offset: 2px;
+}

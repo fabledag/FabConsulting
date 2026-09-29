@@ -24,7 +24,11 @@ const BOOKINGS_TABLE = process.env.BOOKINGS_TABLE;
 const PACKAGES_TABLE = process.env.PACKAGES_TABLE;
 
 const RESCHEDULE_WINDOW_MS = 24 * 60 * 60 * 1000;
-const VALID_SERVICES = ['session', 'mock', 'cv', 'portfolio', 'mentoria'];
+// Services that can be booked now (matches `key` in frontend/src/lib/services.js).
+// Since 2026-09-29 the CV and portfolio reviews are one `cv` session and the
+// Mentoría package is gone; old `portfolio`/`mentoria` records still display
+// and can be rescheduled/cancelled, they just can't be created.
+const VALID_SERVICES = ['session', 'cv', 'mock'];
 
 function slotDateTime(date, time) {
   return new Date(`${date}T${time}:00`);

@@ -23,7 +23,7 @@ const TRUST_ITEMS = [
   {
     icon: 'fa-solid fa-envelope-circle-check',
     title: 'Te aviso en cuanto se confirme',
-    body: 'Pagas con tarjeta y tu sesión queda confirmada al instante — sin esperas ni confirmaciones manuales. Si usas un crédito de Mentoría, ni siquiera necesitas pagar.',
+    body: 'Pagas con tarjeta y tu sesión queda confirmada al instante — sin esperas ni confirmaciones manuales.',
   },
   {
     icon: 'fa-solid fa-calendar-check',
@@ -66,6 +66,10 @@ function Booking() {
   const [name, setName] = useState('');
   const [linkedin, setLinkedin] = useState('');
   const [message, setMessage] = useState('');
+  // What to review, for services that offer a choice (the CV/portfolio
+  // review). Sent as the first line of the booking message.
+  const [reviewItems, setReviewItems] = useState([]);
+  const [reviewTouched, setReviewTouched] = useState(false);
   const [nameTouched, setNameTouched] = useState(false);
 
   const [email, setEmail] = useState(getLastEmail);
@@ -76,15 +80,15 @@ function Booking() {
   // so we can tell the user what just happened instead of silently jumping.
   const [justRestored, setJustRestored] = useState(false);
 
-  const [activePackage, setActivePackage] = useState(null);
-  const [loadingPackages, setLoadingPackages] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState(null); // { booking } | { package }
 
   const canGoToStep2 = Boolean(selectedService);
   const canGoToStep3 = Boolean(selectedSlot);
   const nameError = nameTouched && name.trim().length < 2 ? 'Escribe tu nombre para continuar.' : '';
-  const canGoToStep5 = name.trim().length >= 2;
+  const reviewOptions = selectedService ? SERVICES[selectedService]?.reviewOptions : null;
+  const reviewError = reviewOptions && reviewTouched && reviewItems.length === 0 ? 'Elige al menos una opción para revisar.' : '';
+  const canGoToStep5 = name.trim().length >= 2 && (!reviewOptions || reviewItems.length > 0);
   const emailError = emailTouched && email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? 'Revisa que el correo tenga un formato válido.' : '';
 
   // Pick up a service chosen from a Services card or a /asesorias page —
@@ -120,6 +124,7 @@ function Booking() {
     if (parsed.name) setName(parsed.name);
     if (parsed.linkedin) setLinkedin(parsed.linkedin);
     if (parsed.message) setMessage(parsed.message);
+    if (Array.isArray(parsed.reviewItems)) setReviewItems(parsed.reviewItems);
     setStep(5);
     setJustRestored(true);
 
@@ -128,22 +133,6 @@ function Booking() {
       document.getElementById('agenda')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   }, [user]);
-
-  // When logged in and reaching the confirm step for mentoria, check credits.
-  useEffect(() => {
-    if (!user || step !== 5 || selectedService !== 'mentoria') {
-      setActivePackage(null);
-      return;
-    }
-    setLoadingPackages(true);
-    apiFetch('/me/packages', { auth: true })
-      .then((data) => {
-        const active = (data.packages || []).find((p) => p.status === 'active' && p.remainingCredits > 0);
-        setActivePackage(active || null);
-      })
-      .catch(() => setActivePackage(null))
-      .finally(() => setLoadingPackages(false));
-  }, [user, step, selectedService]);
 
   // Prefill for returning, already-logged-in users so they don't retype it.
   useEffect(() => {
@@ -155,7 +144,7 @@ function Booking() {
     if (!email) return;
     setLinkStatus('sending');
     setError('');
-    savePendingSelection({ selectedService, selectedSlot, name, linkedin, message });
+    savePendingSelection({ selectedService, selectedSlot, name, linkedin, message, reviewItems });
     try {
       // Send them back to the booking widget itself, not the top of the page.
       await requestLink(email, '/#agenda');
@@ -174,50 +163,17 @@ function Booking() {
     }
   }
 
-  async function handleBookWithCredit() {
-    setSubmitting(true);
-    setError('');
-    syncProfileName();
-    try {
-      const data = await apiFetch('/me/bookings', {
-        method: 'POST',
-        auth: true,
-        body: {
-          date: selectedSlot.date,
-          time: selectedSlot.time,
-          service: selectedService,
-          name: name.trim(),
-          linkedin: linkedin.trim(),
-          message: message.trim(),
-          packageId: activePackage.id,
-        },
-      });
-      setResult({ booking: data.booking });
-    } catch (err) {
-      setError(err.message || 'No se pudo agendar la sesión.');
-    } finally {
-      setSubmitting(false);
-    }
+  // The booking message, with the chosen review items (if any) on top.
+  function composedMessage() {
+    const note = message.trim();
+    if (!reviewOptions || reviewItems.length === 0) return note;
+    const ordered = reviewOptions.filter((o) => reviewItems.includes(o));
+    return `Quiero revisar: ${ordered.join(', ')}${note ? `\n\n${note}` : ''}`;
   }
 
-  async function handleBuyPackage() {
-    setSubmitting(true);
-    setError('');
-    syncProfileName();
-    try {
-      const data = await apiFetch('/me/packages', { method: 'POST', auth: true, body: { packageType: 'mentoria-4x6' } });
-      const checkout = await apiFetch('/me/payments/checkout', {
-        method: 'POST',
-        auth: true,
-        body: { packageId: data.package.id },
-      });
-      // Same tab, not a popup: blockers eat popups, and Mercado Pago sends the
-      // buyer straight back to /pago/exito/ when it's done.
-      window.location.assign(checkout.checkoutUrl);
-    } catch (err) {
-      setError(err.message || 'No se pudo iniciar la compra del paquete.');
-      setSubmitting(false);
-    }
+  function toggleReviewItem(option) {
+    setReviewTouched(true);
+    setReviewItems((items) => (items.includes(option) ? items.filter((i) => i !== option) : [...items, option]));
   }
 
   async function handleBookAndPay() {
@@ -234,7 +190,7 @@ function Booking() {
           service: selectedService,
           name: name.trim(),
           linkedin: linkedin.trim(),
-          message: message.trim(),
+          message: composedMessage(),
         },
       });
       // The slot is held as `pending` while the customer pays. Mercado Pago's
@@ -489,9 +445,43 @@ function Booking() {
                     )}
                   </div>
 
+                  {reviewOptions && (
+                    <fieldset
+                      className={styles.reviewGroup}
+                      aria-describedby={reviewError ? 'booking-review-error' : 'booking-review-hint'}
+                    >
+                      <legend className={styles.reviewLegend}>
+                        ¿Qué quieres revisar? <span className={styles.required} aria-hidden="true">*</span>
+                      </legend>
+                      <p id="booking-review-hint" className={styles.reviewHint}>
+                        Elige una o varias opciones. El precio es el mismo.
+                      </p>
+                      <div className={styles.reviewOptions}>
+                        {reviewOptions.map((option) => (
+                          <label key={option} className={styles.reviewOption}>
+                            <input
+                              type="checkbox"
+                              checked={reviewItems.includes(option)}
+                              onChange={() => toggleReviewItem(option)}
+                            />
+                            <span>{option}</span>
+                          </label>
+                        ))}
+                      </div>
+                      {reviewError && (
+                        <p id="booking-review-error" role="alert" style={{ fontSize: '0.78rem', color: '#dc2626', margin: '0.4rem 0 0' }}>
+                          {reviewError}
+                        </p>
+                      )}
+                    </fieldset>
+                  )}
+
                   <div style={{ marginBottom: '1rem' }}>
                     <label htmlFor="booking-linkedin" style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--purple-800)', marginBottom: '0.4rem' }}>
-                      LinkedIn <span style={{ fontWeight: 400, color: 'var(--text-muted)' }}>(opcional)</span>
+                      LinkedIn{' '}
+                      <span style={{ fontWeight: 400, color: 'var(--text-muted)' }}>
+                        {reviewItems.includes('LinkedIn') ? '(compárteme el enlace para revisarlo)' : '(opcional)'}
+                      </span>
                     </label>
                     <input
                       id="booking-linkedin"
@@ -541,6 +531,7 @@ function Booking() {
                       className={styles.formSubmit}
                       onClick={() => {
                         setNameTouched(true);
+                        setReviewTouched(true);
                         if (canGoToStep5) setStep(5);
                       }}
                     >
@@ -645,27 +636,9 @@ function Booking() {
                         </div>
                       </div>
 
-                      {selectedService === 'mentoria' && loadingPackages && (
-                        <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Revisando tus créditos…</p>
-                      )}
-
-                      {selectedService === 'mentoria' && !loadingPackages && activePackage && (
-                        <button className={styles.formSubmit} disabled={submitting} onClick={handleBookWithCredit}>
-                          {submitting ? 'Agendando…' : `Usar 1 de tus ${activePackage.remainingCredits} sesiones disponibles →`}
-                        </button>
-                      )}
-
-                      {selectedService === 'mentoria' && !loadingPackages && !activePackage && (
-                        <button className={`${styles.formSubmit} ${styles.paySubmit}`} disabled={submitting} onClick={handleBuyPackage}>
-                          {submitting ? 'Procesando…' : `Comprar el paquete completo — ${SERVICES.mentoria.display} →`}
-                        </button>
-                      )}
-
-                      {selectedService !== 'mentoria' && (
-                        <button className={`${styles.formSubmit} ${styles.paySubmit}`} disabled={submitting} onClick={handleBookAndPay}>
-                          {submitting ? 'Llevándote al pago…' : `Pagar ${SERVICES[selectedService].display} y confirmar →`}
-                        </button>
-                      )}
+                      <button className={`${styles.formSubmit} ${styles.paySubmit}`} disabled={submitting} onClick={handleBookAndPay}>
+                        {submitting ? 'Llevándote al pago…' : `Pagar ${SERVICES[selectedService].display} y confirmar →`}
+                      </button>
 
                       <button className={styles.btnBack} style={{ marginTop: '0.5rem', width: '100%' }} onClick={() => setStep(3)}>
                         ← Cambiar fecha

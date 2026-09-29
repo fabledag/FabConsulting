@@ -9,7 +9,6 @@ const {
   UpdateCommand,
   ScanCommand,
 } = require('@aws-sdk/lib-dynamodb');
-const { v4: uuidv4 } = require('uuid');
 
 const { sendEmail, emailLayout } = require('../utils/email');
 const { createNotification } = require('../utils/notify');
@@ -49,64 +48,12 @@ async function listMyPackages(email) {
 }
 
 /**
- * POST /me/packages
- * Body: { packageType }
+ * POST /me/packages — retired, answers 410.
  */
-async function createPendingPackage(email, body) {
-  const packageType = body?.packageType;
-  const def = PACKAGE_TYPES[packageType];
-  if (!def) {
-    return { statusCode: 400, body: { error: `packageType must be one of: ${Object.keys(PACKAGE_TYPES).join(', ')}.` } };
-  }
-
-  const id = uuidv4();
-  const now = new Date().toISOString();
-  const pkg = {
-    id,
-    email,
-    packageType,
-    totalCredits: def.totalCredits,
-    usedCredits: 0,
-    remainingCredits: 0,
-    status: 'pending_payment',
-    pricePaidMXN: def.pricePaidMXN,
-    purchasedAt: now,
-    confirmedAt: null,
-    expiresAt: null,
-  };
-
-  try {
-    await ddb.send(new PutCommand({ TableName: PACKAGES_TABLE, Item: pkg }));
-
-    if (ADMIN_EMAIL) {
-      try {
-        await sendEmail({
-          to: ADMIN_EMAIL,
-          subject: `Nueva compra pendiente: ${def.label}`,
-          html: emailLayout({
-            headerSubtitle: 'Paquete pendiente de confirmar pago',
-            bodyHtml: `
-              <p style="margin:0 0 8px;color:#374151;font-size:15px;"><strong>Cliente:</strong> ${email}</p>
-              <p style="margin:0 0 8px;color:#374151;font-size:15px;"><strong>Paquete:</strong> ${def.label}</p>
-              <p style="margin:0;color:#374151;font-size:15px;"><strong>Monto:</strong> $${def.pricePaidMXN} MXN</p>
-            `,
-            ctaUrl: `${SITE_URL}/admin/`,
-            ctaLabel: 'Ver en el panel de admin',
-          }),
-        });
-      } catch (emailErr) {
-        console.error('createPendingPackage admin email error:', emailErr);
-      }
-    }
-
-    // Payment is started separately via POST /me/payments/checkout, which
-    // creates the Mercado Pago preference for this package id.
-
-    return { statusCode: 201, body: { package: pkg } };
-  } catch (err) {
-    console.error('createPendingPackage error:', err);
-    return { statusCode: 500, body: { error: 'No se pudo crear el paquete.' } };
-  }
+async function createPendingPackage() {
+  // Mentoría stopped being sold on 2026-09-29. Existing packages (none at the
+  // time) keep working through listMyPackages and the admin endpoints.
+  return { statusCode: 410, body: { error: 'El paquete de Mentoría ya no está disponible.' } };
 }
 
 /**

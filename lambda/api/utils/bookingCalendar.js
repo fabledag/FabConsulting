@@ -22,7 +22,7 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 const SERVICE_LABELS = {
   session: 'Conversación estratégica 1:1',
   mock: 'Simulación de entrevista',
-  cv: 'Revisión de CV y LinkedIn',
+  cv: 'Revisión de CV y portafolio',
   portfolio: 'Revisión de portafolio o book',
   mentoria: 'Mentoría',
 };

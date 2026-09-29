@@ -10,7 +10,7 @@ import styles from './asesorias.module.css';
 export const metadata = buildMetadata({
   title: 'Asesorías en UX, IA y Product Design',
   description:
-    'Cinco asesorías individuales para profesionales de UX y Product Design: conversación estratégica, revisión de CV y LinkedIn, revisión de portafolio, simulación de entrevista y mentoría continua.',
+    'Tres asesorías individuales para profesionales de UX y Product Design: conversación estratégica, revisión de CV y portafolio (con LinkedIn incluido) y simulación de entrevista.',
   path: '/asesorias',
 });
 
@@ -53,7 +53,7 @@ export default function AsesoriasIndex() {
         <header className={styles.header}>
           <h1 className={styles.title}>Asesorías en UX, IA y Product Design</h1>
           <p className={styles.intro}>
-            Cinco formas de trabajar juntos, según lo que necesites resolver ahora.
+            Tres formas de trabajar juntos, según lo que necesites resolver ahora.
             Todas son sesiones individuales por videollamada, en español, pensadas
             para profesionales de UX y Product Design.
           </p>

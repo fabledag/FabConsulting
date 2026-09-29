@@ -1,5 +1,11 @@
 /**
- * Single source of truth for the five bookable services.
+ * Single source of truth for the three bookable services.
+ *
+ * 2026-09-29: the offer went from five to three. The CV and portfolio reviews
+ * merged into one `cv` session (LinkedIn included, chosen at booking via
+ * `reviewOptions`), and the Mentoría package was dropped. Their old slugs
+ * (revision-de-cv-y-linkedin, revision-de-portafolio, mentoria) redirect via
+ * LEGACY_SLUGS below.
  *
  * This used to live in three places that had already drifted apart once (the
  * portfolio review silently collapsed into the `cv` key). Everything now reads
@@ -59,7 +65,7 @@ export const SERVICES = [
       },
       {
         h: '¿Qué no es esta sesión?',
-        p: 'No es una plática motivacional ni una revisión de tu CV (para eso hay una sesión específica). No voy a decirte lo que quieres escuchar: si tu plan tiene un hueco, te lo digo. Tampoco es una sesión genérica con consejos de internet — todo lo que trabajemos parte de tu contexto real.',
+        p: 'No es una plática motivacional ni una revisión de tu CV o portafolio (para eso hay una sesión específica). No voy a decirte lo que quieres escuchar: si tu plan tiene un hueco, te lo digo. Tampoco es una sesión genérica con consejos de internet — todo lo que trabajemos parte de tu contexto real.',
       },
     ],
     faq: [
@@ -73,82 +79,19 @@ export const SERVICES = [
       },
       {
         q: '¿Puedo tomar varias sesiones?',
-        a: 'Claro. Si sabes de antemano que quieres acompañamiento continuo, la Mentoría (4 sesiones en 6 meses) sale $200 más barata que comprarlas por separado.',
+        a: 'Claro. Cada sesión se reserva por separado, cuando la necesites, y la siguiente parte de lo que trabajamos en la anterior.',
       },
     ],
   },
 
   {
     key: 'cv',
-    slug: 'revision-de-cv-y-linkedin',
-    anchor: 'servicio-cv',
+    slug: 'revision-de-cv-y-portafolio',
+    anchor: 'servicio-revision',
 
-    name: 'Revisión de CV y LinkedIn',
-    label: 'Revisión de CV y LinkedIn',
-    tag: 'CV & LinkedIn',
-    tagPlain: true,
-
-    price: 600,
-    display: '$600 MXN',
-    duration: '60 min',
-    durationLong: '60 minutos',
-    durationMinutes: 60,
-
-    desc: 'Revisaremos cómo comunicas tu experiencia, tus logros y tu propuesta de valor para que tu perfil sea más claro y competitivo.',
-    shortDesc: 'Feedback directo desde lo que realmente evalúan los hiring managers',
-    forWho: 'Para quien quiere que su perfil comunique mejor su experiencia.',
-    topics: ['Estructura del CV', 'Claridad de logros', 'Coherencia con LinkedIn', 'Priorización de información'],
-    includes: [
-      'Estructura y jerarquía del CV',
-      'Claridad de logros',
-      'Coherencia CV ↔ LinkedIn',
-    ],
-    cta: 'Quiero revisar mi perfil',
-
-    seoTitle: 'Revisión de CV y LinkedIn para diseñadores UX',
-    seoDescription:
-      'Revisión profesional de tu CV y perfil de LinkedIn con feedback desde la perspectiva de quien contrata diseñadores. Sesión de 60 minutos, $600 MXN.',
-    heroKicker: 'Revisión de perfil',
-    intro:
-      'He estado del lado que recibe los CVs. Sé cuánto tiempo real se le dedica a cada uno en la primera ronda —mucho menos del que te imaginas— y qué hace que uno pase el filtro. Esta sesión te da esa perspectiva aplicada a tu perfil.',
-    body: [
-      {
-        h: '¿Para quién es esta revisión?',
-        p: 'Para quien está aplicando y no recibe respuesta, para quien lleva años sin actualizar su CV y no sabe por dónde empezar, y para quien tiene muy buena experiencia pero no logra que se note al leerla. Si sientes que tu perfil te describe pero no te vende, esta sesión es para ti.',
-      },
-      {
-        h: '¿Qué revisamos exactamente?',
-        p: 'Revisamos la estructura y jerarquía de tu CV: qué se ve primero y si eso es lo más fuerte que tienes. Revisamos cómo están escritos tus logros —la mayoría de los CVs describen responsabilidades, no resultados, y esa es la diferencia entre avanzar o no. Y revisamos la coherencia entre tu CV y tu LinkedIn, porque quien te evalúa casi siempre abre los dos.',
-      },
-      {
-        h: '¿Cómo es el proceso?',
-        p: 'Me compartes tu CV y el enlace a tu LinkedIn al reservar. Llego a la sesión habiéndolos revisado, así que la hora completa se usa en trabajar sobre observaciones concretas y no en leer en silencio. Salimos con una lista priorizada de cambios: qué corregir primero, qué después, y qué está bien y no hay que tocar.',
-      },
-    ],
-    faq: [
-      {
-        q: '¿En qué formato mando mi CV?',
-        a: 'PDF de preferencia. Si tu CV está en Figma, Notion o Google Docs, un enlace con permisos de lectura funciona igual.',
-      },
-      {
-        q: '¿Reescribes mi CV por mí?',
-        a: 'No. Te doy las observaciones y la dirección concreta para que lo reescribas tú — así aprendes el criterio y puedes aplicarlo cada vez que lo actualices, no solo esta vez.',
-      },
-      {
-        q: '¿Sirve si estoy cambiando de carrera hacia UX?',
-        a: 'Sí, y es uno de los casos donde más ayuda. La dificultad ahí es traducir experiencia de otra industria a un lenguaje que un equipo de diseño reconozca, y eso se trabaja bien en una sesión.',
-      },
-    ],
-  },
-
-  {
-    key: 'portfolio',
-    slug: 'revision-de-portafolio',
-    anchor: 'servicio-portafolio',
-
-    name: 'Revisión de portafolio o book',
-    label: 'Revisión de portafolio o book',
-    tag: 'Portafolio',
+    name: 'Revisión de CV y portafolio',
+    label: 'Revisión de CV y portafolio (LinkedIn incluido)',
+    tag: 'CV · Portafolio · LinkedIn',
     tagPlain: true,
 
     price: 700,
@@ -157,49 +100,65 @@ export const SERVICES = [
     durationLong: '60 minutos',
     durationMinutes: 60,
 
-    desc: 'Analizaremos la estructura, narrativa y presentación de tus casos para que tu portafolio comunique mejor tu forma de pensar.',
-    shortDesc: 'Analizaremos la estructura, narrativa y presentación de tus casos',
-    forWho: 'Para quien quiere que su portafolio comunique mejor su trabajo.',
-    topics: ['Storytelling', 'Contexto del problema', 'Resultados', 'Preparación para explicarlo en entrevista'],
-    includes: [
-      'Storytelling y narrativa',
-      'Estructura de casos',
-      'Preparación para explicarlo en entrevista',
-    ],
-    cta: 'Quiero revisar mi portafolio',
+    // What the person can ask to review. Picked in the booking form and sent
+    // as part of the booking message — it never changes the price.
+    reviewOptions: ['CV', 'Portafolio o book', 'LinkedIn'],
 
-    seoTitle: 'Revisión de portafolio UX y Product Design',
+    desc: 'Revisamos tu CV, tu portafolio o ambos —y tu LinkedIn si quieres— para que comuniquen con claridad tu experiencia y tu forma de pensar.',
+    shortDesc: 'CV, portafolio o ambos · LinkedIn incluido si lo eliges',
+    forWho: 'Para quien quiere que su perfil y su trabajo se entiendan a la primera.',
+    topics: ['Estructura del CV', 'Narrativa de casos', 'Claridad de logros', 'Coherencia con LinkedIn'],
+    includes: [
+      'CV, portafolio o ambos',
+      'LinkedIn incluido si lo eliges',
+      'Lista priorizada de cambios',
+    ],
+    cta: 'Quiero revisar mi perfil',
+
+    seoTitle: 'Revisión de CV, portafolio y LinkedIn para diseñadores UX',
     seoDescription:
-      'Revisión de la estructura, narrativa y presentación de tus casos de estudio para que tu portafolio comunique cómo piensas. 60 minutos, $700 MXN.',
-    heroKicker: 'Revisión de portafolio',
+      'Revisión de tu CV, tu portafolio o ambos —con LinkedIn incluido si lo eliges— desde la perspectiva de quien contrata diseñadores. 60 minutos, $700 MXN.',
+    heroKicker: 'Revisión de perfil y portafolio',
     intro:
-      'Un portafolio no se evalúa por lo bonito que se ve, sino por lo que revela sobre cómo piensas. La mayoría de los portafolios que reviso tienen buen trabajo adentro y una narrativa que no lo deja ver.',
+      'He estado del lado que recibe los CVs y revisa los portafolios. Sé cuánto tiempo real se le dedica a cada uno en la primera ronda —mucho menos del que te imaginas— y qué hace que uno pase el filtro. Esta sesión te da esa perspectiva aplicada a tu caso.',
     body: [
       {
         h: '¿Para quién es esta revisión?',
-        p: 'Para quien tiene el portafolio listo pero no consigue entrevistas, para quien llega a la entrevista y siente que sus casos no se defienden solos, y para quien tiene proyectos fuertes pero no sabe cuáles poner ni en qué orden. También para quien está armando el primero y quiere evitar los errores clásicos desde el inicio.',
+        p: 'Para quien está aplicando y no recibe respuesta, para quien llega a la entrevista y siente que sus casos no se defienden solos, y para quien tiene muy buena experiencia pero no logra que se note al leerla. También para quien está armando su primer portafolio o cambiando de carrera hacia UX.',
+      },
+      {
+        h: 'Tú eliges qué revisamos',
+        p: 'Al reservar marcas qué quieres trabajar: tu CV, tu portafolio o book, tu LinkedIn, o cualquier combinación. El precio es el mismo. Si eliges varios, priorizamos juntos en qué invertir más tiempo según el rol al que apuntas.',
       },
       {
         h: '¿Qué revisamos exactamente?',
-        p: 'Revisamos si cada caso deja claro el problema antes de mostrar la solución —el error más común es saltar directo a las pantallas. Revisamos la narrativa: si se entiende qué decidiste tú, por qué, y qué pasó después. Revisamos si hay resultados o solo entregables. Y revisamos la selección y el orden de los casos, porque el primero decide si alguien sigue leyendo.',
+        p: 'En el CV, la estructura y jerarquía —qué se ve primero y si eso es lo más fuerte que tienes— y cómo están escritos tus logros: la mayoría describe responsabilidades, no resultados. En el portafolio, si cada caso deja claro el problema antes de la solución, si se entiende qué decidiste tú y por qué, y la selección y el orden de los casos. En LinkedIn, la coherencia con tu CV, porque quien te evalúa casi siempre abre los dos.',
       },
       {
-        h: 'Preparación para defenderlo en vivo',
-        p: 'Un portafolio no termina en el sitio web: termina cuando lo presentas. Dedicamos parte de la sesión a cómo contar cada caso en voz alta, qué preguntas te van a hacer y cómo responder cuando te cuestionen una decisión. Es la parte que casi nadie practica y la que más pesa en la entrevista final.',
+        h: '¿Cómo es el proceso?',
+        p: 'Me compartes tus materiales al reservar. Llego a la sesión habiéndolos revisado, así que la hora completa se usa en trabajar sobre observaciones concretas y no en leer en silencio. Salimos con una lista priorizada de cambios: qué corregir primero, qué después, y qué está bien y no hay que tocar.',
       },
     ],
     faq: [
       {
+        q: '¿Puedo revisar CV y portafolio en la misma sesión?',
+        a: 'Sí. Marcas ambos al reservar y repartimos la hora según lo que más te urja. Si alguno necesita más trabajo, lo priorizamos juntos.',
+      },
+      {
+        q: '¿LinkedIn cuesta extra?',
+        a: 'No. Está incluido: solo márcalo al reservar y compárteme el enlace a tu perfil.',
+      },
+      {
+        q: '¿En qué formato mando mis materiales?',
+        a: 'PDF de preferencia para el CV. El portafolio puede estar en Behance, Notion, Figma, un PDF o un sitio propio: revisamos el contenido, no la plataforma.',
+      },
+      {
         q: '¿Qué pasa si mi trabajo tiene NDA?',
-        a: 'Es muy común y tiene solución. En la sesión vemos cómo presentar el caso sin exponer información confidencial: se puede hablar del proceso y las decisiones sin mostrar datos ni pantallas sensibles.',
+        a: 'Es muy común y tiene solución. Vemos cómo presentar el caso sin exponer información confidencial: se puede hablar del proceso y las decisiones sin mostrar datos ni pantallas sensibles.',
       },
       {
-        q: '¿Sirve si mi portafolio está en Behance o Notion?',
-        a: 'Sí. Revisamos el contenido y la narrativa, no la plataforma. Behance, Notion, Figma, un PDF o un sitio propio funcionan igual.',
-      },
-      {
-        q: '¿Cuántos casos debería tener?',
-        a: 'Es justo una de las cosas que definimos en la sesión, porque depende del rol al que apuntas. La respuesta casi nunca es "más".',
+        q: '¿Reescribes mi CV o mi portafolio por mí?',
+        a: 'No. Te doy las observaciones y la dirección concreta para que lo hagas tú — así aprendes el criterio y puedes aplicarlo cada vez que lo actualices.',
       },
     ],
   },
@@ -214,8 +173,8 @@ export const SERVICES = [
     tag: 'Preparación',
     tagPlain: true,
 
-    price: 550,
-    display: '$550 MXN',
+    price: 800,
+    display: '$800 MXN',
     duration: '60 min',
     durationLong: '60 minutos',
     durationMinutes: 60,
@@ -233,7 +192,7 @@ export const SERVICES = [
 
     seoTitle: 'Simulación de entrevista para roles de UX y Product Design',
     seoDescription:
-      'Entrevista simulada con retroalimentación honesta sobre tus respuestas, tu narrativa y tu manejo de preguntas difíciles. 60 minutos, $550 MXN.',
+      'Entrevista simulada con retroalimentación honesta sobre tus respuestas, tu narrativa y tu manejo de preguntas difíciles. 60 minutos, $800 MXN.',
     heroKicker: 'Preparación para entrevista',
     intro:
       'La primera vez que dices una respuesta en voz alta nunca sale bien. El problema es cuando esa primera vez es en la entrevista que te importaba. Esta sesión existe para que esa primera vez sea conmigo.',
@@ -258,7 +217,7 @@ export const SERVICES = [
       },
       {
         q: '¿Incluye la presentación de portafolio?',
-        a: 'Podemos practicar cómo presentas un caso, sí. Si lo que necesitas es revisar el portafolio en sí —estructura, narrativa, selección de casos— esa es la sesión de revisión de portafolio.',
+        a: 'Podemos practicar cómo presentas un caso, sí. Si lo que necesitas es revisar el portafolio en sí —estructura, narrativa, selección de casos— esa es la sesión de revisión de CV y portafolio.',
       },
       {
         q: '¿Y si me bloqueo durante la simulación?',
@@ -267,77 +226,6 @@ export const SERVICES = [
     ],
   },
 
-  {
-    key: 'mentoria',
-    slug: 'mentoria',
-    anchor: 'servicio-mentoria',
-
-    name: 'Mentoría',
-    label: 'Mentoría · 4 sesiones / 6 meses',
-    tag: 'Acompañamiento continuo',
-    tagPlain: true,
-
-    price: 1800,
-    display: '$1,800 MXN',
-    duration: '4 sesiones · 6 meses',
-    durationLong: '4 sesiones de 60 min, a lo largo de 6 meses',
-    durationMinutes: 60,
-    sessions: 4,
-
-    desc: 'Acompañamiento estratégico continuo para diseñadores que quieren cambiar de rol, pasar a liderazgo o replantear su carrera con claridad.',
-    shortDesc: '4 sesiones a lo largo de 6 meses · Ahorra $200 vs sueltas',
-    forWho: 'Para quien busca acompañamiento a lo largo de varios meses.',
-    topics: ['Seguimiento continuo', 'Estrategia de carrera', 'Liderazgo', 'Ahorra $200 vs sesiones sueltas'],
-    includes: [
-      'Acompañamiento continuo',
-      'Seguimiento entre sesiones',
-      'Estrategia de carrera a mediano plazo',
-    ],
-    cta: 'Quiero acompañamiento continuo',
-
-    seoTitle: 'Mentoría en UX y Product Design — 4 sesiones en 6 meses',
-    seoDescription:
-      'Acompañamiento estratégico continuo para diseñadores que buscan cambiar de rol, pasar a liderazgo o replantear su carrera. 4 sesiones en 6 meses, $1,800 MXN.',
-    heroKicker: 'Acompañamiento continuo',
-    intro:
-      'Los cambios de carrera que funcionan no pasan en una hora. Pasan a lo largo de meses, con ajustes en el camino y alguien que te sostenga el criterio cuando dudas. Para eso existe la mentoría.',
-    body: [
-      {
-        h: '¿Para quién es la mentoría?',
-        p: 'Para quien va tras un cambio que toma tiempo: pasar de diseñador individual a rol de liderazgo, moverse de una industria a otra, o replantear una carrera que ya no tiene sentido como está. Si tu objetivo se resuelve con una conversación, la sesión individual te conviene más. Si tu objetivo es un proceso, esto es lo que necesitas.',
-      },
-      {
-        h: '¿Cómo se distribuyen las sesiones?',
-        p: 'Son 4 sesiones de 60 minutos que tú agendas dentro de un periodo de 6 meses, al ritmo que te sirva. Hay quien las usa cada mes y medio para sostener un plan largo, y quien concentra dos al inicio de una búsqueda intensa y guarda las otras dos para negociar la oferta. Tú decides cuándo, según cómo avance tu proceso.',
-      },
-      {
-        h: '¿Qué pasa entre sesiones?',
-        p: 'Cada sesión cierra con acciones concretas, y la siguiente empieza revisando qué pasó con ellas. Ese seguimiento es la diferencia real entre la mentoría y cuatro sesiones sueltas: hay continuidad, hay memoria de lo que ya intentamos, y hay a quién rendirle cuentas.',
-      },
-      {
-        h: 'Cómo funciona la compra',
-        p: 'Compras el paquete una sola vez y quedan 4 créditos en tu cuenta. Desde tu perfil agendas cada sesión cuando la necesites, sin volver a pagar. El paquete cuesta $1,800 contra $2,000 si compraras las cuatro por separado.',
-      },
-    ],
-    faq: [
-      {
-        q: '¿Tengo que agendar las 4 sesiones desde el inicio?',
-        a: 'No. Al activarse tu paquete quedan 4 créditos disponibles en tu perfil y agendas cada sesión cuando te haga sentido, dentro de los 6 meses.',
-      },
-      {
-        q: '¿Puedo usar las sesiones para temas distintos?',
-        a: 'Sí. Es común usar una para revisar el CV, otra para simular una entrevista y las demás para estrategia. La ventaja es que quien te acompaña ya conoce tu contexto completo.',
-      },
-      {
-        q: '¿Qué pasa si no uso las 4 sesiones en 6 meses?',
-        a: 'Escríbeme antes de que venza. Si hubo una razón de fuerza mayor lo vemos caso por caso — la idea es acompañarte, no que pierdas lo que pagaste.',
-      },
-      {
-        q: '¿Cómo se confirma mi paquete?',
-        a: 'Al comprarlo recibes las instrucciones de pago. En cuanto confirmo el pago activo tu paquete y te llega un correo avisándote que ya tienes tus 4 créditos disponibles.',
-      },
-    ],
-  },
 ];
 
 /** Lookup by public URL slug — used by the /asesorias/[slug] pages. */
@@ -368,8 +256,20 @@ export const SERVICES_BY_KEY = Object.fromEntries(
       duration: s.durationLong,
       durationMinutes: s.durationMinutes,
       includes: s.includes,
+      reviewOptions: s.reviewOptions,
     },
   ])
 );
 
 export const SERVICE_SLUGS = SERVICES.map((s) => s.slug);
+
+/**
+ * Service pages that no longer exist, and where they point now. Each still
+ * gets a static page that forwards visitors (and tells crawlers the canonical
+ * URL), so links and search results pointing at them keep working.
+ */
+export const LEGACY_SLUGS = {
+  'revision-de-cv-y-linkedin': 'revision-de-cv-y-portafolio',
+  'revision-de-portafolio': 'revision-de-cv-y-portafolio',
+  mentoria: 'conversacion-estrategica',
+};

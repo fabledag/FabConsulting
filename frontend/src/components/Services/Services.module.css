@@ -232,3 +232,9 @@
   white-space: normal;
   text-align: center;
 }
+
+/* Cards have copy of different lengths; push duration, price and buttons to
+   the bottom so they line up across the row. */
+.cardMeta {
+  margin-top: auto;
+}

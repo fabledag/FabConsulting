@@ -11,7 +11,7 @@ export const FAQ_ITEMS = [
   {
     q: '¿Cuál sesión debería elegir?',
     plain:
-      'Si no tienes claro tu siguiente paso, empieza con la Conversación estratégica 1:1. Si necesitas mejorar tu perfil, elige la revisión de CV y LinkedIn o de portafolio. Si ya tienes una entrevista próxima, la Simulación de entrevista es la más específica para eso.',
+      'Si no tienes claro tu siguiente paso, empieza con la Conversación estratégica 1:1. Si necesitas mejorar tu perfil, elige la Revisión de CV y portafolio: ahí eliges si revisamos tu CV, tu portafolio, tu LinkedIn o todo. Si ya tienes una entrevista próxima, la Simulación de entrevista es la más específica para eso.',
   },
   {
     q: '¿Las sesiones son únicamente para diseñadores?',
@@ -51,7 +51,7 @@ export const FAQ_ITEMS = [
   {
     q: '¿Puedo contratar más de una sesión?',
     plain:
-      'Sí. Puedes agendar las sesiones sueltas que necesites, o elegir Mentoría si buscas acompañamiento continuo a lo largo de varios meses.',
+      'Sí. Cada sesión se reserva por separado, cuando la necesites, y puedes combinar las que quieras: por ejemplo, revisar tu CV y portafolio y después practicar una entrevista.',
   },
   {
     q: '¿La asesoría garantiza que conseguiré trabajo?',

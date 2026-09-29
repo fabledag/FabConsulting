@@ -11,7 +11,7 @@ import { BOOKING_STATUS, PACKAGE_STATUS, statusInfo, badgeStyle, timeAgo } from 
 const SERVICE_LABELS = {
   session: 'Conversación estratégica 1:1',
   mock: 'Simulación de entrevista',
-  cv: 'Revisión de CV y LinkedIn',
+  cv: 'Revisión de CV y portafolio',
   portfolio: 'Revisión de portafolio o book',
   mentoria: 'Mentoría',
 };
@@ -228,15 +228,11 @@ function Profile() {
             </>
           )}
 
-          {/* Credits / packages */}
-          {card(
+          {/* Credits / packages. Mentoría is no longer sold (2026-09-29), so
+              this only shows for an account that still holds a package. */}
+          {packages.length > 0 && card(
             <>
               <h2 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--purple-900)', marginBottom: '1rem' }}>Tus créditos</h2>
-              {!loadingData && packages.length === 0 && (
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-                  Aún no tienes un paquete de Mentoría.
-                </p>
-              )}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: packages.length ? '1rem' : 0 }}>
                 {packages.map((p) => (
                   <div key={p.id} style={{ border: '1px solid var(--border)', borderRadius: '10px', padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -254,9 +250,6 @@ function Profile() {
                   </div>
                 ))}
               </div>
-              <a href="/#agenda" className="btn-ghost" style={{ display: 'inline-flex' }}>
-                Comprar Mentoría →
-              </a>
             </>
           )}
 

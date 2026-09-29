@@ -71,8 +71,7 @@ ${workshopLines}
 
 1. La persona elige una asesoría y una fecha disponible en ${SITE_URL}/#agenda
 2. Confirma su cuenta con un enlace enviado por correo (sin contraseñas).
-3. Paga con tarjeta a través de Mercado Pago, o usa un crédito si compró el
-   paquete de Mentoría.
+3. Paga con tarjeta a través de Mercado Pago.
 4. La sesión se confirma automáticamente en cuanto se aprueba el pago, y
    recibe la confirmación por correo junto con la invitación de calendario.
 5. Puede reagendar o cancelar desde su perfil hasta 24 horas antes.
