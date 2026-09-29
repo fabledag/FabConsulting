@@ -1,6 +1,6 @@
 import { SERVICES } from '@/lib/services.js';
 import { getPublishedPosts } from '@/lib/blog.js';
-import { SITE_URL, absoluteUrl } from '@/lib/seo.js';
+import { SITE_URL, absoluteUrl, LINKEDIN_URL, INSTAGRAM_URL } from '@/lib/seo.js';
 
 /**
  * /llms.txt — a plain-text summary of the site for AI assistants.
@@ -83,6 +83,8 @@ ${postLines}
 - [Blog](${absoluteUrl('/blog')})
 - [Agendar una sesión](${SITE_URL}/#agenda)
 - [Preguntas frecuentes](${SITE_URL}/#faq)
+- [Instagram @fab_designux](${INSTAGRAM_URL})
+- [LinkedIn](${LINKEDIN_URL})
 `;
 
   return new Response(body, {

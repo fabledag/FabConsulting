@@ -16,6 +16,10 @@ export const AUTHOR = 'Fabiola Ledesma';
 export const LOCALE = 'es_MX';
 export const OG_IMAGE = `${SITE_URL}/og-image.jpg`;
 
+/** Public profiles. Footer, JSON-LD sameAs and llms.txt all read from here. */
+export const LINKEDIN_URL = 'https://linkedin.com/in/fabiolaledesma';
+export const INSTAGRAM_URL = 'https://www.instagram.com/fab_designux/';
+
 export const DEFAULT_TITLE = 'Fabiola Ledesma | Asesorías en UX, IA y Product Design';
 export const DEFAULT_DESCRIPTION =
   'Asesorías personalizadas para profesionales que quieren mejorar su carrera, CV, portafolio o preparación para entrevistas en UX y Product Design.';
@@ -90,7 +94,7 @@ export const personSchema = {
     'Senior Design Manager con más de 15 años diseñando productos digitales. Cofundadora de GEDX. Asesora a profesionales de UX y Product Design en México en estrategia, carrera y aplicación práctica de IA.',
   url: `${SITE_URL}/`,
   image: OG_IMAGE,
-  sameAs: ['https://linkedin.com/in/fabiolaledesma', 'https://gedx.com.mx'],
+  sameAs: [LINKEDIN_URL, INSTAGRAM_URL, 'https://gedx.com.mx'],
   address: {
     '@type': 'PostalAddress',
     addressLocality: 'Ciudad de México',

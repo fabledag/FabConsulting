@@ -1,3 +1,5 @@
+import { LINKEDIN_URL, INSTAGRAM_URL } from '@/lib/seo.js';
+
 const linkStyle = {
   color: 'rgba(255,255,255,0.7)',
   textDecoration: 'none',
@@ -43,8 +45,11 @@ function Footer() {
           <div>
             <div style={columnLabelStyle}>Enlaces</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', marginBottom: '1rem' }}>
-              <a href="https://linkedin.com/in/fabiolaledesma" target="_blank" rel="noopener noreferrer" style={linkStyle}>
+              <a href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer" style={linkStyle}>
                 LinkedIn
+              </a>
+              <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" style={linkStyle}>
+                Instagram
               </a>
               <a href="#servicios" style={linkStyle}>
                 Agenda tu asesoría
