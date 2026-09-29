@@ -87,6 +87,18 @@ function About({ asPage = false }) {
             gap: '1rem',
           }}
         >
+          {asPage ? (
+            // /sobre-mi/ shows the stage photo; the studio portrait is the
+            // one used on the home page's "Sobre mí".
+            <Image
+              src="/images/fabiola-escenario.jpg"
+              alt="Fabiola Ledesma dando una conferencia en un escenario, con micrófono"
+              width={675}
+              height={900}
+              sizes="(min-width: 900px) 240px, (min-width: 640px) 220px, 80vw"
+              className="about-stage-photo"
+            />
+          ) : (
           <div
             className="about-photo-frame"
             style={{
@@ -108,6 +120,7 @@ function About({ asPage = false }) {
               style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
             />
           </div>
+          )}
           <div
             style={{
               display: 'flex',
@@ -333,6 +346,16 @@ function About({ asPage = false }) {
           .about-title-lg {
             font-size: 2.75rem;
           }
+        }
+        .about-stage-photo {
+          display: block;
+          width: 100%;
+          max-width: 320px;
+          height: auto;
+          aspect-ratio: 3 / 4;
+          object-fit: cover;
+          border-radius: 20px;
+          box-shadow: 0 20px 48px rgba(30, 17, 69, 0.18), 0 6px 16px rgba(30, 17, 69, 0.08);
         }
         @media (min-width: 640px) {
           .about-grid-responsive {

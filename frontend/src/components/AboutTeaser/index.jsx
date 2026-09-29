@@ -4,7 +4,7 @@ import FadeUp from '../FadeUp/index.jsx';
 import styles from './AboutTeaser.module.css';
 
 /**
- * "Sobre mí" on the home page: a large stage photo and a short, prominent
+ * "Sobre mí" on the home page: a large studio portrait and a short, prominent
  * introduction. The full story, skills and credentials live on /sobre-mi/.
  */
 function AboutTeaser() {
@@ -12,13 +12,11 @@ function AboutTeaser() {
     <section id="presentacion" className={styles.section} aria-labelledby="presentacion-title">
       <div className={`wrap ${styles.inner}`}>
         <FadeUp className={styles.photoWrap}>
-          {/* Stage photo (Assets/Fotos/WhatsApp Image 2026-09-26…), cropped to
-              3:4 around Fabiola. The studio portrait stays on /sobre-mi/. */}
           <Image
-            src="/images/fabiola-escenario.jpg"
-            alt="Fabiola Ledesma dando una conferencia en un escenario, con micrófono"
-            width={675}
-            height={900}
+            src="/fabiola.jpg"
+            alt="Fabiola Ledesma, Senior Design Manager y consultora en UX, IA y Product Design"
+            width={1086}
+            height={1448}
             sizes="(min-width: 900px) 420px, 90vw"
             className={styles.photo}
           />
