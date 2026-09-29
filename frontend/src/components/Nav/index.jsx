@@ -60,7 +60,17 @@ function Nav() {
     <nav className={[styles.nav, scrolled ? styles.navScrolled : ''].join(' ')} aria-label="Principal">
       <div className={`wrap ${styles.navInner}`}>
         <a href={resolve('#inicio')} className={styles.logo}>
-          <span className={styles.logoName}>Fabiola Ledesma</span>
+          {/* Fab Design wordmark (transparent PNG cut from
+              Assets/Fotos/logo_horizontal_fab.png). The alt keeps her name
+              for screen readers and search engines. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/logo-fab-design.png"
+            alt="Fab Design — Fabiola Ledesma"
+            width={606}
+            height={132}
+            className={styles.logoImg}
+          />
           <span className={styles.logoTagline}>Consultoría en UX, IA y Product Design</span>
         </a>
 

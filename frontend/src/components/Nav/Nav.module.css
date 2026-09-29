@@ -36,13 +36,21 @@
   line-height: 1.2;
 }
 
-.logoName {
-  font-family: 'Fraunces', Georgia, serif;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--purple-800);
-  letter-spacing: -0.02em;
+.logoImg {
+  display: block;
+  height: 30px;
+  width: auto;
+  /* .logo is a flex column; without this the image stretches to the
+     tagline's width and distorts. */
+  align-self: flex-start;
 }
+
+@media (min-width: 900px) {
+  .logoImg {
+    height: 36px;
+  }
+}
+
 
 .logoTagline {
   display: none;
@@ -186,9 +194,6 @@
    that (labels were wrapping at ~1024px), so tablets keep the menu button. */
 @media (min-width: 1200px) {
 
-  .logoName {
-    font-size: 1.2rem;
-  }
 
   .logoTagline {
     font-size: 0.72rem;

@@ -28,7 +28,13 @@ export const metadata = {
   alternates: { canonical: '/' },
   manifest: '/manifest.json',
   icons: {
-    icon: [{ url: '/favicon.svg', type: 'image/svg+xml' }],
+    // Fab Design mark (Assets/Fotos/favicon.png). favicon.ico also sits at
+    // the root for crawlers and browsers that request it by default.
+    icon: [
+      { url: '/favicon.ico', sizes: '32x32 48x48' },
+      { url: '/favicon-32.png', type: 'image/png', sizes: '32x32' },
+      { url: '/icon-192.png', type: 'image/png', sizes: '192x192' },
+    ],
     apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }],
   },
   openGraph: {

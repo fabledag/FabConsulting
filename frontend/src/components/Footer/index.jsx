@@ -24,21 +24,17 @@ function Footer() {
         <div className="footer-grid">
           {/* Brand */}
           <div>
-            <span
-              style={{
-                fontFamily: "'Fraunces', Georgia, serif",
-                fontSize: '1.2rem',
-                fontWeight: 600,
-                color: '#ffffff',
-                letterSpacing: '-0.02em',
-                display: 'block',
-                marginBottom: '0.6rem',
-              }}
-            >
-              Fabiola Ledesma
-            </span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/logo-fab-design-crema.png"
+              alt="Fab Design — Fabiola Ledesma"
+              width={606}
+              height={132}
+              style={{ display: 'block', height: '40px', width: 'auto', marginBottom: '0.9rem' }}
+            />
             <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, maxWidth: '300px', margin: 0 }}>
-              Senior Design Manager y mentora — asesorías 1:1 para profesionales de UX y Product Design.
+              Fabiola Ledesma · Senior Design Manager y mentora — asesorías 1:1 y talleres para equipos en UX,
+              IA y Product Design.
             </p>
             {/* Social profiles: icon-only, so each link carries its own label. */}
             <div className="footer-social">
