@@ -22,7 +22,7 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 const SITE_URL = process.env.SITE_URL || 'https://fabiolaledesma.com';
 
 const PACKAGE_TYPES = {
-  'mentoria-4x6': { totalCredits: 4, pricePaidMXN: 2800, label: 'Mentoría · 4 sesiones / 6 meses' },
+  'mentoria-4x6': { totalCredits: 4, pricePaidMXN: 1800, label: 'Mentoría · 4 sesiones / 6 meses' },
 };
 
 const VALID_STATUSES = ['pending_payment', 'active', 'cancelled'];

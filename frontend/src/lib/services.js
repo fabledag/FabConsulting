@@ -23,8 +23,8 @@ export const SERVICES = [
     tag: 'Más elegida',
     tagPlain: false,
 
-    price: 800,
-    display: '$800 MXN',
+    price: 500,
+    display: '$500 MXN',
     duration: '60 min',
     durationLong: '60 minutos',
     durationMinutes: 60,
@@ -44,7 +44,7 @@ export const SERVICES = [
     // Dedicated page
     seoTitle: 'Conversación estratégica 1:1 en UX y Product Design',
     seoDescription:
-      'Sesión individual de 60 minutos para ordenar tus ideas, resolver dudas de carrera y definir tus siguientes pasos en UX y Product Design. $800 MXN.',
+      'Sesión individual de 60 minutos para ordenar tus ideas, resolver dudas de carrera y definir tus siguientes pasos en UX y Product Design. $500 MXN.',
     heroKicker: 'Asesoría individual',
     intro:
       'A veces no necesitas un curso ni otro certificado: necesitas una hora con alguien que ya estuvo del otro lado de la mesa y te ayude a ordenar lo que ya sabes. Esta sesión es exactamente eso.',
@@ -73,7 +73,7 @@ export const SERVICES = [
       },
       {
         q: '¿Puedo tomar varias sesiones?',
-        a: 'Claro. Si sabes de antemano que quieres acompañamiento continuo, la Mentoría (4 sesiones en 6 meses) sale $400 más barata que comprarlas por separado.',
+        a: 'Claro. Si sabes de antemano que quieres acompañamiento continuo, la Mentoría (4 sesiones en 6 meses) sale $200 más barata que comprarlas por separado.',
       },
     ],
   },
@@ -88,8 +88,8 @@ export const SERVICES = [
     tag: 'CV & LinkedIn',
     tagPlain: true,
 
-    price: 1000,
-    display: '$1,000 MXN',
+    price: 600,
+    display: '$600 MXN',
     duration: '60 min',
     durationLong: '60 minutos',
     durationMinutes: 60,
@@ -107,7 +107,7 @@ export const SERVICES = [
 
     seoTitle: 'Revisión de CV y LinkedIn para diseñadores UX',
     seoDescription:
-      'Revisión profesional de tu CV y perfil de LinkedIn con feedback desde la perspectiva de quien contrata diseñadores. Sesión de 60 minutos, $1,000 MXN.',
+      'Revisión profesional de tu CV y perfil de LinkedIn con feedback desde la perspectiva de quien contrata diseñadores. Sesión de 60 minutos, $600 MXN.',
     heroKicker: 'Revisión de perfil',
     intro:
       'He estado del lado que recibe los CVs. Sé cuánto tiempo real se le dedica a cada uno en la primera ronda —mucho menos del que te imaginas— y qué hace que uno pase el filtro. Esta sesión te da esa perspectiva aplicada a tu perfil.',
@@ -151,8 +151,8 @@ export const SERVICES = [
     tag: 'Portafolio',
     tagPlain: true,
 
-    price: 1200,
-    display: '$1,200 MXN',
+    price: 700,
+    display: '$700 MXN',
     duration: '60 min',
     durationLong: '60 minutos',
     durationMinutes: 60,
@@ -170,7 +170,7 @@ export const SERVICES = [
 
     seoTitle: 'Revisión de portafolio UX y Product Design',
     seoDescription:
-      'Revisión de la estructura, narrativa y presentación de tus casos de estudio para que tu portafolio comunique cómo piensas. 60 minutos, $1,200 MXN.',
+      'Revisión de la estructura, narrativa y presentación de tus casos de estudio para que tu portafolio comunique cómo piensas. 60 minutos, $700 MXN.',
     heroKicker: 'Revisión de portafolio',
     intro:
       'Un portafolio no se evalúa por lo bonito que se ve, sino por lo que revela sobre cómo piensas. La mayoría de los portafolios que reviso tienen buen trabajo adentro y una narrativa que no lo deja ver.',
@@ -214,8 +214,8 @@ export const SERVICES = [
     tag: 'Preparación',
     tagPlain: true,
 
-    price: 900,
-    display: '$900 MXN',
+    price: 550,
+    display: '$550 MXN',
     duration: '60 min',
     durationLong: '60 minutos',
     durationMinutes: 60,
@@ -233,7 +233,7 @@ export const SERVICES = [
 
     seoTitle: 'Simulación de entrevista para roles de UX y Product Design',
     seoDescription:
-      'Entrevista simulada con retroalimentación honesta sobre tus respuestas, tu narrativa y tu manejo de preguntas difíciles. 60 minutos, $900 MXN.',
+      'Entrevista simulada con retroalimentación honesta sobre tus respuestas, tu narrativa y tu manejo de preguntas difíciles. 60 minutos, $550 MXN.',
     heroKicker: 'Preparación para entrevista',
     intro:
       'La primera vez que dices una respuesta en voz alta nunca sale bien. El problema es cuando esa primera vez es en la entrevista que te importaba. Esta sesión existe para que esa primera vez sea conmigo.',
@@ -277,17 +277,17 @@ export const SERVICES = [
     tag: 'Acompañamiento continuo',
     tagPlain: true,
 
-    price: 2800,
-    display: '$2,800 MXN',
+    price: 1800,
+    display: '$1,800 MXN',
     duration: '4 sesiones · 6 meses',
     durationLong: '4 sesiones de 60 min, a lo largo de 6 meses',
     durationMinutes: 60,
     sessions: 4,
 
     desc: 'Acompañamiento estratégico continuo para diseñadores que quieren cambiar de rol, pasar a liderazgo o replantear su carrera con claridad.',
-    shortDesc: '4 sesiones a lo largo de 6 meses · Ahorra $400 vs sueltas',
+    shortDesc: '4 sesiones a lo largo de 6 meses · Ahorra $200 vs sueltas',
     forWho: 'Para quien busca acompañamiento a lo largo de varios meses.',
-    topics: ['Seguimiento continuo', 'Estrategia de carrera', 'Liderazgo', 'Ahorra $400 vs sesiones sueltas'],
+    topics: ['Seguimiento continuo', 'Estrategia de carrera', 'Liderazgo', 'Ahorra $200 vs sesiones sueltas'],
     includes: [
       'Acompañamiento continuo',
       'Seguimiento entre sesiones',
@@ -297,7 +297,7 @@ export const SERVICES = [
 
     seoTitle: 'Mentoría en UX y Product Design — 4 sesiones en 6 meses',
     seoDescription:
-      'Acompañamiento estratégico continuo para diseñadores que buscan cambiar de rol, pasar a liderazgo o replantear su carrera. 4 sesiones en 6 meses, $2,800 MXN.',
+      'Acompañamiento estratégico continuo para diseñadores que buscan cambiar de rol, pasar a liderazgo o replantear su carrera. 4 sesiones en 6 meses, $1,800 MXN.',
     heroKicker: 'Acompañamiento continuo',
     intro:
       'Los cambios de carrera que funcionan no pasan en una hora. Pasan a lo largo de meses, con ajustes en el camino y alguien que te sostenga el criterio cuando dudas. Para eso existe la mentoría.',
@@ -316,7 +316,7 @@ export const SERVICES = [
       },
       {
         h: 'Cómo funciona la compra',
-        p: 'Compras el paquete una sola vez y quedan 4 créditos en tu cuenta. Desde tu perfil agendas cada sesión cuando la necesites, sin volver a pagar. El paquete cuesta $2,800 contra $3,200 si compraras las cuatro por separado.',
+        p: 'Compras el paquete una sola vez y quedan 4 créditos en tu cuenta. Desde tu perfil agendas cada sesión cuando la necesites, sin volver a pagar. El paquete cuesta $1,800 contra $2,000 si compraras las cuatro por separado.',
       },
     ],
     faq: [

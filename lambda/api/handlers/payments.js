@@ -41,11 +41,11 @@ const BOOKINGS_TABLE = process.env.BOOKINGS_TABLE;
 const PACKAGES_TABLE = process.env.PACKAGES_TABLE;
 
 const SERVICE_PRICES = {
-  session: 800,
-  cv: 1000,
-  portfolio: 1200,
-  mock: 900,
-  mentoria: 2800,
+  session: 500,
+  cv: 600,
+  portfolio: 700,
+  mock: 550,
+  mentoria: 1800,
 };
 
 const SERVICE_LABELS = {
@@ -86,7 +86,7 @@ async function findBookingById(bookingId) {
  * Body: { bookingId } or { packageId }
  *
  * Prices come from this file, never from the request — otherwise a customer
- * could post their own amount and pay $1 for a $2,800 package.
+ * could post their own amount and pay $1 for a $1,800 package.
  */
 async function createCheckout(email, body) {
   if (!isConfigured()) {

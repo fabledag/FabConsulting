@@ -194,25 +194,30 @@
 /* Link to the dedicated /asesorias/[slug] page. Kept visually secondary to the
    booking CTA above it — it's there for depth (and for crawlers), not to
    compete with the primary action. */
+/* Secondary action on the dark purple section: light outline + white text.
+   It used to be --purple-800 text on the purple gradient, which was nearly
+   invisible. */
 .detailsLink {
   display: block;
-  margin-top: 0.7rem;
+  margin-top: 0.4rem;
+  padding: 0.65rem 1rem;
   text-align: center;
-  font-size: 0.82rem;
-  font-weight: 500;
-  color: var(--purple-800);
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #ffffff;
   text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: color 0.2s ease, border-color 0.2s ease;
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
+  border-radius: 8px;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .detailsLink:hover {
-  color: var(--purple-700);
-  border-bottom-color: var(--purple-400);
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: #ffffff;
 }
 
 .detailsLink:focus-visible {
-  outline: 2px solid var(--purple-800);
-  outline-offset: 3px;
-  border-radius: 3px;
+  outline: 3px solid var(--orange);
+  outline-offset: 2px;
 }
