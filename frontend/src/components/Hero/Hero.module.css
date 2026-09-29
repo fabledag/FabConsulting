@@ -77,25 +77,6 @@
   margin-bottom: 1.25rem;
 }
 
-/* "Talleres para empresas": orange outline button. Border in the logo
-   orange; the label uses the text-safe orange (4.5:1 on cream). */
-.actions .ctaWorkshops {
-  color: var(--orange-text);
-  border-color: var(--orange);
-  background-color: rgba(255, 255, 255, 0.6);
-}
-
-.actions .ctaWorkshops:hover {
-  color: var(--orange-text);
-  border-color: var(--orange-text);
-  background-color: #fff4ec;
-}
-
-.actions .ctaWorkshops:focus-visible {
-  outline: 3px solid var(--orange);
-  outline-offset: 2px;
-}
-
 .stats {
   display: grid;
   grid-template-columns: 1fr 1fr;

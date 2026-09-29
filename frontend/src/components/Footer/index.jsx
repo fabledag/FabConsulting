@@ -40,18 +40,33 @@ function Footer() {
             <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, maxWidth: '300px', margin: 0 }}>
               Senior Design Manager y mentora — asesorías 1:1 para profesionales de UX y Product Design.
             </p>
+            {/* Social profiles: icon-only, so each link carries its own label. */}
+            <div className="footer-social">
+              <a
+                href={LINKEDIN_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn de Fabiola Ledesma"
+                title="LinkedIn"
+              >
+                <i className="fa-brands fa-linkedin-in" aria-hidden="true" />
+              </a>
+              <a
+                href={INSTAGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram de Fabiola Ledesma (@fab_designux)"
+                title="Instagram"
+              >
+                <i className="fa-brands fa-instagram" aria-hidden="true" />
+              </a>
+            </div>
           </div>
 
           {/* Links */}
           <div>
             <div style={columnLabelStyle}>Enlaces</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', marginBottom: '1rem' }}>
-              <a href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer" style={linkStyle}>
-                LinkedIn
-              </a>
-              <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" style={linkStyle}>
-                Instagram
-              </a>
               <a href="/#servicios" style={linkStyle}>
                 Agenda tu asesoría
               </a>
@@ -86,6 +101,31 @@ function Footer() {
         </div>
 
         <style>{`
+          .footer-social {
+            display: flex;
+            gap: 0.6rem;
+            margin-top: 1.25rem;
+          }
+          .footer-social a {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 1.05rem;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.12);
+            text-decoration: none;
+            transition: background-color 0.2s, transform 0.2s;
+          }
+          .footer-social a:hover {
+            background: rgba(255, 255, 255, 0.24);
+            transform: translateY(-1px);
+          }
+          .footer-social a:focus-visible {
+            outline: 3px solid var(--orange);
+            outline-offset: 2px;
+          }
           .footer-grid {
             display: grid;
             grid-template-columns: 1fr;

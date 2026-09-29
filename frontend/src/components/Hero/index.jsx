@@ -36,7 +36,7 @@ function Hero() {
           <a href="#servicios" className="btn-primary">
             Agenda tu asesoría
           </a>
-          <a href={WORKSHOPS_PATH} className={`btn-ghost ${styles.ctaWorkshops}`}>
+          <a href={WORKSHOPS_PATH} className="btn-ghost">
             Talleres para empresas →
           </a>
         </div>

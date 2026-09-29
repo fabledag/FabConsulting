@@ -72,14 +72,11 @@
   outline-offset: 3px;
 }
 
+/* Just the icon (cream stroke), no tile behind it. */
 .pathIcon {
   grid-row: span 2;
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 12px;
   display: grid;
   place-items: center;
-  background: var(--orange);
 }
 
 .pathBody {
