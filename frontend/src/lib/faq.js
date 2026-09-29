@@ -61,12 +61,13 @@ export const FAQ_ITEMS = [
   {
     q: '¿Ofreces servicios para empresas?',
     plain:
-      'Este sitio está enfocado en asesorías individuales para profesionales. Para consultoría, talleres o servicios empresariales puedes visitar GEDX en gedx.com.mx.',
+      'Sí. Además de las asesorías individuales, ofrezco talleres para equipos: Comunicación estratégica para equipos, y Diseño estratégico e IA aplicada al negocio. El alcance, la duración y la modalidad se acuerdan según el objetivo y el contexto del equipo. Puedes solicitar información en https://fabdesign.digital/talleres-empresariales/.',
     // Rendered version keeps the link clickable.
     hasLink: {
-      before: 'Este sitio está enfocado en asesorías individuales para profesionales. Para consultoría, talleres o servicios empresariales puedes visitar ',
-      href: 'https://gedx.com.mx',
-      label: 'GEDX en gedx.com.mx',
+      before:
+        'Sí. Además de las asesorías individuales, ofrezco talleres para equipos: Comunicación estratégica para equipos, y Diseño estratégico e IA aplicada al negocio. El alcance, la duración y la modalidad se acuerdan según el objetivo y el contexto del equipo. ',
+      href: '/talleres-empresariales/',
+      label: 'Conoce los talleres y solicita información',
       after: '.',
     },
   },

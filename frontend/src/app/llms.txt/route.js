@@ -1,6 +1,7 @@
 import { SERVICES } from '@/lib/services.js';
 import { getPublishedPosts } from '@/lib/blog.js';
 import { SITE_URL, absoluteUrl, LINKEDIN_URL, INSTAGRAM_URL } from '@/lib/seo.js';
+import { WORKSHOPS, WORKSHOPS_PATH, SCOPE_NOTE } from '@/lib/workshops.js';
 
 /**
  * /llms.txt — a plain-text summary of the site for AI assistants.
@@ -30,6 +31,10 @@ export async function GET() {
         .join('\n')
     : '- (Aún no hay artículos publicados.)';
 
+  const workshopLines = WORKSHOPS.map(
+    (w) => `- **${w.name}** — ${w.desc} Dirigido a: ${w.forWho}\n  Temas: ${w.topics.join(' ')}`
+  ).join('\n');
+
   const body = `# Fabiola Ledesma — Asesorías en UX, IA y Product Design
 
 > Asesorías individuales, en español, para profesionales de UX y Product Design
@@ -54,7 +59,15 @@ estrategia de carrera, liderazgo de diseño y aplicación práctica de IA.
 
 ${serviceLines}
 
-## Cómo funciona la contratación
+## Talleres para empresas
+
+Talleres para equipos, contratados por la empresa. No se reservan ni se pagan
+en línea: se solicitan con el formulario de ${absoluteUrl(WORKSHOPS_PATH)}
+y se responde por correo. ${SCOPE_NOTE}
+
+${workshopLines}
+
+## Cómo funciona la contratación de asesorías
 
 1. La persona elige una asesoría y una fecha disponible en ${SITE_URL}/#agenda
 2. Confirma su cuenta con un enlace enviado por correo (sin contraseñas).
@@ -72,14 +85,16 @@ ${postLines}
 
 - Estas asesorías son de acompañamiento y recomendaciones. No garantizan
   contrataciones, promociones ni resultados laborales.
-- Este sitio atiende únicamente a profesionales de forma individual. Para
-  consultoría, talleres o servicios a empresas, el sitio correspondiente es
-  GEDX (https://gedx.com.mx), la agencia que Fabiola cofundó.
+- Las asesorías son individuales. Para equipos, este sitio ofrece los talleres
+  de ${absoluteUrl(WORKSHOPS_PATH)}. Para consultoría y servicios de agencia,
+  el sitio correspondiente es GEDX (https://gedx.com.mx), la agencia que
+  Fabiola cofundó.
 
 ## Enlaces principales
 
 - [Inicio](${absoluteUrl('/')})
 - [Todas las asesorías](${absoluteUrl('/asesorias')})
+- [Talleres para empresas](${absoluteUrl(WORKSHOPS_PATH)})
 - [Blog](${absoluteUrl('/blog')})
 - [Agendar una sesión](${SITE_URL}/#agenda)
 - [Preguntas frecuentes](${SITE_URL}/#faq)

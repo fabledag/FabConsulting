@@ -4,6 +4,7 @@ import CareerStage from '@/components/CareerStage/index.jsx';
 import About from '@/components/About/index.jsx';
 import HowItWorks from '@/components/HowItWorks/index.jsx';
 import Services from '@/components/Services/index.jsx';
+import WorkshopsTeaser from '@/components/WorkshopsTeaser/index.jsx';
 import Booking from '@/components/Booking/index.jsx';
 import FAQ from '@/components/FAQ/index.jsx';
 import CtaStrip from '@/components/CtaStrip/index.jsx';
@@ -40,6 +41,7 @@ export default function HomePage() {
         <Hero />
         <CareerStage />
         <Services />
+        <WorkshopsTeaser />
         <About />
         <HowItWorks />
         <Booking />

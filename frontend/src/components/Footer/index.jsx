@@ -1,4 +1,5 @@
 import { LINKEDIN_URL, INSTAGRAM_URL } from '@/lib/seo.js';
+import { WORKSHOPS_PATH } from '@/lib/workshops.js';
 
 const linkStyle = {
   color: 'rgba(255,255,255,0.7)',
@@ -16,7 +17,8 @@ const columnLabelStyle = {
   marginBottom: '0.9rem',
 };
 
-function Footer() {
+// `anchorBase="/"` on pages other than home, so #servicios points back there.
+function Footer({ anchorBase = '' }) {
   return (
     <footer style={{ backgroundColor: '#523AA8', color: 'rgba(255,255,255,0.75)' }}>
       <div className="wrap" style={{ paddingTop: '3rem', paddingBottom: '2rem' }}>
@@ -51,7 +53,7 @@ function Footer() {
               <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" style={linkStyle}>
                 Instagram
               </a>
-              <a href="#servicios" style={linkStyle}>
+              <a href={`${anchorBase}#servicios`} style={linkStyle}>
                 Agenda tu asesoría
               </a>
             </div>
@@ -60,20 +62,21 @@ function Footer() {
             </p>
           </div>
 
-          {/* GEDX */}
+          {/* Empresas */}
           <div>
             <div style={columnLabelStyle}>Para empresas</div>
             <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, marginBottom: '0.65rem' }}>
-              ¿Buscas consultoría, talleres o servicios para tu empresa?
+              Talleres de comunicación estratégica y de diseño e IA aplicada al negocio para equipos.
             </p>
-            <a
-              href="https://gedx.com.mx"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ ...linkStyle, color: '#ffffff', fontWeight: 600 }}
-            >
-              GEDX Agency ↗
+            <a href={WORKSHOPS_PATH} style={{ ...linkStyle, color: '#ffffff', fontWeight: 600 }}>
+              Talleres para empresas →
             </a>
+            <p style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.45)', lineHeight: 1.5, margin: '0.9rem 0 0' }}>
+              Consultoría y servicios de agencia:{' '}
+              <a href="https://gedx.com.mx" target="_blank" rel="noopener noreferrer" style={{ ...linkStyle, fontSize: '0.78rem' }}>
+                GEDX ↗
+              </a>
+            </p>
           </div>
         </div>
 

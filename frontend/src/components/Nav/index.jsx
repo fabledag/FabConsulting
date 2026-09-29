@@ -4,16 +4,22 @@ import { useState, useEffect } from 'react';
 import styles from './Nav.module.css';
 import { useAuth } from '../../hooks/useAuth.js';
 import { getDisplayName } from '../../utils/displayName.js';
+import { WORKSHOPS_PATH } from '@/lib/workshops.js';
 
+// `#…` entries are sections of the home page; `anchorBase` turns them into
+// `/#…` on other pages, where those sections don't exist. Full paths are
+// left alone.
 const NAV_LINKS = [
   { href: '#inicio', label: 'Inicio' },
   { href: '#servicios', label: 'Asesorías' },
+  { href: WORKSHOPS_PATH, label: 'Talleres' },
   { href: '#sobre-mi', label: 'Sobre mí' },
   { href: '#faq', label: 'Preguntas frecuentes' },
   { href: '#servicios', label: 'Agenda tu sesión', cta: true },
 ];
 
-function Nav() {
+function Nav({ anchorBase = '' }) {
+  const resolve = (href) => (href.startsWith('#') ? `${anchorBase}${href}` : href);
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { user } = useAuth();
@@ -47,7 +53,7 @@ function Nav() {
   return (
     <nav className={[styles.nav, scrolled ? styles.navScrolled : ''].join(' ')} aria-label="Principal">
       <div className={`wrap ${styles.navInner}`}>
-        <a href="#inicio" className={styles.logo}>
+        <a href={resolve('#inicio')} className={styles.logo}>
           <span className={styles.logoName}>Fabiola Ledesma</span>
           <span className={styles.logoTagline}>Consultoría en UX, IA y Product Design</span>
         </a>
@@ -68,7 +74,7 @@ function Nav() {
           {NAV_LINKS.map(({ href, label, cta }, i) => (
             <li key={`${href}-${i}`}>
               <a
-                href={href}
+                href={resolve(href)}
                 className={[styles.link, cta ? styles.navCta : ''].join(' ')}
                 onClick={close}
               >

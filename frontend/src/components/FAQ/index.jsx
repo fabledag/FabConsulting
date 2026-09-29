@@ -8,10 +8,12 @@ import styles from './FAQ.module.css';
 function Answer({ item }) {
   if (item.hasLink) {
     const { before, href, label, after } = item.hasLink;
+    // Only off-site links open a new tab.
+    const external = /^https?:/.test(href) ? { target: '_blank', rel: 'noopener noreferrer' } : {};
     return (
       <>
         {before}
-        <a href={href} target="_blank" rel="noopener noreferrer">
+        <a href={href} {...external}>
           {label}
         </a>
         {after}

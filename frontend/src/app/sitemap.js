@@ -1,6 +1,7 @@
 import { SERVICES } from '@/lib/services.js';
 import { getPublishedPosts } from '@/lib/blog.js';
 import { absoluteUrl } from '@/lib/seo.js';
+import { WORKSHOPS_PATH } from '@/lib/workshops.js';
 
 /**
  * Generated at build time into /sitemap.xml, replacing the old hand-maintained
@@ -19,6 +20,7 @@ export default async function sitemap() {
   const staticRoutes = [
     { url: absoluteUrl('/'), changeFrequency: 'weekly', priority: 1.0 },
     { url: absoluteUrl('/asesorias'), changeFrequency: 'monthly', priority: 0.9 },
+    { url: absoluteUrl(WORKSHOPS_PATH), changeFrequency: 'monthly', priority: 0.8 },
     { url: absoluteUrl('/blog'), changeFrequency: 'weekly', priority: 0.7 },
   ].map((r) => ({ ...r, lastModified: now }));
 

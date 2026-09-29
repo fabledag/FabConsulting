@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { WORKSHOPS_PATH } from '@/lib/workshops.js';
 import styles from './Hero.module.css';
 
 const STATS = [
@@ -32,16 +33,17 @@ function Hero() {
 
         <p className={styles.sub}>
           Acompaño a profesionales que quieren impulsar su carrera, fortalecer
-          su perfil y tomar mejores decisiones — con sesiones personalizadas
-          basadas en experiencia real en diseño, estrategia y liderazgo.
+          su perfil y tomar mejores decisiones — y a equipos que necesitan
+          alinear, comunicar y explorar oportunidades con diseño e IA — con
+          base en experiencia real en diseño, estrategia y liderazgo.
         </p>
 
         <div className={styles.actions}>
           <a href="#servicios" className="btn-primary">
             Agenda tu asesoría
           </a>
-          <a href="#servicios" className="btn-ghost">
-            Conoce las sesiones →
+          <a href={WORKSHOPS_PATH} className="btn-ghost">
+            Talleres para empresas →
           </a>
         </div>
 
