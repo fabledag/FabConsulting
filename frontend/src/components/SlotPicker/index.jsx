@@ -7,6 +7,19 @@ import styles from './SlotPicker.module.css';
 const MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 const DAY_NAMES = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
+/** The slot object the booking flow works with, from a date + time. Also
+ *  used to rebuild a slot that arrives in a magic link. */
+export function slotFromDateTime(date, time) {
+  const dateObj = new Date(`${date}T00:00:00`);
+  return {
+    key: `${date}-${time}`,
+    date,
+    time,
+    dateLabel: `${DAY_NAMES[dateObj.getDay()]} ${dateObj.getDate()} ${MONTHS[dateObj.getMonth()].slice(0, 3)}`,
+    timeLabel: time,
+  };
+}
+
 /**
  * Reusable calendar/slot picker backed by the real GET /availability
  * endpoint. Used both for new bookings (Booking) and reschedules (Profile).
@@ -102,10 +115,10 @@ function SlotPicker({ onSelect, selectedKey }) {
             day.slots
               .filter((s) => s.available)
               .map((slot) => {
-                const key = `${day.date}-${slot.time}`;
+                const built = slotFromDateTime(day.date, slot.time);
+                const { key, dateLabel } = built;
                 const isSelected = selectedKey === key;
                 const dateObj = new Date(`${day.date}T00:00:00`);
-                const dateLabel = `${DAY_NAMES[dateObj.getDay()]} ${dateObj.getDate()} ${MONTHS[dateObj.getMonth()].slice(0, 3)}`;
                 return (
                   <button
                     type="button"
@@ -113,15 +126,7 @@ function SlotPicker({ onSelect, selectedKey }) {
                     className={`${styles.daySlot} ${isSelected ? styles.selected : ''}`}
                     aria-pressed={isSelected}
                     aria-label={`${dateLabel}, ${slot.time}${isSelected ? ', seleccionado' : ''}`}
-                    onClick={() =>
-                      onSelect({
-                        key,
-                        date: day.date,
-                        time: slot.time,
-                        dateLabel,
-                        timeLabel: slot.time,
-                      })
-                    }
+                    onClick={() => onSelect(built)}
                   >
                     <div className={styles.dayName}>{DAY_NAMES[dateObj.getDay()]}</div>
                     <div className={styles.dayDate}>{dateObj.getDate()}</div>

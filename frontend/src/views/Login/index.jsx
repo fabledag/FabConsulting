@@ -31,7 +31,7 @@ function readLinkParams() {
 }
 
 function Login() {
-  const { requestLink, verify } = useAuth();
+  const { user, requestLink, verify } = useAuth();
   const navigate = useNavigate();
 
   // Read after mount: during static export there is no `window`, and reading
@@ -71,6 +71,15 @@ function Login() {
       setStatus('done');
       setTimeout(() => navigate(redirect), 900);
     } catch (err) {
+      // Links are single-use, so opening the same email again fails — but if
+      // this browser is already signed in there's nothing to fix: carry on to
+      // the destination instead of showing "ya fue usado" (people were
+      // looping between the email and this error).
+      if (user) {
+        setStatus('done');
+        setTimeout(() => navigate(redirect), 900);
+        return;
+      }
       setError(err.message || 'El enlace no es válido o ya expiró.');
       setStatus('error');
     }

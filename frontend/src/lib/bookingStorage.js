@@ -81,3 +81,38 @@ export function takePendingSelection() {
     return null;
   }
 }
+
+/**
+ * The booking choice, carried in the magic link itself.
+ *
+ * localStorage only survives in the browser where the booking started. When
+ * the email is opened on another device — or in Gmail's in-app browser —
+ * the person arrived logged in to an empty widget, went back to the email,
+ * and hit "Este enlace ya fue usado" (seen in production on 2026-10-01). So
+ * the link also carries service + date + time (+ what to review): nothing
+ * personal, just enough to put them back on the confirm step.
+ *
+ * Format: `<service>_<YYYY-MM-DD>_<HH:MM>[_<i-j-k>]`, review items as
+ * indexes into that service's reviewOptions.
+ */
+export const BOOKING_PARAM = 'reserva';
+
+export function encodeBookingChoice({ selectedService, selectedSlot, reviewItems = [], reviewOptions = [] }) {
+  if (!selectedService || !selectedSlot) return '';
+  const idx = reviewItems.map((r) => reviewOptions.indexOf(r)).filter((i) => i >= 0);
+  return [selectedService, selectedSlot.date, selectedSlot.time, ...(idx.length ? [idx.join('-')] : [])].join('_');
+}
+
+export function decodeBookingChoice(raw, services) {
+  if (!raw) return null;
+  const [service, date, time, idx] = raw.split('_');
+  const svc = services[service];
+  if (!svc || !/^\d{4}-\d{2}-\d{2}$/.test(date || '') || !/^\d{2}:\d{2}$/.test(time || '')) return null;
+  const options = svc.reviewOptions || [];
+  const reviewItems = (idx || '')
+    .split('-')
+    .map(Number)
+    .filter((i) => Number.isInteger(i) && options[i])
+    .map((i) => options[i]);
+  return { selectedService: service, date, time, reviewItems };
+}

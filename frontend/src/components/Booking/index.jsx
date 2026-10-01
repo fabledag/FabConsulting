@@ -2,11 +2,19 @@
 
 import { useEffect, useState } from 'react';
 import FadeUp from '../FadeUp/index.jsx';
-import SlotPicker from '../SlotPicker/index.jsx';
+import SlotPicker, { slotFromDateTime } from '../SlotPicker/index.jsx';
 import { useAuth } from '../../hooks/useAuth.js';
 import { apiFetch, getLastEmail } from '@/lib/api.js';
 import { SERVICES_BY_KEY } from '@/lib/services.js';
-import { takePreselectedService, takePendingSelection, savePendingSelection, PRESELECT_EVENT } from '@/lib/bookingStorage.js';
+import {
+  takePreselectedService,
+  takePendingSelection,
+  savePendingSelection,
+  PRESELECT_EVENT,
+  BOOKING_PARAM,
+  encodeBookingChoice,
+  decodeBookingChoice,
+} from '@/lib/bookingStorage.js';
 import styles from './Booking.module.css';
 
 const TRUST_ITEMS = [
@@ -114,18 +122,38 @@ function Booking() {
   // tab, already logged in. Without the restore + the visible banner below,
   // they land on a reset form with no explanation — which read as "logging in
   // did nothing".
+  //
+  // Two sources, in order: the full selection saved in this browser, or —
+  // when the email was opened on another device / in an in-app browser — the
+  // service, date and time carried in the link itself (?reserva=…). The
+  // latter has no name or notes, so without a name on the account we stop at
+  // step 4 instead of the pay step.
   useEffect(() => {
     if (!user) return;
-    const parsed = takePendingSelection();
-    if (!parsed) return;
+    const params = new URLSearchParams(window.location.search);
+    const fromLink = decodeBookingChoice(params.get(BOOKING_PARAM), SERVICES);
+    if (params.has(BOOKING_PARAM)) {
+      // Done with it: keep the address clean (and the choice out of history).
+      window.history.replaceState(null, '', `${window.location.pathname}${window.location.hash}`);
+    }
 
-    if (parsed.selectedService) setSelectedService(parsed.selectedService);
-    if (parsed.selectedSlot) setSelectedSlot(parsed.selectedSlot);
-    if (parsed.name) setName(parsed.name);
-    if (parsed.linkedin) setLinkedin(parsed.linkedin);
-    if (parsed.message) setMessage(parsed.message);
-    if (Array.isArray(parsed.reviewItems)) setReviewItems(parsed.reviewItems);
-    setStep(5);
+    const parsed = takePendingSelection();
+    if (parsed) {
+      if (parsed.selectedService) setSelectedService(parsed.selectedService);
+      if (parsed.selectedSlot) setSelectedSlot(parsed.selectedSlot);
+      if (parsed.name) setName(parsed.name);
+      if (parsed.linkedin) setLinkedin(parsed.linkedin);
+      if (parsed.message) setMessage(parsed.message);
+      if (Array.isArray(parsed.reviewItems)) setReviewItems(parsed.reviewItems);
+      setStep(5);
+    } else if (fromLink) {
+      setSelectedService(fromLink.selectedService);
+      setSelectedSlot(slotFromDateTime(fromLink.date, fromLink.time));
+      setReviewItems(fromLink.reviewItems);
+      setStep(user.name?.trim().length >= 2 ? 5 : 4);
+    } else {
+      return;
+    }
     setJustRestored(true);
 
     // Land on the widget rather than wherever the page happened to be.
@@ -146,8 +174,16 @@ function Booking() {
     setError('');
     savePendingSelection({ selectedService, selectedSlot, name, linkedin, message, reviewItems });
     try {
-      // Send them back to the booking widget itself, not the top of the page.
-      await requestLink(email, '/#agenda');
+      // Send them back to the booking widget itself, not the top of the page,
+      // with the choice in the link so it survives opening the email on
+      // another device.
+      const choice = encodeBookingChoice({
+        selectedService,
+        selectedSlot,
+        reviewItems,
+        reviewOptions: SERVICES[selectedService]?.reviewOptions || [],
+      });
+      await requestLink(email, choice ? `/?${BOOKING_PARAM}=${encodeURIComponent(choice)}#agenda` : '/#agenda');
       setLinkStatus('sent');
     } catch (err) {
       setError(err.message || 'No se pudo enviar el enlace.');
@@ -408,6 +444,15 @@ function Booking() {
               {/* STEP 4 — contact details */}
               {step === 4 && (
                 <div>
+                  {justRestored && (
+                    <div className={styles.restoredBanner} role="status">
+                      <i className="fa-solid fa-circle-check" aria-hidden="true" />
+                      <span>
+                        ¡Listo! Ya entraste a tu cuenta y recuperé tu sesión y horario. Escribe tu
+                        nombre para continuar.
+                      </span>
+                    </div>
+                  )}
                   <div className={styles.stepTitle}>Tus datos</div>
                   <p className={styles.stepSubtitle}>
                     Solo lo necesario para preparar tu sesión. Los campos marcados
